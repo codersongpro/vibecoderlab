@@ -73,12 +73,29 @@ function render() {
   saveState();
 }
 
+const LEAGUE_ICONS = {
+  rookie: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22V12"/><path d="M5 3a7 7 0 0 0 7 7 7 7 0 0 0 7-7"/><path d="M5 3H3"/><path d="M19 3h2"/></svg>`,
+  pro:    `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
+  master: `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4l3 12h14l3-12-6 7-4-7-4 7-6-7z"/><path d="M5 20h14"/></svg>`
+};
+
 function renderLevels() {
-  $("#levelList").innerHTML = Object.entries(COURSE).map(([id, item]) => `
-    <button class="level-btn ${id === activeLevel ? "active" : ""}" type="button" data-level="${id}">
-      <strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.label)}</span>
-    </button>
-  `).join("");
+  $("#levelList").innerHTML = Object.entries(COURSE).map(([id, item]) => {
+    const saved = state.levels?.[id]?.pages || {};
+    const total = item.pages.length;
+    const done = item.pages.filter(p => saved[p.id]?.complete).length;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    return `
+      <button class="level-btn ${id === activeLevel ? "active" : ""}" type="button" data-level="${id}">
+        <div class="level-btn-main">
+          <span class="level-icon">${LEAGUE_ICONS[id] || ""}</span>
+          <strong>${escapeHtml(item.name)}</strong>
+          <span class="level-pct-badge">${pct}%</span>
+        </div>
+        <span class="level-sublabel">${escapeHtml(item.label)}</span>
+        <div class="level-mini-track"><div class="level-mini-fill" style="width:${pct}%"></div></div>
+      </button>`;
+  }).join("");
 }
 
 function renderPages() {
@@ -107,6 +124,7 @@ function renderHeader() {
   document.documentElement.style.setProperty("--accent", item.theme);
   document.documentElement.style.setProperty("--accent-strong", darkenTheme(item.theme));
   document.documentElement.style.setProperty("--accent-soft", softTheme(activeLevel));
+  setLeagueClass(activeLevel);
   $("#levelIntro").textContent = item.description;
 
   // 전체 코스 진행률 (모든 리그 합산)
@@ -140,8 +158,12 @@ function renderLesson() {
   $("#reading").innerHTML = renderText(p.reading || "");
   $("#terms").innerHTML = (p.terms || []).map((t) => `<dt>${escapeHtml(t.term)}</dt><dd>${renderText(t.def)}</dd>`).join("");
   renderVisual(p);
-  $("#discussion").innerHTML = (p.discussion || []).map((q) => `<li>${renderText(q)}</li>`).join("");
-  $("#steps").innerHTML = (p.steps || []).map((s) => `<li>${renderText(s)}</li>`).join("");
+  $("#discussion").innerHTML = (p.discussion || []).map((q) =>
+    `<li><span class="q-dot"></span><span>${renderText(q)}</span></li>`
+  ).join("");
+  $("#steps").innerHTML = (p.steps || []).map((s, i) =>
+    `<li><span class="step-num">${i + 1}</span><span class="step-body">${renderText(s)}</span></li>`
+  ).join("");
   const hasGuide = p.externalGuide || (p.links && p.links.length);
   if (hasGuide) {
     let guideHtml = `<strong>외부 도구 따라하기</strong>`;
@@ -245,10 +267,14 @@ function layersHtml(v) {
 }
 
 function darkenTheme(color) {
-  return { "#0056d2":"#003d99", "#1a8754":"#136640", "#c47800":"#9a5e00" }[color] || "#003d99";
+  return { "#0056d2":"#1d4ed8", "#1a8754":"#0f766e", "#c47800":"#a16207" }[color] || "#1d4ed8";
 }
 function softTheme(levelId) {
-  return { rookie:"#e8f0fe", pro:"#e6f4ed", master:"#fef3e2" }[levelId] || "#e8f0fe";
+  return { rookie:"#eff6ff", pro:"#f0fdfa", master:"#fefce8" }[levelId] || "#eff6ff";
+}
+function setLeagueClass(levelId) {
+  document.body.classList.remove("league-rookie", "league-pro", "league-master");
+  document.body.classList.add("league-" + levelId);
 }
 
 /* ------------------------------ 실습 ------------------------------ */
