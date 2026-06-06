@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VibeCoder Lab</title>
+  <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <p class="eyebrow">바이브코딩 코스웨어</p>
+      <h1>VibeCoder Lab</h1>
+    </div>
+    <div class="course-progress" title="전체 진행률">
+      <span class="progress-label">전체</span>
+      <div class="progress-track"><div id="courseProgressBar" class="progress-fill"></div></div>
+      <span id="courseProgressText" class="progress-pct">0%</span>
+    </div>
+    <div class="top-actions">
+      <button id="presentBtn" type="button">▶ 발표 모드</button>
+      <button id="copyAll" type="button">결과물 복사</button>
+      <button id="resetAll" class="ghost danger" type="button">초기화</button>
+    </div>
+  </header>
+
+  <main class="layout">
+    <aside class="sidebar">
+      <section class="panel">
+        <h2>리그</h2>
+        <div id="levelList" class="level-list"></div>
+        <p id="levelIntro" class="level-intro"></p>
+      </section>
+      <section class="panel">
+        <div class="panel-title">
+          <h2>강의</h2>
+          <span id="pageCounter"></span>
+        </div>
+        <nav id="pageList" class="page-list" aria-label="강의 목록"></nav>
+      </section>
+    </aside>
+
+    <section class="content">
+      <article class="lesson">
+        <nav class="breadcrumb" aria-label="현재 위치">
+          <span id="crumbLevel"></span>
+          <span class="crumb-sep">›</span>
+          <span id="crumbGroup"></span>
+        </nav>
+
+        <div class="lesson-meta">
+          <span id="pageBadge" class="lesson-counter"></span>
+          <div class="lesson-progress"><div id="levelProgressBar" class="progress-fill"></div></div>
+          <span id="levelProgressText" class="lesson-progress-text"></span>
+        </div>
+
+        <h2 id="pageTitle"></h2>
+        <p id="pageGoal" class="goal"></p>
+
+        <section class="summary-card">
+          <h3>한 줄 핵심</h3>
+          <p id="summary"></p>
+        </section>
+
+        <section class="reading-card">
+          <h3>읽고 이해하기</h3>
+          <p id="reading"></p>
+        </section>
+
+        <section class="terms-card">
+          <h3>용어 사전</h3>
+          <dl id="terms"></dl>
+        </section>
+
+        <div id="visual" class="visual"></div>
+
+        <section class="talk-card">
+          <h3>생각해보기</h3>
+          <ul id="discussion"></ul>
+        </section>
+
+        <section class="steps-card">
+          <h3>따라하기</h3>
+          <ol id="steps" class="steps"></ol>
+        </section>
+
+        <div id="externalGuide" class="external-guide"></div>
+
+        <section class="practice-card">
+          <div class="section-head">
+            <span>실습하기</span>
+            <button id="savePage" type="button">저장</button>
+          </div>
+          <div id="practiceArea"></div>
+          <section class="checks">
+            <h3>확인하기</h3>
+            <div id="checks"></div>
+          </section>
+        </section>
+
+        <nav class="lesson-nav" aria-label="강의 이동">
+          <button id="prevPage" type="button" class="ghost">← 이전 강의</button>
+          <button id="completePage" type="button" class="primary">완료하고 다음 →</button>
+        </nav>
+      </article>
+
+      <details class="resource" id="notebookResource">
+        <summary>내 결과물 저장소</summary>
+        <div class="resource-body">
+          <p class="resource-hint">지금까지 작성한 내용이 자동으로 모입니다. 상단의 ‘결과물 복사’로 한 번에 가져갈 수 있어요.</p>
+          <textarea id="notebook" readonly></textarea>
+        </div>
+      </details>
+
+      <details class="resource" id="helpResource">
+        <summary>막혔을 때 도움받기</summary>
+        <div class="resource-body help-panel">
+          <label>상황
+            <select id="helpType">
+              <option value="term">용어가 어렵다</option>
+              <option value="prompt">AI에게 뭐라고 물어볼지 모르겠다</option>
+              <option value="tool">외부 도구 사용이 막혔다</option>
+              <option value="review">내 결과물이 맞는지 모르겠다</option>
+            </select>
+          </label>
+          <label>현재 상황 메모
+            <textarea id="helpMemo" placeholder="막힌 부분, 에러 문구, 내가 한 일을 적어보세요."></textarea>
+          </label>
+          <div class="section-head">
+            <span>AI에게 보낼 도움 요청문</span>
+            <button id="copyHelp" type="button">복사</button>
+          </div>
+          <pre id="helpPrompt"></pre>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- 발표 모드 오버레이 -->
+  <div id="presentationOverlay" class="pres-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+    <header class="pres-header">
+      <div class="pres-lesson-info">
+        <span id="presLeagueBadge" class="pres-league"></span>
+        <span id="presLessonName" class="pres-lesson-name"></span>
+      </div>
+      <div class="pres-controls">
+        <button id="presPrev" class="pres-nav-btn" type="button" aria-label="이전 슬라이드">←</button>
+        <span id="presCounter" class="pres-counter">1 / 1</span>
+        <button id="presNext" class="pres-nav-btn" type="button" aria-label="다음 슬라이드">→</button>
+      </div>
+      <button id="presClose" class="pres-close-btn" type="button">✕ 닫기</button>
+    </header>
+    <main class="pres-stage">
+      <div id="presSlide" class="pres-slide"></div>
+    </main>
+    <footer class="pres-footer">
+      <div id="presDots" class="pres-dots"></div>
+    </footer>
+  </div>
+
+  <script src="content.js?v=5"></script>
+  <script src="app.js?v=5"></script>
+</body>
+</html>
