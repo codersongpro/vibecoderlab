@@ -44,7 +44,7 @@ body {
   background: var(--bg);
   color: var(--ink);
   font-family: 'Pretendard Variable', 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif;
-  font-size: 16px;
+  font-size: 17.5px;
   line-height: 1.7;
   -webkit-font-smoothing: antialiased;
   word-break: keep-all;
@@ -55,14 +55,14 @@ h1, h2, h3, p { margin-top: 0; }
 
 /* ---- 버튼 ---- */
 button {
-  min-height: 38px;
-  padding: 7px 16px;
+  min-height: 42px;
+  padding: 9px 18px;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--ink);
   cursor: pointer;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   white-space: nowrap;
   transition: border-color .15s, background .15s, box-shadow .15s;
@@ -81,7 +81,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   align-items: center;
   gap: 20px;
   padding: 0 28px;
-  height: 60px;
+  min-height: 68px;
   border-bottom: 1px solid var(--line);
   background: var(--panel);
   box-shadow: var(--shadow-sm);
@@ -111,7 +111,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 .eyebrow {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .08em;
@@ -119,7 +119,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 }
 .brand h1 {
   margin: 0;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   letter-spacing: -.03em;
   line-height: 1.2;
@@ -134,24 +134,24 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   flex: 1;
   max-width: 360px;
 }
-.progress-label { color: var(--muted); font-size: 11.5px; font-weight: 700; white-space: nowrap; }
-.progress-track { flex: 1; height: 5px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.progress-label { color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; }
+.progress-track { flex: 1; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .progress-fill { height: 100%; width: 0; background: var(--accent); border-radius: 999px; transition: width .5s cubic-bezier(.4,0,.2,1); }
-.progress-pct { color: var(--accent-strong); font-size: 12.5px; font-weight: 700; min-width: 36px; text-align: right; }
+.progress-pct { color: var(--accent-strong); font-size: 14px; font-weight: 700; min-width: 42px; text-align: right; }
 .top-actions { display: flex; gap: 8px; margin-left: auto; }
-#presentBtn { font-size: 13px; font-weight: 700; gap: 5px; }
+#presentBtn { font-size: 14.5px; font-weight: 700; gap: 5px; }
 
 /* ---- 레이아웃 ---- */
 .layout {
   display: grid;
-  grid-template-columns: 288px minmax(0, 1fr);
-  gap: 24px;
-  max-width: 1280px;
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr);
+  gap: 32px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 24px;
   align-items: start;
 }
-.sidebar { position: sticky; top: 76px; display: grid; gap: 12px; min-width: 0; }
+.sidebar { position: sticky; top: 88px; display: grid; gap: 14px; min-width: 0; width: 100%; max-width: 340px; }
 .content { min-width: 0; display: grid; gap: 16px; }
 
 /* ---- 패널 ---- */
@@ -163,7 +163,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   padding: 16px;
 }
 .panel h2 {
-  font-size: 10.5px;
+  font-size: 13px;
   margin-bottom: 10px;
   color: var(--muted);
   text-transform: uppercase;
@@ -172,7 +172,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 }
 .panel-title { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
 .panel-title h2 { margin: 0; }
-#pageCounter { color: var(--muted); font-size: 11.5px; font-weight: 700; white-space: nowrap; }
+#pageCounter { color: var(--muted); font-size: 13px; font-weight: 700; white-space: nowrap; }
 
 /* ---- 리그 버튼 ---- */
 .level-list, .page-list { display: grid; gap: 6px; }
@@ -181,17 +181,19 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   text-align: left;
   display: grid;
   gap: 2px;
-  padding: 11px 13px;
+  padding: 14px 15px;
   border-radius: var(--radius-sm);
   background: var(--surface-soft);
   border-color: transparent;
+  white-space: normal;
+  overflow: hidden;
 }
-.level-btn strong { font-size: 13.5px; font-weight: 700; color: var(--ink); }
-.level-btn-main { display: flex; align-items: center; gap: 7px; }
+.level-btn strong { min-width: 0; font-size: 16px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+.level-btn-main { display: flex; align-items: center; gap: 8px; min-width: 0; }
 .level-icon { display: flex; align-items: center; color: var(--muted); flex-shrink: 0; }
-.level-sublabel { font-size: 10.5px; color: var(--muted); line-height: 1.4; display: block; }
-.level-pct-badge { margin-left: auto; font-size: 11px; font-weight: 700; color: var(--muted); background: var(--surface-card); padding: 1px 7px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; }
-.level-mini-track { height: 3px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 3px; }
+.level-sublabel { min-width: 0; font-size: 13px; color: var(--muted); line-height: 1.45; display: block; overflow-wrap: anywhere; }
+.level-pct-badge { margin-left: auto; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--surface-card); padding: 2px 8px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; }
+.level-mini-track { height: 4px; border-radius: 999px; background: var(--line); overflow: hidden; margin-top: 5px; }
 .level-mini-fill { height: 100%; border-radius: 999px; background: var(--accent); transition: width .5s cubic-bezier(.4,0,.2,1); }
 .level-btn.active {
   border-color: var(--accent);
@@ -201,13 +203,13 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 .level-btn.active .level-icon { color: var(--accent); }
 .level-btn.active strong { color: var(--accent-strong); }
 .level-btn.active .level-pct-badge { background: var(--accent-soft); color: var(--accent-strong); }
-.level-intro { margin: 8px 2px 0; color: var(--muted); font-size: 11.5px; line-height: 1.65; }
+.level-intro { margin: 10px 2px 0; color: var(--muted); font-size: 13.5px; line-height: 1.7; }
 
 /* ---- 강의 목록 ---- */
 .page-group {
   margin: 14px 4px 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: .07em;
@@ -215,41 +217,44 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 .page-group:first-child { margin-top: 4px; }
 .page-btn {
   display: grid;
-  grid-template-columns: 26px 1fr auto;
-  gap: 9px;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 10px;
   align-items: center;
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
   background: transparent;
   border-color: transparent;
   min-height: unset;
   width: 100%;
   text-align: left;
+  white-space: normal;
+  overflow: hidden;
 }
 .page-btn:hover { background: var(--surface-soft); border-color: transparent; }
 .page-btn.active { border-color: var(--accent); background: var(--accent-soft); }
-.page-btn strong { display: block; font-size: 12.5px; font-weight: 700; color: var(--ink); }
-.page-btn > span:nth-child(2) > span { display: block; color: var(--muted); font-size: 10.5px; line-height: 1.3; margin-top: 1px; }
+.page-btn strong { display: block; font-size: 15px; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+.page-btn > span:nth-child(2) { min-width: 0; }
+.page-btn > span:nth-child(2) > span { display: block; color: var(--muted); font-size: 13px; line-height: 1.4; margin-top: 2px; overflow-wrap: anywhere; }
 .num {
   display: grid;
   place-items: center;
-  width: 24px; height: 24px;
+  width: 28px; height: 28px;
   border-radius: 50%;
   background: var(--surface-card);
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: 12.5px;
   font-weight: 800;
   flex-shrink: 0;
 }
 .page-btn.active .num { background: var(--accent); color: #fff; }
-.done { color: var(--accent-strong); font-size: 13px; font-weight: 700; }
+.done { color: var(--accent-strong); font-size: 15px; font-weight: 700; }
 
 /* ============================================================
    강의 본문
    ============================================================ */
 .lesson {
   width: 100%;
-  max-width: 900px;
+  max-width: 980px;
   padding: 40px 48px;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -286,16 +291,16 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent-strong);
-  font-size: 11.5px;
+  font-size: 13.5px;
   font-weight: 700;
   white-space: nowrap;
 }
-.lesson-progress { flex: 1; min-width: 120px; max-width: 240px; height: 4px; border-radius: 999px; background: var(--line); overflow: hidden; }
-.lesson-progress-text { color: var(--muted); font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.lesson-progress { flex: 1; min-width: 120px; max-width: 240px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.lesson-progress-text { color: var(--muted); font-size: 13.5px; font-weight: 600; white-space: nowrap; }
 
 /* 제목 & 목표 */
 #pageTitle {
-  font-size: 28px;
+  font-size: 34px;
   line-height: 1.25;
   font-weight: 800;
   margin-bottom: 8px;
@@ -305,7 +310,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 .goal {
   margin-bottom: 28px;
   color: var(--body);
-  font-size: 15.5px;
+  font-size: 18px;
   line-height: 1.65;
 }
 
@@ -315,7 +320,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   width: max-content;
   white-space: nowrap;
   margin-bottom: 10px;
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .09em;
@@ -360,7 +365,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   border: 1.5px solid var(--read-border);
 }
 .reading-card h3 { background: #dbeafe; color: var(--read-ink); margin-bottom: 12px; white-space: nowrap; }
-.reading-card p { margin: 0; color: var(--body); font-size: 15.5px; line-height: 1.85; }
+.reading-card p { margin: 0; color: var(--body); font-size: 18px; line-height: 1.9; }
 
 /* 용어 사전 — 그린 톤 */
 .terms-card {
@@ -382,7 +387,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   font-size: 13.5px;
   margin-bottom: 3px;
 }
-.terms-card dd { margin: 0; color: var(--body); font-size: 14.5px; line-height: 1.65; }
+.terms-card dd { margin: 0; color: var(--body); font-size: 17px; line-height: 1.7; }
 
 /* 시각화 (visual) */
 .visual {
@@ -491,7 +496,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   flex-shrink: 0;
   margin-top: 1px;
 }
-.step-body { flex: 1; color: var(--body); font-size: 15px; line-height: 1.65; }
+.step-body { flex: 1; color: var(--body); font-size: 17.5px; line-height: 1.7; }
 
 /* 외부 가이드 */
 .external-guide {
@@ -502,8 +507,8 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   border: 1.5px solid #fed7aa;
 }
 .external-guide:empty { display: none; }
-.external-guide strong { display: block; margin-bottom: 6px; font-size: 10.5px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-.external-guide p { margin: 0; color: var(--body); font-size: 15px; line-height: 1.7; }
+.external-guide strong { display: block; margin-bottom: 6px; font-size: 13px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.external-guide p { margin: 0; color: var(--body); font-size: 17.5px; line-height: 1.75; }
 .guide-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .guide-link-btn {
   display: inline-flex;
@@ -513,7 +518,7 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent-strong);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: none;
   border: 1.5px solid var(--accent);
@@ -631,23 +636,23 @@ code.inline-code:hover { background: #313244; transform: translateY(-1px); }
   justify-content: space-between;
   gap: 8px;
   color: var(--muted);
-  font-size: 10.5px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: .08em;
   white-space: nowrap;
 }
-.section-head button { min-height: 30px; padding: 4px 12px; font-size: 12.5px; }
+.section-head button { min-height: 34px; padding: 6px 14px; font-size: 14.5px; }
 #practiceArea { padding: 20px; }
 
-label { display: grid; gap: 5px; color: var(--muted); font-size: 12.5px; font-weight: 700; letter-spacing: .02em; }
+label { display: grid; gap: 5px; color: var(--muted); font-size: 14.5px; font-weight: 700; letter-spacing: .02em; }
 input, textarea, select {
   width: 100%;
   border: 1.5px solid var(--line);
   border-radius: var(--radius-sm);
   background: #fff;
   color: var(--ink);
-  font-size: 15px;
+  font-size: 17px;
   transition: border-color .15s, box-shadow .15s;
 }
 input, select { min-height: 42px; padding: 9px 12px; }
@@ -656,7 +661,7 @@ input::placeholder, textarea::placeholder { color: #b0b8c4; }
 input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent); }
 .fields { display: grid; gap: 14px; }
 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.result { padding: 14px 16px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); background: #fff; color: var(--body); white-space: pre-wrap; font-size: 14px; line-height: 1.65; }
+.result { padding: 14px 16px; border: 1.5px dashed var(--line); border-radius: var(--radius-sm); background: #fff; color: var(--body); white-space: pre-wrap; font-size: 16px; line-height: 1.7; }
 .mini-preview { width: 100%; min-height: 240px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: #fff; }
 .build-preview { min-height: 420px; }
 .choice-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -691,7 +696,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
   background: #fff;
   color: var(--ink);
   font-weight: 600;
-  font-size: 14px;
+  font-size: 16.5px;
 }
 .check-item:last-child { margin-bottom: 0; }
 .check-item input { width: 18px; min-height: 18px; margin-top: 2px; accent-color: var(--accent); }
@@ -715,11 +720,11 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
   padding-top: 24px;
   border-top: 1px solid var(--line);
 }
-.lesson-nav .primary { margin-left: auto; padding: 10px 24px; font-size: 14.5px; }
-.lesson-nav .ghost { font-size: 13.5px; }
+.lesson-nav .primary { margin-left: auto; padding: 12px 26px; font-size: 16px; }
+.lesson-nav .ghost { font-size: 15.5px; }
 
 /* 저장 버튼 */
-#savePage { min-height: 30px; padding: 4px 12px; font-size: 12.5px; }
+#savePage { min-height: 34px; padding: 6px 14px; font-size: 14.5px; }
 
 /* ============================================================
    리소스 (접기)
@@ -736,7 +741,7 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
   cursor: pointer;
   list-style: none;
   padding: 14px 20px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -748,10 +753,10 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--a
 .resource > summary::before { content: "▸"; color: var(--muted); font-size: 11px; }
 .resource[open] > summary::before { content: "▾"; }
 .resource-body { padding: 0 20px 20px; display: grid; gap: 12px; }
-.resource-hint { margin: 0; color: var(--muted); font-size: 13px; }
-#notebook { width: 100%; min-height: 300px; padding: 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-family: 'Menlo', 'Consolas', monospace; font-size: 13px; line-height: 1.6; resize: vertical; }
+.resource-hint { margin: 0; color: var(--muted); font-size: 15px; }
+#notebook { width: 100%; min-height: 300px; padding: 14px; border: 1.5px solid var(--line); border-radius: var(--radius-sm); font-family: 'Menlo', 'Consolas', monospace; font-size: 15px; line-height: 1.65; resize: vertical; }
 .help-panel { display: grid; gap: 12px; }
-#helpPrompt { min-height: 180px; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-soft); white-space: pre-wrap; font-size: 13px; line-height: 1.65; overflow: auto; }
+#helpPrompt { min-height: 180px; margin: 0; padding: 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-soft); white-space: pre-wrap; font-size: 15px; line-height: 1.7; overflow: auto; }
 
 /* ============================================================
    토스트
@@ -913,7 +918,7 @@ ol.pres-list li { padding-left: 0; }
    ============================================================ */
 @media (max-width: 1040px) {
   .layout { grid-template-columns: 1fr; }
-  .sidebar { position: static; }
+  .sidebar { position: static; max-width: none; }
   .lesson, .resource { max-width: none; }
 }
 @media (max-width: 760px) {
@@ -923,7 +928,7 @@ ol.pres-list li { padding-left: 0; }
   #presentBtn { display: none; }
   .layout { padding: 12px; gap: 12px; }
   .lesson { padding: 24px 18px; }
-  #pageTitle { font-size: 22px; }
+  #pageTitle { font-size: 28px; }
   .two, .choice-row { grid-template-columns: 1fr; }
   .lesson-nav { flex-direction: column-reverse; }
   .lesson-nav button { width: 100%; }
