@@ -7,9 +7,8 @@
 
 const storeKey = "vibecoder-lab-redesign-v2";
 let state = loadState();
-let activeLevel = state.activeLevel && COURSE[state.activeLevel] ? state.activeLevel : "rookie";
-let activePage = Number.isInteger(state.activePage) ? state.activePage : 0;
-if (activePage < 0 || activePage >= COURSE[activeLevel].pages.length) activePage = 0;
+let activeLevel = "rookie";
+let activePage = 0;
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -58,6 +57,179 @@ function bindCodeCopy() {
 function fieldLabel(page, key) {
   const found = (page?.practice?.fields || []).find((f) => f.key === key);
   return found ? found.label : key;
+}
+
+const TOOL_MANUALS = {
+  chatgpt: {
+    name: "ChatGPT",
+    context: "아이디어 정리, PRD 작성, 단일 HTML 코드 초안, 디버그 질문에 사용합니다.",
+    steps: ["ChatGPT 페이지에 로그인합니다.", "만들 앱의 목표, 사용자, 기능, 조건을 한 번에 붙여넣습니다.", "불명확한 부분을 먼저 질문해 달라고 요청합니다.", "받은 결과를 실행해 보고, 안 되는 부분을 구체적으로 다시 요청합니다."]
+  },
+  claude: {
+    name: "Claude",
+    context: "긴 설명을 읽고 정리하거나, PRD와 코드 수정 요청을 차분히 다듬을 때 사용합니다.",
+    steps: ["Claude에 로그인합니다.", "현재 단계의 PRD나 작업 지시서를 붙여넣습니다.", "먼저 이해한 내용을 요약하게 한 뒤 누락된 조건을 확인합니다.", "코드나 문구를 받으면 성공 기준과 비교해 수정 요청을 이어갑니다."]
+  },
+  gemini: {
+    name: "Gemini",
+    context: "Google 계정 기반으로 질문, 자료 정리, Gemini Gems, Gemini API 실습 준비에 사용합니다.",
+    steps: ["Gemini에 Google 계정으로 로그인합니다.", "현재 만들 앱의 목적과 기능 3개를 입력합니다.", "답변이 너무 넓어지면 이번 단계에서 필요한 범위만 다시 지정합니다.", "반복해서 쓸 규칙은 Gemini Gems로 저장합니다."]
+  },
+  geminiGems: {
+    name: "Gemini Gems",
+    context: "반복해서 쓸 나만의 AI 코치 역할과 규칙을 저장할 때 사용합니다.",
+    steps: ["Gemini Gems 만들기 페이지를 엽니다.", "Gem 이름을 정합니다.", "역할과 지침에 말투, 질문 방식, 보안 확인 규칙을 적습니다.", "저장한 뒤 해당 Gem을 열어 같은 규칙으로 대화를 시작합니다."]
+  },
+  geminiApi: {
+    name: "Gemini API",
+    context: "날씨, 예산, 준비물, 일정 데이터를 바탕으로 여행 준비 요약이나 추천 문구를 생성할 때 사용합니다.",
+    steps: ["Gemini API 문서를 열고 사용 가능한 모델과 요청 형식을 확인합니다.", "API 키는 서버 환경변수에 저장하고 브라우저 코드에는 넣지 않습니다.", "앱에서 보낼 입력 데이터와 받을 결과 형식을 정합니다.", "테스트 응답을 확인한 뒤 실패했을 때 보여 줄 문구를 준비합니다."]
+  },
+  canva: {
+    name: "Canva",
+    context: "앱 화면 초안, 발표용 이미지, 사용자가 볼 화면 구성을 빠르게 시각화할 때 사용합니다.",
+    steps: ["Canva에 로그인합니다.", "앱 스크린샷이나 휴대폰 목업 형식을 선택합니다.", "Magic Design에 화면 구성과 분위기를 적어 생성합니다.", "마음에 드는 초안을 저장하고 AI 코드 요청 때 참고 이미지로 사용합니다."]
+  },
+  netlify: {
+    name: "Netlify",
+    context: "단일 HTML 파일이나 정적 웹앱을 빠르게 인터넷 링크로 배포할 때 사용합니다.",
+    steps: ["Netlify에 로그인합니다.", "Sites에서 새 사이트를 만들거나 Deploy manually를 선택합니다.", "index.html 또는 프로젝트 폴더를 드래그해서 올립니다.", "생성된 URL을 열어 첫 화면과 주요 버튼이 동작하는지 확인합니다."]
+  },
+  git: {
+    name: "Git",
+    context: "내 컴퓨터에서 파일 변경 기록을 남기고 GitHub로 올릴 준비를 할 때 사용합니다.",
+    steps: ["Git 설치 파일을 내려받아 기본 옵션으로 설치합니다.", "설치 후 Git 버전이 보이는지 확인합니다.", "프로젝트 폴더에서 변경 파일을 확인합니다.", "작업 단위가 끝날 때 커밋으로 기록합니다."]
+  },
+  github: {
+    name: "GitHub",
+    context: "코드를 저장하고, 버전 기록을 남기고, 배포 서비스와 연결할 때 사용합니다.",
+    steps: ["GitHub에 가입하고 로그인합니다.", "새 저장소를 만들거나 기존 저장소를 엽니다.", "Push 전에 API 키, 비밀번호, 개인정보가 없는지 확인합니다.", "파일이 올라간 뒤 GitHub 화면에서 변경 내용을 다시 확인합니다."]
+  },
+  githubPages: {
+    name: "GitHub Pages",
+    context: "GitHub 저장소의 정적 웹앱을 별도 서버 없이 공개 링크로 만들 때 사용합니다.",
+    steps: ["GitHub 저장소 Settings로 이동합니다.", "Pages 메뉴에서 배포할 브랜치를 선택합니다.", "Save를 누르고 생성된 URL을 기다립니다.", "URL을 열어 새로고침과 모바일 화면을 확인합니다."]
+  },
+  claudeCode: {
+    name: "Claude Code",
+    context: "프로젝트 폴더를 열고 여러 파일 수정, 코드 설명, 구현 작업을 맡길 때 사용합니다.",
+    steps: ["Claude Code를 실행합니다.", "작업할 프로젝트 폴더를 엽니다.", "PRD와 수정 범위, 보안 금지사항을 붙여넣습니다.", "변경 파일을 확인하고 실행 결과를 보며 수정 요청을 반복합니다."]
+  },
+  antigravity: {
+    name: "Antigravity",
+    context: "브라우저 흐름 확인, 화면 기반 작업, 여러 단계의 구현 점검에 사용합니다.",
+    steps: ["Antigravity를 실행합니다.", "프로젝트 폴더나 확인할 화면을 엽니다.", "사용자가 누를 순서와 기대 결과를 지시합니다.", "화면에서 깨지는 지점이나 오류를 확인해 수정 요청으로 연결합니다."]
+  },
+  codex: {
+    name: "Codex",
+    context: "프로젝트 파일을 읽고 수정 방향을 제안하거나, 코드 변경과 검증을 함께 진행할 때 사용합니다.",
+    steps: ["Codex에서 프로젝트 폴더를 엽니다.", "작업 목표와 건드리면 안 되는 범위를 적습니다.", "수정 전 확인할 파일과 성공 기준을 알려줍니다.", "변경 후 실행 결과, 문법 검사, 보안 점검을 확인합니다."]
+  },
+  vercel: {
+    name: "Vercel",
+    context: "GitHub 저장소와 연결해 웹앱을 배포하고 환경변수를 관리할 때 사용합니다.",
+    steps: ["Vercel에 로그인합니다.", "Add New Project에서 GitHub 저장소를 연결합니다.", "필요한 환경변수를 Settings에서 등록합니다.", "배포 URL을 열어 주요 기능과 새로고침 동작을 확인합니다."]
+  },
+  cloudflarePages: {
+    name: "Cloudflare Pages",
+    context: "정적 웹앱을 빠르게 배포하고 GitHub 변경과 연결할 때 사용합니다.",
+    steps: ["Cloudflare Pages에 로그인합니다.", "새 Pages 프로젝트를 만들고 GitHub 저장소를 연결합니다.", "빌드 설정을 확인하고 배포합니다.", "생성된 URL에서 화면과 주요 기능을 확인합니다."]
+  },
+  openMeteo: {
+    name: "Open-Meteo",
+    context: "API 키 없이 날씨 데이터를 불러오는 여행 준비 앱 실습에 사용합니다.",
+    steps: ["Open-Meteo 문서를 엽니다.", "여행지의 위도, 경도와 날짜를 정합니다.", "샘플 URL로 날씨 응답이 오는지 확인합니다.", "앱에는 필요한 날씨 항목만 표시합니다."]
+  },
+  naverShopping: {
+    name: "네이버 쇼핑 API",
+    context: "준비물 구매 후보와 가격 검색 구조를 설계할 때 사용합니다. Client ID와 Secret은 브라우저에 넣지 않습니다.",
+    steps: ["네이버 개발자 센터에서 애플리케이션을 등록합니다.", "쇼핑 검색 API 사용 권한을 확인합니다.", "Client ID와 Secret은 서버나 환경변수에만 보관합니다.", "프로리그에서는 요청 구조와 샘플 응답으로 먼저 화면을 설계합니다."]
+  },
+  supabase: {
+    name: "Supabase",
+    context: "로그인, 데이터베이스, 사용자별 데이터 분리를 한 서비스에서 다룰 때 사용합니다.",
+    steps: ["Supabase에 로그인하고 새 프로젝트를 만듭니다.", "Auth에서 로그인 방식을 선택합니다.", "Database에 여행, 준비물, 예산 테이블을 만듭니다.", "RLS 정책으로 자기 데이터나 초대된 데이터만 보이게 설정합니다.", "API 키는 환경변수로 관리하고 화면에 직접 넣지 않습니다."]
+  },
+  firebase: {
+    name: "Firebase",
+    context: "Google 기반 로그인, Firestore 데이터 저장, 호스팅을 함께 사용할 때 검토합니다.",
+    steps: ["Firebase 콘솔에서 프로젝트를 만듭니다.", "Authentication에서 로그인 제공자를 켭니다.", "Firestore에 사용자별 여행 데이터 구조를 만듭니다.", "Security Rules로 자기 데이터만 읽고 쓰게 제한합니다.", "배포 전 규칙과 테스트 계정을 확인합니다."]
+  },
+  clerk: {
+    name: "Clerk",
+    context: "로그인 화면과 사용자 관리를 빠르게 붙이고, 데이터베이스는 별도로 연결할 때 사용합니다.",
+    steps: ["Clerk에 로그인하고 새 애플리케이션을 만듭니다.", "로그인 방식과 리디렉션 주소를 설정합니다.", "앱에서 현재 사용자 ID를 가져오도록 연결합니다.", "DB 저장 시 사용자 ID를 함께 저장합니다.", "다른 사용자의 데이터가 보이지 않는지 테스트합니다."]
+  },
+  pyinstaller: {
+    name: "PyInstaller",
+    context: "Python으로 만든 앱을 Windows exe 파일로 묶을 때 사용합니다.",
+    steps: ["Python 프로젝트가 로컬에서 정상 실행되는지 확인합니다.", "PyInstaller를 설치합니다.", "진입 파일을 기준으로 exe를 생성합니다.", "다른 PC에서 실행해 보고 보안 경고 안내문을 준비합니다."]
+  },
+  electron: {
+    name: "Electron",
+    context: "웹 기술로 만든 앱을 데스크톱 프로그램처럼 패키징할 때 사용합니다.",
+    steps: ["웹앱이 브라우저에서 정상 동작하는지 확인합니다.", "Electron 프로젝트 구조를 만듭니다.", "웹 화면을 Electron 창에 연결합니다.", "패키징 후 용량, 업데이트 방식, 보안 경고를 점검합니다."]
+  },
+  tauri: {
+    name: "Tauri",
+    context: "웹 기술 기반 데스크톱 앱을 비교적 가볍게 패키징할 때 검토합니다.",
+    steps: ["웹앱 화면과 기능을 먼저 완성합니다.", "Tauri 요구 환경을 설치합니다.", "프론트엔드 빌드와 Tauri 설정을 연결합니다.", "exe 생성 후 실행, 권한, 보안 안내를 확인합니다."]
+  }
+};
+
+function toolGuideKey(link) {
+  const text = `${link?.label || ""} ${link?.url || ""}`.toLowerCase();
+  const rules = [
+    ["geminiGems", ["gems"]],
+    ["geminiApi", ["gemini api"]],
+    ["claudeCode", ["claude code"]],
+    ["githubPages", ["github pages"]],
+    ["cloudflarePages", ["cloudflare pages"]],
+    ["naverShopping", ["naver", "shopping"]],
+    ["openMeteo", ["open-meteo", "openmeteo"]],
+    ["antigravity", ["antigravity"]],
+    ["pyinstaller", ["pyinstaller"]],
+    ["electron", ["electron"]],
+    ["tauri", ["tauri"]],
+    ["supabase", ["supabase"]],
+    ["firebase", ["firebase"]],
+    ["clerk", ["clerk"]],
+    ["netlify", ["netlify"]],
+    ["vercel", ["vercel"]],
+    ["canva", ["canva"]],
+    ["chatgpt", ["chatgpt", "chat.openai"]],
+    ["claude", ["claude"]],
+    ["gemini", ["gemini"]],
+    ["codex", ["codex"]],
+    ["git", ["git-scm"]],
+    ["github", ["github"]]
+  ];
+  const found = rules.find(([, needles]) => needles.some((n) => text.includes(n)));
+  return found ? found[0] : null;
+}
+
+function renderToolManuals(p) {
+  const keys = [];
+  (p.toolGuides || []).forEach((key) => keys.push(key));
+  (p.links || []).forEach((link) => {
+    const key = toolGuideKey(link);
+    if (key) keys.push(key);
+  });
+  const unique = [...new Set(keys)].filter((key) => TOOL_MANUALS[key]);
+  if (!unique.length) return "";
+  return `<div class="tool-manuals">
+    <div class="tool-manual-title">도구별 매뉴얼</div>
+    ${unique.map((key) => {
+      const guide = TOOL_MANUALS[key];
+      return `<details class="tool-manual">
+        <summary><span>${escapeHtml(guide.name)}</span><small>설치·활용 순서</small></summary>
+        <div class="tool-manual-body">
+          <p>${renderText(guide.context)}</p>
+          <ol>${guide.steps.map((step) => `<li>${renderText(step)}</li>`).join("")}</ol>
+        </div>
+      </details>`;
+    }).join("")}
+  </div>`;
 }
 
 /* ------------------------------ 렌더 ------------------------------ */
@@ -164,7 +336,7 @@ function renderLesson() {
   $("#steps").innerHTML = (p.steps || []).map((s, i) =>
     `<li><span class="step-num">${i + 1}</span><span class="step-body">${renderText(s)}</span></li>`
   ).join("");
-  const hasGuide = p.externalGuide || (p.links && p.links.length);
+  const hasGuide = p.externalGuide || (p.links && p.links.length) || (p.toolGuides && p.toolGuides.length);
   if (hasGuide) {
     let guideHtml = `<strong>외부 도구 따라하기</strong>`;
     if (p.externalGuide) guideHtml += `<p>${renderText(p.externalGuide)}</p>`;
@@ -173,6 +345,7 @@ function renderLesson() {
         `<a href="${escapeHtml(l.url)}" target="_blank" rel="noopener noreferrer" class="guide-link-btn">↗ ${escapeHtml(l.label)}</a>`
       ).join("")}</div>`;
     }
+    guideHtml += renderToolManuals(p);
     $("#externalGuide").innerHTML = guideHtml;
   } else {
     $("#externalGuide").innerHTML = "";
