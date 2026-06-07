@@ -30,7 +30,7 @@ const COURSE = {
     name: "루키리그",
     theme: "#0056d2",
     label: "AI에게 코드를 받아 내 첫 앱을 만들고 배포한다",
-    description: "코딩 경험 없이도 여행 준비 미니앱을 만들 수 있습니다. ChatGPT·Claude·Gemini 중 편한 AI를 골라 코드를 받고, Netlify로 배포해 실제로 열리는 첫 앱을 완성합니다.",
+    description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 자기 아이디어가 있다면 캠핑·출장·이사·운동 준비 앱으로 바꿔도 됩니다.",
     tags: ["Prompt·Context·Harness", "AI 코드 받기", "Netlify/Vercel 배포", "첫 앱 완성"],
     padletUrl: "https://padlet.com/dungstme/_-guhr4cbmj43e82ew",
     pages: [
@@ -123,9 +123,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "appIdea", label: "내가 만들고 싶은 것(한 문장)", placeholder: "예: 여행 전 준비물 체크, 코스 뽑기, 예산 합계를 한 화면에서 하는 앱", chips: ["여행 준비 미니앱", "캠핑 준비 앱", "출장 준비 앱", "이사 준비 앱", "운동 루틴 준비 앱"] },
-            { key: "user", label: "누가 사용하나요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 나", chips: ["나 자신", "가족", "친구", "여행 동행자"] },
-            { key: "firstQ", label: "AI에게 던질 첫 질문", placeholder: "예: 여행 준비 미니앱의 가장 간단한 첫 화면부터 만들어 주세요. 준비물 체크, 코스 뽑기, 예산 합계가 필요해요. 불명확한 부분이 있으면 먼저 물어봐 줘.", chips: ["불명확한 부분이 있으면 먼저 물어봐 줘", "한 화면짜리로 만들어 줘", "API·로그인·DB는 넣지 마", "<!DOCTYPE html>부터 </html>까지 전체를 줘"] }
+            { key: "appIdea", label: "내가 만들고 싶은 것(한 문장)", placeholder: "예: 여행 전 준비물 체크, 코스 뽑기, 예산 합계를 한 화면에서 하는 앱", chips: ["여행 준비 미니앱", "캠핑 준비 앱", "출장 준비 앱", "이사 준비 앱", "운동 루틴 준비 앱", "반려동물 산책 준비 앱", "장보기 준비 앱", "주말 계획 앱", "내 아이디어로 바꾸기"] },
+            { key: "user", label: "누가 사용하나요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 나", chips: ["나 자신", "가족", "친구", "여행 동행자", "캠핑 동호회", "출장이 잦은 직장인", "이사를 준비하는 사람", "운동 루틴을 시작하는 사람"] },
+            { key: "firstQ", label: "AI에게 던질 첫 질문", placeholder: "예: 여행 준비 미니앱의 가장 간단한 첫 화면부터 만들어 주세요. 준비물 체크, 코스 뽑기, 예산 합계가 필요해요. 불명확한 부분이 있으면 먼저 물어봐 줘.", chips: ["불명확한 부분이 있으면 먼저 물어봐 줘", "한 화면짜리로 만들어 줘", "API·로그인·DB는 넣지 마", "준비물 체크 기능을 넣어 줘", "랜덤 추천 버튼을 넣어 줘", "예산 합계를 계산해 줘", "내 아이디어에 맞게 항목명을 바꿔 줘", "<!DOCTYPE html>부터 </html>까지 전체를 줘"] }
           ]
         },
         checks: ["바이브코딩을 내 말로 설명했다", "만들고 싶은 것을 한 문장으로 적었다"]
@@ -286,12 +286,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱" },
-            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람" },
-            { key: "problem", label: "어떤 문제를 해결하나요?", placeholder: "예: 여행 전 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다." },
-            { key: "features", label: "꼭 필요한 기능 3개", placeholder: "예: 1) 준비물 체크  2) 코스 후보 랜덤 뽑기  3) 예산 합계 계산" },
-            { key: "success", label: "성공 확인 방법", placeholder: "예: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다." },
-            { key: "copyPrompt", label: "AI에게 요청할 루키 PRD", placeholder: "예: 아래 PRD를 바탕으로 여행 준비 미니앱을 HTML+CSS+JS 한 파일로 만들어 줘.\n\n[루키 PRD]\n앱 이름: 여행 준비 미니앱\n사용자: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람\n해결할 문제: 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.\n필수 기능: 1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산\n성공 기준: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.\n\n조건: API·로그인·DB는 넣지 말고, 모바일에서도 보기 좋게 만들어 줘. <!DOCTYPE html>부터 </html>까지 전체 파일로 줘." }
+            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱", chips: ["여행 준비 미니앱", "캠핑 준비 미니앱", "출장 준비 미니앱", "이사 준비 미니앱", "운동 루틴 준비 앱", "장보기 준비 앱"] },
+            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람", chips: ["여행 전날 준비물을 확인하는 사람", "가족 여행을 준비하는 사람", "캠핑 장비를 챙기는 사람", "출장 짐을 빠뜨리기 싫은 사람", "운동 루틴을 시작하는 사람"] },
+            { key: "problem", label: "어떤 문제를 해결하나요?", placeholder: "예: 여행 전 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.", chips: ["준비물이 여러 메모에 흩어져 있다", "어디를 갈지 매번 고민한다", "예상 비용을 머릿속으로만 계산한다", "필요한 물건을 빠뜨리기 쉽다", "내 앱 주제의 관리 항목이 흩어져 있다"] },
+            { key: "features", label: "꼭 필요한 기능 3개", placeholder: "예: 1) 준비물 체크  2) 코스 후보 랜덤 뽑기  3) 예산 합계 계산", chips: ["1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산", "1) 항목 추가 2) 완료 체크 3) 총액 계산", "1) 후보 목록 2) 랜덤 추천 3) 메모 저장", "1) 할 일 체크 2) 우선순위 표시 3) 진행률 표시"] },
+            { key: "success", label: "성공 확인 방법", placeholder: "예: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.", chips: ["체크 버튼이 눌린다", "랜덤 추천 결과가 바뀐다", "비용을 입력하면 합계가 맞다", "모바일에서 화면이 밀리지 않는다", "새로 만든 항목명이 내 주제에 맞다"] },
+            { key: "copyPrompt", label: "AI에게 요청할 루키 PRD", placeholder: "예: 아래 PRD를 바탕으로 여행 준비 미니앱을 HTML+CSS+JS 한 파일로 만들어 줘.\n\n[루키 PRD]\n앱 이름: 여행 준비 미니앱\n사용자: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람\n해결할 문제: 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.\n필수 기능: 1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산\n성공 기준: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.\n\n조건: API·로그인·DB는 넣지 말고, 모바일에서도 보기 좋게 만들어 줘. <!DOCTYPE html>부터 </html>까지 전체 파일로 줘.", chips: ["여행 준비 앱 기준으로 작성", "내 앱 주제로 항목명만 바꾸기", "API·로그인·DB 없이 만들기", "모바일 우선으로 만들기", "수정하기 쉽게 주석을 조금 넣기", "완성 HTML 한 파일로 받기"] }
           ]
         },
         checks: ["앱 이름·사용자·문제를 적었다", "기능 3개를 적었다", "성공 확인 방법을 적었다", "AI에게 요청할 PRD를 만들었다"]
@@ -330,9 +330,9 @@ const COURSE = {
         practice: {
           kind: "build",
           fields: [
-            { key: "aiRequest", label: "6번 PRD 기반 AI 요청문", placeholder: "6번에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요." },
+            { key: "aiRequest", label: "6번 PRD 기반 AI 요청문", placeholder: "6번에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["6번 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
             { key: "htmlCode", label: "AI가 준 HTML 코드 붙여넣기", placeholder: "AI에게 받은 HTML 코드를 여기 전체 붙여넣으세요. 아래에서 바로 실행됩니다." },
-            { key: "debugLog", label: "수정·디버그 기록", placeholder: "예: 예산 합계가 NaN으로 나와서 '숫자만 계산되게 수정해 줘'라고 요청했고 정상 확인했다. / 모바일에서 버튼이 밀려서 간격을 줄여 달라고 요청했다." }
+            { key: "debugLog", label: "수정·디버그 기록", placeholder: "예: 예산 합계가 NaN으로 나와서 '숫자만 계산되게 수정해 줘'라고 요청했고 정상 확인했다. / 모바일에서 버튼이 밀려서 간격을 줄여 달라고 요청했다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음", "모바일에서 화면이 밀림", "항목명이 내 주제와 맞지 않음", "색상 대비가 약함", "수정 후 다시 붙여넣어 확인함"] }
           ]
         },
         checks: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"]
@@ -515,7 +515,7 @@ const COURSE = {
     name: "프로리그",
     theme: "#1a8754",
     label: "보안 가드레일 안에서 날씨·쇼핑 API 여행 준비 앱을 만든다",
-    description: "루키리그의 여행 준비 미니앱을 확장해 날씨 확인, 네이버 쇼핑 검색 구조, 준비물, 계획, 예산을 함께 정리하는 여행 준비 앱으로 만듭니다. 프로리그부터 API 키와 개인정보를 노출하지 않는 보안 기준을 적용합니다.",
+    description: "시나리오: 루키 미니앱을 API 연동 여행 준비 앱으로 확장합니다. 여행지·날짜 입력, Open-Meteo 날씨 확인, 네이버 쇼핑 API 구조 설계, 준비물·예산 정리를 연결합니다. 자기 아이디어가 있다면 같은 구조로 캠핑·출장·행사 준비 앱을 만들 수 있습니다.",
     tags: ["여행 준비 앱", "Open-Meteo", "네이버 쇼핑 API", "API 보안", "예산 정리"],
     padletUrl: "https://padlet.com/dungstme/_-othnocro968oryg4",
     pages: [
@@ -632,9 +632,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "problem", label: "해결할 문제", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다." },
-            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 구매 예산을 한 번에 정리하고 싶은 사람" },
-            { key: "why", label: "왜 필요한가(한 문장)", placeholder: "예: 날씨와 쇼핑 정보를 함께 보며 필요한 준비물과 예산을 빠르게 정리하기 위해." }
+            { key: "problem", label: "해결할 문제", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다.", chips: ["준비물·날씨·쇼핑·예산이 흩어져 있다", "날씨에 맞는 준비물을 고르기 어렵다", "구매 후보 가격을 예산에 반영하기 번거롭다", "동행자에게 준비 상황을 설명하기 어렵다", "내 앱 주제의 정보가 여러 곳에 흩어져 있다"] },
+            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 구매 예산을 한 번에 정리하고 싶은 사람", chips: ["가족 여행 준비자", "혼자 여행을 준비하는 사람", "캠핑 장비를 준비하는 사람", "출장 준비를 자주 하는 직장인", "행사 준비 담당자", "내 앱의 실제 사용자"] },
+            { key: "why", label: "왜 필요한가(한 문장)", placeholder: "예: 날씨와 쇼핑 정보를 함께 보며 필요한 준비물과 예산을 빠르게 정리하기 위해.", chips: ["날씨에 맞는 준비물을 바로 정하기 위해", "구매 후보와 예산을 한 화면에서 보기 위해", "준비 누락을 줄이기 위해", "API 정보와 내 체크리스트를 연결하기 위해"] }
           ]
         },
         checks: ["문제를 적었다", "사용자를 적었다"]
@@ -662,9 +662,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "screenList", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리" },
-            { key: "eachPurpose", label: "각 화면의 목적", placeholder: "예: 날씨 확인은 여행지·날짜별 기온과 강수확률을 보여 주고, 쇼핑 검색은 우비·보조배터리 같은 구매 후보를 보여 준다." },
-            { key: "firstScreen", label: "가장 먼저 만들 화면", input: "text", placeholder: "예: 여행 정보 입력 + 준비물 대시보드" }
+            { key: "screenList", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리", chips: ["여행 정보 입력", "날씨 확인", "준비물 체크리스트", "쇼핑 검색 결과", "예산 정리", "요약 대시보드", "내 앱 관리 화면"] },
+            { key: "eachPurpose", label: "각 화면의 목적", placeholder: "예: 날씨 확인은 여행지·날짜별 기온과 강수확률을 보여 주고, 쇼핑 검색은 우비·보조배터리 같은 구매 후보를 보여 준다.", chips: ["입력 화면: 여행지와 날짜를 받는다", "날씨 화면: 기온과 강수확률을 보여 준다", "준비물 화면: 챙긴 항목을 체크한다", "쇼핑 화면: 구매 후보와 가격을 보여 준다", "예산 화면: 총액과 남은 예산을 보여 준다"] },
+            { key: "firstScreen", label: "가장 먼저 만들 화면", input: "text", placeholder: "예: 여행 정보 입력 + 준비물 대시보드", chips: ["여행 정보 입력 + 대시보드", "준비물 체크리스트 먼저", "날씨 결과 화면 먼저", "예산 합계 화면 먼저", "내 아이디어의 핵심 화면 먼저"] }
           ]
         },
         checks: ["화면 목록을 적었다", "각 화면 목적을 적었다"]
@@ -692,9 +692,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "featureList", label: "기능 목록", placeholder: "예: 여행지·날짜 입력, 날씨 불러오기, 준비물 체크, 네이버 쇼핑 검색, 구매 후보 추가, 예산 합계" },
-            { key: "priority", label: "우선순위(필수/나중)", placeholder: "예: 필수 - 날씨 확인·준비물 체크·예산 합계 / 나중 - 쇼핑 이미지, 정렬, 저장" },
-            { key: "doneCriteria", label: "완료 기준", placeholder: "예: 여행지를 입력하면 날씨가 보이고, 준비물을 체크하고, 쇼핑 후보 가격을 예산에 더할 수 있다." }
+            { key: "featureList", label: "기능 목록", placeholder: "예: 여행지·날짜 입력, 날씨 불러오기, 준비물 체크, 네이버 쇼핑 검색, 구매 후보 추가, 예산 합계", chips: ["여행지·날짜 입력", "Open-Meteo 날씨 불러오기", "준비물 체크", "네이버 쇼핑 샘플 결과 표시", "구매 후보를 예산에 추가", "예산 합계 계산", "내 앱에 맞는 API 결과 표시"] },
+            { key: "priority", label: "우선순위(필수/나중)", placeholder: "예: 필수 - 날씨 확인·준비물 체크·예산 합계 / 나중 - 쇼핑 이미지, 정렬, 저장", chips: ["필수 - 입력·날씨·준비물·예산", "필수 - Secret 없는 기능만", "나중 - 실제 네이버 쇼핑 호출", "나중 - 로그인 저장", "나중 - 동행자 공유", "나중 - 결제·예약은 제외"] },
+            { key: "doneCriteria", label: "완료 기준", placeholder: "예: 여행지를 입력하면 날씨가 보이고, 준비물을 체크하고, 쇼핑 후보 가격을 예산에 더할 수 있다.", chips: ["날씨가 화면에 표시된다", "준비물 체크가 유지된다", "쇼핑 샘플 가격을 예산에 더한다", "Secret이 코드에 없다", "모바일에서 주요 버튼이 보인다"] }
           ]
         },
         checks: ["핵심 기능을 적었다", "우선순위를 정했다"]
@@ -722,9 +722,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "saveData", label: "저장할 데이터", placeholder: "예: 여행지, 날짜, 준비물명, 체크 여부, 쇼핑 검색어, 상품명, 가격, 예산 합계" },
-            { key: "secretData", label: "공개하면 안 되는 데이터", input: "text", placeholder: "예: 네이버 Client Secret, Gemini API 키, 로그인 정보" },
-            { key: "dbNeeded", label: "DB가 필요한가?", input: "text", placeholder: "예: 프로에서는 브라우저 저장 또는 샘플 데이터로 충분, 로그인 저장은 마스터에서 처리" }
+            { key: "saveData", label: "저장할 데이터", placeholder: "예: 여행지, 날짜, 준비물명, 체크 여부, 쇼핑 검색어, 상품명, 가격, 예산 합계", chips: ["여행지", "여행 날짜", "준비물명", "체크 여부", "쇼핑 검색어", "상품명·가격", "예산 항목·합계", "내 앱의 관리 항목"] },
+            { key: "secretData", label: "공개하면 안 되는 데이터", input: "text", placeholder: "예: 네이버 Client Secret, Gemini API 키, 로그인 정보", chips: ["네이버 Client Secret", "API 키", "로그인 토큰", "실제 전화번호", "여권번호", "정확한 숙소 주소", "결제 정보"] },
+            { key: "dbNeeded", label: "DB가 필요한가?", input: "text", placeholder: "예: 프로에서는 브라우저 저장 또는 샘플 데이터로 충분, 로그인 저장은 마스터에서 처리", chips: ["프로에서는 샘플 데이터로 충분", "브라우저 저장만 사용", "로그인 저장은 마스터에서 처리", "여러 사용자가 쓰면 DB 필요", "동행자 공유가 필요하면 DB 필요"] }
           ]
         },
         checks: ["저장할 데이터를 적었다", "공개하면 안 되는 값을 구분했다"]
@@ -893,16 +893,16 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "problem", label: "문제 정의", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다." },
-            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 예산을 한 번에 정리하고 싶은 사람" },
-            { key: "scenario", label: "사용자 시나리오", placeholder: "예: 여행지와 날짜를 입력하고, 날씨를 확인한 뒤 준비물·쇼핑 후보·예산을 한 화면에서 정리한다." },
-            { key: "screens", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리" },
-            { key: "features", label: "기능 목록", placeholder: "예: 날씨 조회, 준비물 체크, 네이버 쇼핑 샘플 결과 표시, 예산 합계 계산" },
-            { key: "data", label: "데이터 목록", placeholder: "예: 여행지, 날짜, 준비물명, 체크 여부, 상품명, 가격, 예산 항목" },
-            { key: "api", label: "API 필요 여부", input: "text", placeholder: "예: Open-Meteo는 직접 호출, 네이버 쇼핑 API는 Secret 보호가 필요하므로 샘플 응답과 서버 프록시 구조만 설계" },
-            { key: "security", label: "프로 보안 기준", placeholder: "예: 브라우저 코드에 Client Secret·API 키·개인정보를 넣지 않는다. 네이버 쇼핑은 샘플 응답으로 구현하고 실제 호출은 서버 프록시 필요 항목으로 남긴다." },
-            { key: "deploy", label: "배포 방식", input: "text", placeholder: "예: 웹 배포" },
-            { key: "done", label: "완료 기준", placeholder: "예: 날씨가 표시되고, 준비물을 체크할 수 있으며, 쇼핑 후보 가격을 예산에 더해 합계가 바르게 표시된다. 네이버 Secret은 브라우저 코드에 없다." }
+            { key: "problem", label: "문제 정의", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다.", chips: ["준비물·날씨·쇼핑·예산이 흩어져 있다", "날씨에 맞는 준비물을 고르기 어렵다", "가격 후보를 예산에 반영하기 번거롭다", "내 앱 주제의 정보가 여러 곳에 흩어져 있다"] },
+            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 예산을 한 번에 정리하고 싶은 사람", chips: ["가족 여행 준비자", "혼자 여행을 준비하는 사람", "캠핑 준비자", "출장 준비자", "행사 준비 담당자"] },
+            { key: "scenario", label: "사용자 시나리오", placeholder: "예: 여행지와 날짜를 입력하고, 날씨를 확인한 뒤 준비물·쇼핑 후보·예산을 한 화면에서 정리한다.", chips: ["여행지와 날짜 입력 → 날씨 확인 → 준비물 추천 → 쇼핑 후보 확인 → 예산 합계", "캠핑 날짜 입력 → 날씨 확인 → 장비 체크 → 구매 후보 정리", "출장지 입력 → 날씨 확인 → 짐 체크 → 예상 비용 정리"] },
+            { key: "screens", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리", chips: ["입력 화면", "요약 대시보드", "날씨 카드", "준비물 체크리스트", "쇼핑 후보 목록", "예산 합계", "보안 안내"] },
+            { key: "features", label: "기능 목록", placeholder: "예: 날씨 조회, 준비물 체크, 네이버 쇼핑 샘플 결과 표시, 예산 합계 계산", chips: ["Open-Meteo 날씨 조회", "준비물 체크", "네이버 쇼핑 샘플 결과", "가격을 예산에 추가", "예산 합계 계산", "API 실패 안내", "Secret 노출 점검"] },
+            { key: "data", label: "데이터 목록", placeholder: "예: 여행지, 날짜, 준비물명, 체크 여부, 상품명, 가격, 예산 항목", chips: ["여행지", "날짜", "기온·강수확률", "준비물명·체크 여부", "상품명·가격", "예산 항목", "샘플 응답", "내 앱 데이터명"] },
+            { key: "api", label: "API 필요 여부", input: "text", placeholder: "예: Open-Meteo는 직접 호출, 네이버 쇼핑 API는 Secret 보호가 필요하므로 샘플 응답과 서버 프록시 구조만 설계", chips: ["Open-Meteo는 브라우저 직접 호출", "네이버 쇼핑은 샘플 응답으로 구현", "Secret 필요 API는 서버 프록시 필요", "API 실패 시 대체 문구 표시", "내 앱 API도 키 필요 여부를 구분"] },
+            { key: "security", label: "프로 보안 기준", placeholder: "예: 브라우저 코드에 Client Secret·API 키·개인정보를 넣지 않는다. 네이버 쇼핑은 샘플 응답으로 구현하고 실제 호출은 서버 프록시 필요 항목으로 남긴다.", chips: ["브라우저 코드에 Secret 금지", "GitHub에 API 키 업로드 금지", "개인정보 입력칸 제외", "예약·결제 기능 제외", "샘플 데이터만 사용", "배포 전 SECRET/API_KEY 검색"] },
+            { key: "deploy", label: "배포 방식", input: "text", placeholder: "예: 웹 배포", chips: ["웹앱으로 배포", "GitHub Pages", "Netlify", "Vercel", "exe는 이번 단계에서 제외", "나중에 마스터에서 검토"] },
+            { key: "done", label: "완료 기준", placeholder: "예: 날씨가 표시되고, 준비물을 체크할 수 있으며, 쇼핑 후보 가격을 예산에 더해 합계가 바르게 표시된다. 네이버 Secret은 브라우저 코드에 없다.", chips: ["날씨 표시 통과", "준비물 체크 통과", "쇼핑 샘플 표시 통과", "예산 합계 통과", "Secret 검색 통과", "모바일 확인 통과"] }
           ]
         },
         checks: ["문제 정의를 넣었다", "화면·기능·데이터를 넣었다", "프로 보안 기준을 넣었다", "완료 기준을 넣었다"]
@@ -952,9 +952,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "workorder", label: "작업 지시서", placeholder: "예: 여행 준비 앱에 여행지·날짜 입력, Open-Meteo 날씨 표시, 준비물 체크, 쇼핑 샘플 결과, 예산 합계를 구현해 줘. 브라우저 코드에는 어떤 Secret도 넣지 마.", chips: ["Open-Meteo 날씨 패널 구현", "준비물 체크리스트 구현", "네이버 쇼핑 샘플 결과 표시", "예산 항목 추가와 합계 계산"] },
+            { key: "workorder", label: "작업 지시서", placeholder: "예: 여행 준비 앱에 여행지·날짜 입력, Open-Meteo 날씨 표시, 준비물 체크, 쇼핑 샘플 결과, 예산 합계를 구현해 줘. 브라우저 코드에는 어떤 Secret도 넣지 마.", chips: ["Open-Meteo 날씨 패널 구현", "준비물 체크리스트 구현", "네이버 쇼핑 샘플 결과 표시", "예산 항목 추가와 합계 계산", "API 실패 안내 표시", "내 앱 주제로 문구 바꾸기"] },
             { key: "scope", label: "작업 범위(건드릴 것/말 것)", placeholder: "예: 프론트 화면과 Open-Meteo 호출만. 네이버 Client Secret은 브라우저 코드에 넣지 말 것.", chips: ["브라우저에 Secret 넣지 않기", "예약·결제·항공권 구매 제외", "네이버 쇼핑은 샘플 응답으로 표시", "개인정보 입력칸 만들지 않기", "저장·로그인은 마스터리그에서 처리"] },
-            { key: "askFirst", label: "먼저 물어볼 질문", input: "text", placeholder: "예: 여행지 좌표를 직접 입력할지, 도시 선택 목록으로 시작할지 먼저 물어봐 줘.", chips: ["도시 입력 방식 먼저 확인", "쇼핑 샘플 데이터 먼저 확인", "예산 항목 기준 먼저 확인"] }
+            { key: "askFirst", label: "먼저 물어볼 질문", input: "text", placeholder: "예: 여행지 좌표를 직접 입력할지, 도시 선택 목록으로 시작할지 먼저 물어봐 줘.", chips: ["도시 입력 방식 먼저 확인", "쇼핑 샘플 데이터 먼저 확인", "예산 항목 기준 먼저 확인", "모바일 우선 레이아웃 확인", "내 앱 주제의 용어 확인"] }
           ]
         },
         checks: ["작업 지시서를 만들었다", "보안 금지사항을 넣었다", "먼저 질문하라는 문구를 넣었다"]
@@ -1141,7 +1141,7 @@ const COURSE = {
     name: "마스터리그",
     theme: "#c47800",
     label: "로그인·DB·AI를 연결한 여행 플래너로 완성한다",
-    description: "프로리그에서 남겨 둔 API 보안 문제를 서버와 환경변수로 해결하고, 로그인·DB·Gemini API를 붙여 사용자별 여행 계획을 저장하는 운영형 앱으로 확장합니다.",
+    description: "시나리오: API 연동 여행 준비 앱을 운영형 여행 플래너로 확장합니다. 로그인, 사용자별 DB 저장, 동행자 공유, 서버/환경변수 기반 API 보안, Gemini API 요약 추천을 연결합니다. 자기 아이디어가 있다면 같은 구조로 사용자별 데이터가 필요한 앱을 만들 수 있습니다.",
     tags: ["여행 플래너", "DB·로그인", "Gemini API", "API 보안"],
     padletUrl: "https://padlet.com/dungstme/_-6tfn9vwj7wv8p4f",
     pages: [
@@ -1189,8 +1189,8 @@ const COURSE = {
           kind: "form",
           fields: [
             { key: "masterTool", label: "주로 사용할 도구", input: "select", options: ["Claude Code", "Antigravity", "Codex"], value: "Claude Code" },
-            { key: "masterTask", label: "맡길 첫 작업", placeholder: "예: 로그인 후 사용자별 데이터만 보이도록 구조를 점검해 줘." },
-            { key: "humanCheck", label: "사람이 직접 확인할 기준", placeholder: "예: 다른 사용자의 데이터가 보이지 않는지 직접 테스트한다." }
+            { key: "masterTask", label: "맡길 첫 작업", placeholder: "예: 로그인 후 사용자별 데이터만 보이도록 구조를 점검해 줘.", chips: ["로그인 후 내 여행만 보이게 하기", "여행 계획을 DB에 저장하기", "동행자 공유 권한 설계하기", "Gemini API 요약 기능 설계하기", "API 키 환경변수 점검하기", "내 앱의 사용자별 데이터 구조 점검하기"] },
+            { key: "humanCheck", label: "사람이 직접 확인할 기준", placeholder: "예: 다른 사용자의 데이터가 보이지 않는지 직접 테스트한다.", chips: ["A 계정 데이터가 B 계정에 보이지 않는다", "초대된 동행자만 공유 여행을 볼 수 있다", "API 키가 화면과 코드에 없다", "Gemini 응답 실패 시 안내가 나온다", "모바일에서 로그인 흐름이 깨지지 않는다"] }
           ]
         },
         checks: ["세 도구의 역할을 구분했다", "맡길 첫 작업을 정했다", "사람이 확인할 기준을 적었다"]
@@ -1440,11 +1440,11 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "generalApis", label: "사용할 일반 API", placeholder: "예: Open-Meteo 날씨, 네이버 쇼핑, 환율 API" },
-            { key: "geminiUse", label: "Gemini API 사용 목적", placeholder: "예: 날씨·예산·준비물을 바탕으로 여행 준비 요약과 추천 문구 생성" },
-            { key: "envKeys", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY" },
-            { key: "safePrompt", label: "Gemini에 보낼 안전한 요청", placeholder: "예: 개인 연락처 없이 여행지·날짜·날씨·예산·준비물만 보내 준비 요약을 만들어 달라고 요청한다." },
-            { key: "fallback", label: "API 실패 시 대체 안내", placeholder: "예: 날씨 API가 실패하면 '날씨를 불러오지 못했습니다. 준비물은 직접 확인해 주세요.'라고 보여 준다." }
+            { key: "generalApis", label: "사용할 일반 API", placeholder: "예: Open-Meteo 날씨, 네이버 쇼핑, 환율 API", chips: ["Open-Meteo 날씨", "네이버 쇼핑", "환율 API", "장소 검색 API", "내 앱에 필요한 외부 데이터", "처음엔 하나만 선택"] },
+            { key: "geminiUse", label: "Gemini API 사용 목적", placeholder: "예: 날씨·예산·준비물을 바탕으로 여행 준비 요약과 추천 문구 생성", chips: ["비 오는 여행 준비 요약", "예산 초과 위험 안내", "날씨 기반 준비물 추천", "동행자에게 보낼 준비 메시지", "여행 전 체크리스트 요약", "내 앱 데이터 기반 추천 문구"] },
+            { key: "envKeys", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY", chips: ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "GEMINI_API_KEY", "DATABASE_URL", "AUTH_SECRET"] },
+            { key: "safePrompt", label: "Gemini에 보낼 안전한 요청", placeholder: "예: 개인 연락처 없이 여행지·날짜·날씨·예산·준비물만 보내 준비 요약을 만들어 달라고 요청한다.", chips: ["개인정보 없이 요약 요청", "여행지·날짜·날씨·예산만 전달", "실제 전화번호·주소 제외", "추천 문구만 생성", "결정은 사용자가 하도록 안내"] },
+            { key: "fallback", label: "API 실패 시 대체 안내", placeholder: "예: 날씨 API가 실패하면 '날씨를 불러오지 못했습니다. 준비물은 직접 확인해 주세요.'라고 보여 준다.", chips: ["날씨를 불러오지 못했습니다", "쇼핑 후보를 불러오지 못했습니다", "AI 요약을 생성하지 못했습니다", "잠시 후 다시 시도해 주세요", "기본 준비물 목록을 먼저 보여 줍니다"] }
           ]
         },
         checks: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"]
@@ -1495,9 +1495,9 @@ const COURSE = {
           fields: [
             { key: "authProvider", label: "로그인 서비스 후보", input: "select", options: ["Supabase Auth", "Firebase Auth", "Clerk", "아직 미정"], value: "Supabase Auth" },
             { key: "dbProvider", label: "데이터베이스 후보", input: "select", options: ["Supabase Database", "Firebase Firestore", "기존 DB", "아직 미정"], value: "Supabase Database" },
-            { key: "userData", label: "사용자별로 저장할 데이터", placeholder: "예: trips, itineraryItems, packingItems, budgetItems, ownerId, collaborators" },
-            { key: "accessRule", label: "접근 규칙", placeholder: "예: 로그인한 사용자는 ownerId가 자기 ID이거나 collaborators에 포함된 여행만 읽고 수정할 수 있다." },
-            { key: "authTest", label: "연동 테스트", placeholder: "예: A 계정으로 만든 여행이 B 계정에서 보이지 않고, 초대된 동행자에게만 공유되는지 확인한다." }
+            { key: "userData", label: "사용자별로 저장할 데이터", placeholder: "예: trips, itineraryItems, packingItems, budgetItems, ownerId, collaborators", chips: ["trips", "itineraryItems", "packingItems", "budgetItems", "collaborators", "ownerId", "sharedWith", "내 앱의 사용자별 데이터"] },
+            { key: "accessRule", label: "접근 규칙", placeholder: "예: 로그인한 사용자는 ownerId가 자기 ID이거나 collaborators에 포함된 여행만 읽고 수정할 수 있다.", chips: ["ownerId가 현재 사용자일 때만 읽기", "초대된 동행자만 보기", "소유자만 삭제 가능", "관리자는 운영 데이터만 확인", "공개 여행과 비공개 여행 구분"] },
+            { key: "authTest", label: "연동 테스트", placeholder: "예: A 계정으로 만든 여행이 B 계정에서 보이지 않고, 초대된 동행자에게만 공유되는지 확인한다.", chips: ["A 계정 여행이 B 계정에 보이지 않음", "동행자 초대 후에만 보임", "로그아웃하면 저장 화면 접근 불가", "권한 없는 수정 요청 차단", "새로고침 후에도 내 데이터 유지"] }
           ]
         },
         checks: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"]
@@ -1533,9 +1533,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자" },
-            { key: "rolePermissions", label: "역할별 권한", placeholder: "예: 소유자 - 여행 수정·공유 관리 / 동행자 - 초대된 여행 보기·일부 수정 / 관리자 - 신고·운영 관리" },
-            { key: "hiddenData", label: "보면 안 되는 데이터", input: "text", placeholder: "예: 초대받지 않은 여행 일정, 예산, 동행자 메모" }
+            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "내 앱의 일반 사용자"] },
+            { key: "rolePermissions", label: "역할별 권한", placeholder: "예: 소유자 - 여행 수정·공유 관리 / 동행자 - 초대된 여행 보기·일부 수정 / 관리자 - 신고·운영 관리", chips: ["소유자 - 여행 수정·공유 관리", "동행자 - 초대된 여행 보기", "관리자 - 운영 데이터 확인", "비로그인 - 로그인 화면만 보기", "일반 사용자 - 자기 데이터만 수정"] },
+            { key: "hiddenData", label: "보면 안 되는 데이터", input: "text", placeholder: "예: 초대받지 않은 여행 일정, 예산, 동행자 메모", chips: ["초대받지 않은 여행 일정", "다른 사람의 예산", "비공개 준비물 메모", "로그인 토큰", "API 키", "관리자 전용 데이터"] }
           ]
         },
         checks: ["사용자 역할을 정했다", "권한 규칙을 적었다"]
@@ -1563,18 +1563,18 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "scope", label: "목표와 범위", placeholder: "예: 여행 플래너를 로그인·DB·API·Gemini 연동까지 포함해 안전하게 배포·운영한다." },
-            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자" },
-            { key: "flow", label: "핵심 플로우", placeholder: "예: 로그인 → 여행 생성 → 날씨·쇼핑 확인 → 준비물·예산 저장 → Gemini 요약 생성 → 동행자 공유" },
-            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packingItems, budgetItems, itineraryItems, collaborators 테이블에 ownerId와 tripId를 저장한다." },
-            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 로그인한 사용자 ID를 ownerId로 저장하고, 자기 여행 또는 초대받은 여행만 조회한다." },
-            { key: "priority", label: "기능 우선순위", placeholder: "예: 필수 - 로그인·여행 저장·예산 합계·Secret 보호 / 다음 - 동행자 공유·Gemini 추천" },
-            { key: "exceptions", label: "예외 상황", placeholder: "예: API 실패, 로그인 만료, 여행지 없음, 초대 권한 없음" },
-            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini API 키는 환경변수로 관리하고, 사용자별 여행 데이터와 공유 권한을 분리한다." },
-            { key: "tests", label: "테스트 기준", placeholder: "예: 로그인별 데이터 분리, 날씨·쇼핑 API 실패 처리, Gemini 요약 생성, 권한 없는 접근 차단 통과" },
-            { key: "deploy", label: "배포·패키징 기준", input: "text", placeholder: "예: 웹 배포, 링크 접속·모바일 확인" },
-            { key: "release", label: "릴리즈 기준", placeholder: "예: 테스트·보안 통과 후 릴리즈 노트와 함께 공개" },
-            { key: "ops", label: "운영 체크리스트", placeholder: "예: 오류 보고 확인, 업데이트 주기, 보안 재점검" }
+            { key: "scope", label: "목표와 범위", placeholder: "예: 여행 플래너를 로그인·DB·API·Gemini 연동까지 포함해 안전하게 배포·운영한다.", chips: ["로그인·DB·AI 연동 여행 플래너", "사용자별 데이터 저장 앱", "동행자 공유가 있는 준비 앱", "API 키를 서버에서 보호하는 앱", "내 아이디어의 운영형 앱"] },
+            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "내 앱 사용자"] },
+            { key: "flow", label: "핵심 플로우", placeholder: "예: 로그인 → 여행 생성 → 날씨·쇼핑 확인 → 준비물·예산 저장 → Gemini 요약 생성 → 동행자 공유", chips: ["로그인 → 여행 생성 → 준비물 저장 → Gemini 요약", "로그인 → 내 데이터 조회 → 수정 → 저장", "여행 생성 → 동행자 초대 → 권한 확인", "API 호출 → 서버 프록시 → 화면 표시"] },
+            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packingItems, budgetItems, itineraryItems, collaborators 테이블에 ownerId와 tripId를 저장한다.", chips: ["trips + ownerId", "packingItems + tripId", "budgetItems + amount", "collaborators + role", "itineraryItems + date", "내 앱 테이블명"] },
+            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 로그인한 사용자 ID를 ownerId로 저장하고, 자기 여행 또는 초대받은 여행만 조회한다.", chips: ["로그인한 사용자 ID를 ownerId로 저장", "내 데이터만 조회", "초대받은 데이터만 조회", "로그아웃 시 보호 화면 차단", "권한 없는 수정 차단"] },
+            { key: "priority", label: "기능 우선순위", placeholder: "예: 필수 - 로그인·여행 저장·예산 합계·Secret 보호 / 다음 - 동행자 공유·Gemini 추천", chips: ["필수 - 로그인·DB 저장·Secret 보호", "필수 - 사용자별 데이터 분리", "다음 - 동행자 공유", "다음 - Gemini 추천", "제외 - 결제·예약·항공권 구매"] },
+            { key: "exceptions", label: "예외 상황", placeholder: "예: API 실패, 로그인 만료, 여행지 없음, 초대 권한 없음", chips: ["API 실패", "로그인 만료", "여행지 없음", "초대 권한 없음", "DB 저장 실패", "Gemini 응답 실패"] },
+            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini API 키는 환경변수로 관리하고, 사용자별 여행 데이터와 공유 권한을 분리한다.", chips: ["API 키는 환경변수로 관리", "브라우저에 Secret 금지", "사용자별 데이터 분리", "동행자 권한 확인", "개인정보 최소 수집", "공개 전 키 검색"] },
+            { key: "tests", label: "테스트 기준", placeholder: "예: 로그인별 데이터 분리, 날씨·쇼핑 API 실패 처리, Gemini 요약 생성, 권한 없는 접근 차단 통과", chips: ["A/B 계정 데이터 분리", "권한 없는 접근 차단", "API 실패 안내 표시", "Gemini 요약 생성", "새로고침 후 데이터 유지", "모바일 화면 확인"] },
+            { key: "deploy", label: "배포·패키징 기준", input: "text", placeholder: "예: 웹 배포, 링크 접속·모바일 확인", chips: ["웹 배포", "Vercel", "Netlify", "환경변수 등록 후 배포", "배포 URL 직접 확인", "exe는 필요할 때만 검토"] },
+            { key: "release", label: "릴리즈 기준", placeholder: "예: 테스트·보안 통과 후 릴리즈 노트와 함께 공개", chips: ["테스트 통과 후 공개", "보안 점검 통과 후 공개", "사용자용 변경점만 작성", "다운로드·보안 경고 안내 포함", "v1.0 기준 정리"] },
+            { key: "ops", label: "운영 체크리스트", placeholder: "예: 오류 보고 확인, 업데이트 주기, 보안 재점검", chips: ["오류 보고 확인", "API 실패 로그 확인", "사용자 피드백 수집", "보안 재점검", "업데이트 주기 정하기", "다음 버전 개선 목록"] }
           ]
         },
         checks: ["DB 설계를 넣었다", "로그인 연동 기준을 넣었다", "보안 요구사항을 넣었다", "테스트 기준을 넣었다"]
