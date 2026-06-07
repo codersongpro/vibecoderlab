@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=19">
+  <link rel="stylesheet" href="styles.css?v=20">
 </head>
 <body>
   <header class="topbar">
@@ -67,6 +67,10 @@
           <span id="pageBadge" class="lesson-counter"></span>
           <div class="lesson-progress"><div id="levelProgressBar" class="progress-fill"></div></div>
           <span id="levelProgressText" class="lesson-progress-text"></span>
+          <div class="lesson-top-nav" aria-label="상단 강의 이동">
+            <button id="topPrevPage" class="icon-nav" type="button" aria-label="이전 강의" title="이전 강의">←</button>
+            <button id="topNextPage" class="icon-nav" type="button" aria-label="다음 강의" title="다음 강의">→</button>
+          </div>
         </div>
 
         <h2 id="pageTitle"></h2>
@@ -175,7 +179,7 @@
     </footer>
   </div>
 
-  <script src="content.js?v=19"></script>
-  <script src="app.js?v=18"></script>
+  <script src="content.js?v=20"></script>
+  <script src="app.js?v=20"></script>
 </body>
 </html>

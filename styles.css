@@ -335,6 +335,25 @@ button:disabled { opacity: .38; cursor: not-allowed; }
 }
 .lesson-progress { flex: 1; min-width: 120px; max-width: 240px; height: 6px; border-radius: 999px; background: var(--line); overflow: hidden; }
 .lesson-progress-text { color: var(--muted); font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+.lesson-top-nav {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+.icon-nav {
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-strong);
+  background: #fff;
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
+}
+.icon-nav:hover:not(:disabled) { background: var(--accent); color: #fff; }
 
 /* 제목 & 목표 */
 #pageTitle {
@@ -402,8 +421,13 @@ button:disabled { opacity: .38; cursor: not-allowed; }
   background: var(--read-bg);
   border: 1.5px solid var(--read-border);
 }
-.reading-card h3 { background: #dbeafe; color: var(--read-ink); margin-bottom: 12px; white-space: nowrap; }
+.reading-card h3 { background: #dbeafe; color: var(--read-ink); margin-bottom: 14px; white-space: nowrap; }
 .reading-card p { margin: 0; color: var(--body); font-size: 18px; line-height: 1.9; }
+.reading-card p + p {
+  margin-top: 13px;
+  padding-top: 13px;
+  border-top: 1px solid color-mix(in srgb, var(--read-border) 55%, transparent);
+}
 
 /* 용어 사전 — 그린 톤 */
 .terms-card {

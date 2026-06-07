@@ -46,6 +46,20 @@ function renderText(text) {
     `<code class="inline-code" title="클릭해서 복사">${cmd}</code>`
   );
 }
+function splitReading(text) {
+  const raw = String(text || "").trim();
+  if (!raw) return [];
+  if (raw.includes("\n\n")) return raw.split(/\n{2,}/).map((p) => p.trim()).filter(Boolean);
+  const sentences = raw.match(/[^.!?。！？]+[.!?。！？]?/g)?.map((s) => s.trim()).filter(Boolean) || [raw];
+  if (sentences.length <= 3) return [raw];
+  const groups = [];
+  for (let i = 0; i < sentences.length; i += 3) groups.push(sentences.slice(i, i + 3).join(" "));
+  return groups;
+}
+function renderReading(text) {
+  const paragraphs = splitReading(text);
+  return paragraphs.map((p) => `<p>${renderText(p)}</p>`).join("");
+}
 function bindCodeCopy() {
   document.querySelectorAll(".inline-code").forEach((el) => {
     el.addEventListener("click", () => {
@@ -327,7 +341,7 @@ function renderLesson() {
   $("#pageTitle").textContent = p.title;
   $("#pageGoal").textContent = p.goal;
   $("#summary").textContent = p.summary || "";
-  $("#reading").innerHTML = renderText(p.reading || "");
+  $("#reading").innerHTML = renderReading(p.reading || "");
   $("#terms").innerHTML = (p.terms || []).map((t) => `<dt>${escapeHtml(t.term)}</dt><dd>${renderText(t.def)}</dd>`).join("");
   renderVisual(p);
   $("#discussion").innerHTML = (p.discussion || []).map((q) =>
@@ -358,6 +372,8 @@ function renderLesson() {
   const atFirst = order.indexOf(activeLevel) === 0 && activePage === 0;
   const atLast = order.indexOf(activeLevel) === order.length - 1 && activePage === pages.length - 1;
   $("#prevPage").disabled = atFirst;
+  $("#topPrevPage").disabled = atFirst;
+  $("#topNextPage").disabled = atLast;
   $("#completePage").textContent = atLast ? "완료 ✓" : "완료하고 다음 →";
 }
 
@@ -757,6 +773,43 @@ function handlePresKey(e) {
   }
 }
 
+function goPrevLesson() {
+  saveState();
+  const order = Object.keys(COURSE);
+  if (activePage > 0) {
+    activePage -= 1;
+  } else {
+    const i = order.indexOf(activeLevel);
+    if (i <= 0) return;
+    activeLevel = order[i - 1];
+    activePage = COURSE[activeLevel].pages.length - 1;
+  }
+  window.scrollTo(0, 0);
+  render();
+}
+
+function goNextLesson({ complete = false } = {}) {
+  if (complete) pageState().complete = true;
+  saveState();
+  const order = Object.keys(COURSE);
+  if (activePage < level().pages.length - 1) {
+    activePage += 1;
+    if (complete) toast("강의를 완료했습니다.");
+  } else {
+    const i = order.indexOf(activeLevel);
+    if (i >= order.length - 1) {
+      if (complete) toast("모든 강의를 완료했습니다!");
+      return;
+    }
+    const finished = level().name;
+    activeLevel = order[i + 1];
+    activePage = 0;
+    if (complete) toast(`${finished}을 마쳤습니다. 다음 리그로 이동합니다.`);
+  }
+  window.scrollTo(0, 0);
+  render();
+}
+
 /* ------------------------------ 이벤트 ------------------------------ */
 function bindGlobal() {
   document.body.addEventListener("click", (event) => {
@@ -766,37 +819,10 @@ function bindGlobal() {
     if (pageBtn) { activePage = Number(pageBtn.dataset.page); render(); }
   });
   $("#savePage").addEventListener("click", () => { saveState(); renderNotebook(); toast("저장했습니다."); });
-  $("#prevPage").addEventListener("click", () => {
-    const order = Object.keys(COURSE);
-    if (activePage > 0) { activePage -= 1; }
-    else {
-      const i = order.indexOf(activeLevel);
-      if (i > 0) { activeLevel = order[i - 1]; activePage = COURSE[activeLevel].pages.length - 1; }
-      else return;
-    }
-    window.scrollTo(0, 0);
-    render();
-  });
-  $("#completePage").addEventListener("click", () => {
-    pageState().complete = true;
-    const order = Object.keys(COURSE);
-    if (activePage < level().pages.length - 1) {
-      activePage += 1;
-      toast("강의를 완료했습니다.");
-    } else {
-      const i = order.indexOf(activeLevel);
-      if (i < order.length - 1) {
-        const finished = level().name;
-        activeLevel = order[i + 1];
-        activePage = 0;
-        toast(`${finished}을 마쳤습니다. 다음 리그로 이동합니다.`);
-      } else {
-        toast("모든 강의를 완료했습니다! 🎉");
-      }
-    }
-    window.scrollTo(0, 0);
-    render();
-  });
+  $("#prevPage").addEventListener("click", goPrevLesson);
+  $("#topPrevPage").addEventListener("click", goPrevLesson);
+  $("#topNextPage").addEventListener("click", () => goNextLesson({ complete: false }));
+  $("#completePage").addEventListener("click", () => goNextLesson({ complete: true }));
   $("#presentBtn").addEventListener("click", enterPresentation);
   $("#presClose").addEventListener("click", exitPresentation);
   $("#presPrev").addEventListener("click", () => { if (presIdx > 0) { presIdx--; renderPresSlide(); } });
