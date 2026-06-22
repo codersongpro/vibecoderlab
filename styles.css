@@ -1195,3 +1195,21 @@ ol.pres-list li { padding-left: 0; }
 .facilitator-runplan > li { margin-top: 8px; }
 .facilitator-runplan ul { padding-left: 16px; font-size: 12.5px; color: var(--muted); }
 @media print { .facilitator-card { break-inside: avoid; } }
+
+.submit-qr { display: block; margin-top: 10px; width: 140px; height: 140px; border-radius: var(--radius-sm); border: 1px solid var(--border); }
+
+/* 진행 코드 수합 모드(?mode=collect) */
+.collect-view { max-width: 880px; margin: 32px auto; padding: 24px; }
+.collect-header h1 { margin: 0 0 6px; font-size: 22px; }
+.collect-header p { margin: 0 0 20px; color: var(--muted); font-size: 13.5px; }
+.collect-input-row { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 12px; }
+.collect-input-row textarea { flex: 1; min-height: 80px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: inherit; font-size: 13.5px; resize: vertical; }
+.collect-table-actions { display: flex; gap: 8px; margin-bottom: 14px; }
+.collect-table { width: 100%; border-collapse: collapse; background: var(--panel); border-radius: var(--radius-sm); box-shadow: var(--shadow-md); overflow: hidden; }
+.collect-table th, .collect-table td { padding: 9px 12px; border-bottom: 1px solid var(--border); text-align: left; font-size: 13.5px; }
+.collect-table th { background: var(--surface-soft); font-weight: 700; color: var(--muted); }
+.collect-empty { color: var(--muted); font-size: 13.5px; padding: 16px 0; text-align: center; }
+@media (max-width: 760px) {
+  .collect-view { padding: 16px; margin: 12px auto; }
+  .collect-input-row { flex-direction: column; }
+}

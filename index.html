@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=26">
 </head>
 <body>
   <header class="topbar">
@@ -175,10 +175,47 @@
           <pre id="helpPrompt"></pre>
         </div>
       </details>
+
+      <details class="resource" id="submitResource">
+        <summary>완료율 코드 만들기(교사 제출용)</summary>
+        <div class="resource-body">
+          <p class="resource-hint">이름을 적고 코드를 만들면, 교사가 ‘?mode=collect’ 화면에 붙여넣어 반 전체 완료율을 모을 수 있습니다. 작성한 실습 내용은 담기지 않으며 서버로 전송되지 않습니다.</p>
+          <label>이름 또는 학번
+            <input id="studentNameInput" type="text" placeholder="예: 3반 12번 홍길동">
+          </label>
+          <div class="section-head">
+            <span>내 완료율 코드</span>
+            <button id="submitCodeRefresh" type="button">코드 새로 만들기</button>
+          </div>
+          <pre id="submitCodeText"></pre>
+          <div class="resource-tools">
+            <button id="submitCodeCopy" type="button">코드 복사</button>
+          </div>
+          <img id="submitCodeQr" class="submit-qr" alt="완료율 코드 QR" hidden>
+        </div>
+      </details>
     </section>
   </main>
 
   <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- 진행 수합 모드(?mode=collect) — 교사가 학생들의 완료율 코드를 모아 표로 본다 -->
+  <div id="collectView" class="collect-view" hidden>
+    <header class="collect-header">
+      <h1>진행 코드 수합</h1>
+      <p>학생들이 보낸 완료율 코드를 한 줄에 하나씩 붙여넣으세요. 이 브라우저에만 저장되며 서버로 전송되지 않습니다.</p>
+    </header>
+    <div class="collect-input-row">
+      <textarea id="collectPasteArea" placeholder="완료율 코드를 한 줄에 하나씩 붙여넣으세요"></textarea>
+      <button id="collectAddBtn" type="button" class="primary">추가</button>
+    </div>
+    <div class="collect-table-actions">
+      <button id="collectCopyTable" type="button">표 복사</button>
+      <button id="collectClearAll" type="button" class="ghost danger">전체 삭제</button>
+    </div>
+    <table id="collectTable" class="collect-table"></table>
+    <p id="collectEmpty" class="collect-empty">아직 추가된 학생이 없습니다.</p>
+  </div>
 
   <!-- 첫 방문 안내 -->
   <div id="onboardingOverlay" class="onboarding-overlay" hidden>
@@ -219,7 +256,7 @@
     </footer>
   </div>
 
-  <script src="content.js?v=25"></script>
-  <script src="app.js?v=25"></script>
+  <script src="content.js?v=26"></script>
+  <script src="app.js?v=26"></script>
 </body>
 </html>

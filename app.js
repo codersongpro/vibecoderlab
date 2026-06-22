@@ -44,6 +44,29 @@ function importProgressCode(code) {
   saveState();
   return true;
 }
+
+/* 완료율만 담은 짧은 코드(교사 수합용) — 입력 내용(개인정보 포함 가능)은 담지 않는다. */
+function computeCompletionSnapshot() {
+  const snap = { name: state.studentName || "", at: Date.now(), levels: {} };
+  for (const id of Object.keys(COURSE)) {
+    const saved = state.levels?.[id]?.pages || {};
+    const total = COURSE[id].pages.length;
+    const done = COURSE[id].pages.filter((p) => saved[p.id]?.complete).length;
+    snap.levels[id] = { total, done };
+  }
+  return snap;
+}
+function exportCompletionCode() {
+  try { return btoa(encodeURIComponent(JSON.stringify(computeCompletionSnapshot()))); } catch { return ""; }
+}
+function decodeCompletionCode(code) {
+  const trimmed = String(code || "").trim();
+  if (!trimmed) return null;
+  let parsed;
+  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return null; }
+  if (!parsed || typeof parsed !== "object" || !parsed.levels) return null;
+  return parsed;
+}
 function level() { return COURSE[activeLevel]; }
 function courseState() {
   state.levels ||= {};
@@ -280,6 +303,7 @@ function render() {
   renderChecks();
   renderNotebook();
   renderHelp();
+  renderCompletionSubmit();
   saveState();
 }
 
@@ -994,6 +1018,25 @@ function renderHelp() {
   ].join("\n");
 }
 
+/* 완료율 코드 패널: 이름 입력 + 코드/QR 생성(서버 전송 없음, 교사가 ?mode=collect에서 붙여넣어 수합) */
+function renderCompletionSubmit() {
+  const nameInput = $("#studentNameInput");
+  const textHost = $("#submitCodeText");
+  const qrHost = $("#submitCodeQr");
+  if (!nameInput || !textHost) return;
+  if (nameInput.value !== (state.studentName || "")) nameInput.value = state.studentName || "";
+  const code = exportCompletionCode();
+  textHost.textContent = code;
+  if (qrHost) {
+    if (code) {
+      qrHost.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(code)}`;
+      qrHost.hidden = false;
+    } else {
+      qrHost.hidden = true;
+    }
+  }
+}
+
 /* ========================== 발표 모드 ========================== */
 let presSlides = [];
 let presIdx = 0;
@@ -1219,6 +1262,14 @@ function bindGlobal() {
     else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
   });
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  // 완료율 코드 제출(증분 4)
+  $("#studentNameInput")?.addEventListener("input", (e) => {
+    state.studentName = e.target.value;
+    saveState();
+    renderCompletionSubmit();
+  });
+  $("#submitCodeRefresh")?.addEventListener("click", renderCompletionSubmit);
+  $("#submitCodeCopy")?.addEventListener("click", () => copyText($("#submitCodeText").textContent, "완료율 코드를 복사했습니다."));
   // 학습 기록 파일 백업·복원 (Phase 1)
   $("#backupSave")?.addEventListener("click", exportProgressFile);
   $("#backupLoad")?.addEventListener("click", () => $("#importFileInput")?.click());
@@ -1266,6 +1317,114 @@ function maybeShowOnboarding() {
   overlay.hidden = !!state.onboarded;
 }
 
-bindGlobal();
-render();
-maybeShowOnboarding();
+/* ===================== 진행 수합 모드(?mode=collect, 증분 4) =====================
+ * 서버 없이 학생들이 보낸 "완료율 코드"를 교사가 이 브라우저에 붙여넣어 모은다.
+ * 별도 localStorage 키를 쓰며 학습 기록(storeKey)과는 섞이지 않는다.
+ */
+const collectKey = "vibecoder-lab-collect-v1";
+function isCollectMode() {
+  try { return new URLSearchParams(window.location.search).get("mode") === "collect"; } catch { return false; }
+}
+function loadCollectList() {
+  try { return JSON.parse(localStorage.getItem(collectKey)) || []; } catch { return []; }
+}
+function saveCollectList(list) { localStorage.setItem(collectKey, JSON.stringify(list)); }
+function addCollectCodes(text) {
+  const lines = String(text || "").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return 0;
+  const list = loadCollectList();
+  let added = 0;
+  for (const line of lines) {
+    const snap = decodeCompletionCode(line);
+    if (!snap) continue;
+    const name = (snap.name || "이름 없음").trim() || "이름 없음";
+    const idx = list.findIndex((row) => row.name === name);
+    const entry = { name, at: snap.at || Date.now(), levels: snap.levels };
+    if (idx >= 0) list[idx] = entry; else list.push(entry);
+    added++;
+  }
+  saveCollectList(list);
+  return added;
+}
+function collectRowPct(row) {
+  let total = 0, done = 0;
+  for (const id of Object.keys(row.levels || {})) {
+    total += row.levels[id].total || 0;
+    done += row.levels[id].done || 0;
+  }
+  return total ? Math.round((done / total) * 100) : 0;
+}
+function renderCollectTable() {
+  const table = $("#collectTable");
+  const empty = $("#collectEmpty");
+  if (!table) return;
+  const list = loadCollectList();
+  if (!list.length) {
+    table.innerHTML = "";
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+  const head = `<tr><th>이름</th><th>루키</th><th>프로</th><th>마스터</th><th>전체</th><th></th></tr>`;
+  const rows = list.map((row, i) => {
+    const cell = (id) => {
+      const lv = row.levels?.[id];
+      return lv ? `${lv.done}/${lv.total}` : "-";
+    };
+    return `<tr>
+      <td>${escapeHtml(row.name)}</td>
+      <td>${cell("rookie")}</td>
+      <td>${cell("pro")}</td>
+      <td>${cell("master")}</td>
+      <td>${collectRowPct(row)}%</td>
+      <td><button type="button" class="ghost danger" data-collect-remove="${i}">삭제</button></td>
+    </tr>`;
+  }).join("");
+  table.innerHTML = head + rows;
+}
+function buildCollectTsv() {
+  const list = loadCollectList();
+  const head = ["이름", "루키", "프로", "마스터", "전체(%)"].join("\t");
+  const rows = list.map((row) => {
+    const cell = (id) => { const lv = row.levels?.[id]; return lv ? `${lv.done}/${lv.total}` : "-"; };
+    return [row.name, cell("rookie"), cell("pro"), cell("master"), collectRowPct(row)].join("\t");
+  });
+  return [head, ...rows].join("\n");
+}
+function initCollectMode() {
+  document.querySelector(".topbar")?.setAttribute("hidden", "");
+  document.querySelector(".layout")?.setAttribute("hidden", "");
+  const view = $("#collectView");
+  if (!view) return;
+  view.hidden = false;
+  renderCollectTable();
+  $("#collectAddBtn")?.addEventListener("click", () => {
+    const area = $("#collectPasteArea");
+    const added = addCollectCodes(area.value);
+    renderCollectTable();
+    if (added > 0) { area.value = ""; toast(`${added}명을 추가했습니다.`); }
+    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
+  });
+  $("#collectCopyTable")?.addEventListener("click", () => copyText(buildCollectTsv(), "표를 복사했습니다. 스프레드시트에 붙여넣을 수 있습니다."));
+  $("#collectClearAll")?.addEventListener("click", () => {
+    if (!confirm("수합한 목록을 모두 지울까요?")) return;
+    saveCollectList([]);
+    renderCollectTable();
+  });
+  $("#collectTable")?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-collect-remove]");
+    if (!btn) return;
+    const list = loadCollectList();
+    list.splice(Number(btn.dataset.collectRemove), 1);
+    saveCollectList(list);
+    renderCollectTable();
+  });
+}
+
+if (isCollectMode()) {
+  initCollectMode();
+} else {
+  bindGlobal();
+  render();
+  maybeShowOnboarding();
+}
