@@ -446,7 +446,20 @@ function renderFacilitatorIntro(item) {
   const host = $("#facilitatorIntro");
   if (!host) return;
   if (!state.teacherMode || !item.facilitatorIntro) { host.hidden = true; host.innerHTML = ""; return; }
-  host.innerHTML = `<div class="facilitator-card-title">교사용 리그 운영 개요</div><p>${renderText(item.facilitatorIntro)}</p>`;
+  let html = `<div class="facilitator-card-title">교사용 리그 운영 개요</div><p>${renderText(item.facilitatorIntro)}</p>`;
+  if (item.runPlan && item.runPlan.length) {
+    const titleOf = (id) => {
+      const found = (item.pages || []).find((pg) => pg.id === id);
+      return found ? found.title : id;
+    };
+    html += item.runPlan.map((plan, i) => {
+      const sessions = (plan.sessions || []).map((s) =>
+        `<li><strong>${escapeHtml(s.title)}</strong><ul>${(s.pages || []).map((id) => `<li>${escapeHtml(titleOf(id))}</li>`).join("")}</ul></li>`
+      ).join("");
+      return `<details${i === 0 ? " open" : ""}><summary>운영 묶음: ${escapeHtml(plan.name)}</summary>${plan.note ? `<p class="facilitator-time">${renderText(plan.note)}</p>` : ""}<ul class="facilitator-runplan">${sessions}</ul></details>`;
+    }).join("");
+  }
+  host.innerHTML = html;
   host.hidden = false;
 }
 

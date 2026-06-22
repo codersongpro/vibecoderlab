@@ -61,6 +61,23 @@ const COURSE = {
       useInDailyLife: "다음 여행을 준비할 때 메모장 대신 이 링크를 열어 준비물·예산을 정리하고, 같은 구조를 가계부·운동 루틴·할 일 관리 앱으로 바꿔 계속 쓸 수 있습니다."
     },
     facilitatorIntro: "1차시(45~50분) 또는 단기 연수 한 모듈로 운영할 수 있습니다. 코딩 경험이 없는 참가자도 'AI에게 요청 → 받은 코드 실행 → 배포'까지 같은 시간에 끝낼 수 있도록 설계되어 있습니다. 진행 중 막히는 지점은 대부분 계정 가입·이메일 인증이므로, 시작 전 네트워크·메일 정책을 먼저 확인하면 흐름이 끊기지 않습니다.",
+    runPlan: [
+      {
+        name: "1차시 압축형(45~50분)",
+        note: "gemini·canva는 과제 또는 다음 시간으로 미룬다.",
+        sessions: [{ title: "전체 한 번에", pages: ["setup-rookie", "vibe", "pch", "rules", "chatgpt", "prd-basic", "build-rookie", "deploy-rookie", "share"] }]
+      },
+      {
+        name: "4차시 표준형(차시당 45~50분)",
+        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다.",
+        sessions: [
+          { title: "1차시 — 환경·개념 시작", pages: ["setup-rookie", "vibe", "pch", "rules"] },
+          { title: "2차시 — AI에게 요청하기", pages: ["chatgpt", "prd-basic"] },
+          { title: "3차시 — 만들고 배포하기", pages: ["build-rookie", "deploy-rookie"] },
+          { title: "4차시 — 확장과 공유", pages: ["gemini", "canva", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-rookie",
@@ -656,6 +673,26 @@ const COURSE = {
       useInDailyLife: "여행 갈 때마다 날씨를 다시 검색하지 않고 이 링크 하나로 확인하고, 같은 구조를 바꿔 출장·캠핑 준비용으로 계속 쓸 수 있습니다."
     },
     facilitatorIntro: "4차시 안팎(또는 하루 연수)으로 운영하기 좋습니다. 루키리그 수료자를 전제로 하며, 핵심은 'Secret이 필요한 API'와 '브라우저에서 직접 호출 가능한 API'를 구분하는 보안 감각입니다. 참가자가 API 키를 코드에 그대로 박아 넣는 실수를 가장 많이 하므로, 보안 강의(api-security-pro)에서 시간을 더 배정하는 것을 권장합니다.",
+    runPlan: [
+      {
+        name: "4차시 표준형(차시당 45~50분)",
+        note: "api-security-pro는 분량을 줄이지 말고 그대로 한 차시 전체를 쓴다.",
+        sessions: [
+          { title: "1차시 — 기획·구조 설계", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data"] },
+          { title: "2차시 — API 연동과 보안", pages: ["frontend-backend", "api", "api-security-pro"] },
+          { title: "3차시 — AI와 함께 만들기", pages: ["prd-product", "cursor", "build-pro"] },
+          { title: "4차시 — 배포와 공유", pages: ["github", "deploy", "share"] }
+        ]
+      },
+      {
+        name: "하루 연수형(6시간 안팎)",
+        note: "오전·오후 사이 점심시간을 3차시와 4차시 경계로 둔다.",
+        sessions: [
+          { title: "오전 — 기획부터 보안까지", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
+          { title: "오후 — 제작부터 배포까지", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-pro",
@@ -1399,6 +1436,18 @@ const COURSE = {
       useInDailyLife: "가족·친구와 계정을 나눠 로그인해 각자의 여행 계획을 따로 저장하고 동행자와 공유하면서, 실제 다음 여행부터 이 서비스를 계속 운영해 쓸 수 있습니다."
     },
     facilitatorIntro: "다회차 연수(주 1회 × 4주 등)에 적합한 분량입니다. 로그인·DB·릴리즈를 처음 다루는 참가자가 많으므로, 강의 순서를 건너뛰지 않고 release-harness(릴리즈 전 점검 구조)부터 차례로 짚어 주는 것이 중요합니다. 마지막 차시는 반드시 실제 v1.0 배포까지 마치고 끝내야 '완성 경험'이 남습니다.",
+    runPlan: [
+      {
+        name: "4주 연수형(주 1회, 회당 90분)",
+        note: "매회 시작 5분은 직전 주 산출물(릴리즈·로그)을 함께 확인한다.",
+        sessions: [
+          { title: "1주차 — 도구와 점검 체계", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
+          { title: "2주차 — 보안과 인프라", pages: ["security", "env", "travel-api-gemini", "db-auth-integration", "auth"] },
+          { title: "3주차 — 설계와 배포 준비", pages: ["prd-release", "deploy-check", "logs", "cicd"] },
+          { title: "4주차 — 운영과 v1.0 출시", pages: ["exe", "releases", "warning", "ops", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-master",
