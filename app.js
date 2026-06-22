@@ -7,8 +7,9 @@
 
 const storeKey = "vibecoder-lab-redesign-v2";
 let state = loadState();
-let activeLevel = "rookie";
-let activePage = 0;
+// 재방문 시 마지막으로 보던 리그·강의로 복귀(없거나 범위를 벗어나면 처음부터)
+let activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+let activePage = clampPage(activeLevel, state.activePage);
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -20,6 +21,28 @@ function saveState() {
   state.activeLevel = activeLevel;
   state.activePage = activePage;
   localStorage.setItem(storeKey, JSON.stringify(state));
+}
+function clampPage(levelId, value) {
+  const max = (COURSE[levelId]?.pages.length || 1) - 1;
+  const n = Number(value);
+  return (Number.isInteger(n) && n >= 0 && n <= max) ? n : 0;
+}
+
+/* 진행 상황을 짧은 코드로 내보내고 되돌린다(로그인·서버 없이 기기 이동). */
+function exportProgressCode() {
+  try { return btoa(encodeURIComponent(JSON.stringify(state))); } catch { return ""; }
+}
+function importProgressCode(code) {
+  const trimmed = String(code || "").trim();
+  if (!trimmed) return false;
+  let parsed;
+  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return false; }
+  if (!parsed || typeof parsed !== "object") return false;
+  state = parsed;
+  activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+  activePage = clampPage(activeLevel, state.activePage);
+  saveState();
+  return true;
 }
 function level() { return COURSE[activeLevel]; }
 function courseState() {
@@ -248,6 +271,7 @@ function renderToolManuals(p) {
 
 /* ------------------------------ 렌더 ------------------------------ */
 function render() {
+  $("#teacherModeToggle")?.classList.toggle("active", !!state.teacherMode);
   renderLevels();
   renderPages();
   renderHeader();
@@ -312,6 +336,8 @@ function renderHeader() {
   document.documentElement.style.setProperty("--accent-soft", softTheme(activeLevel));
   setLeagueClass(activeLevel);
   $("#levelIntro").textContent = item.description;
+  renderLevelGraduation(item);
+  renderFacilitatorIntro(item);
 
   // 전체 코스 진행률 (모든 리그 합산)
   let total = 0, done = 0;
@@ -340,6 +366,7 @@ function renderLesson() {
 
   $("#pageTitle").textContent = p.title;
   $("#pageGoal").textContent = p.goal;
+  renderLessonMeta(p);
   $("#summary").textContent = p.summary || "";
   $("#reading").innerHTML = renderReading(p.reading || "");
   $("#terms").innerHTML = (p.terms || []).map((t) => `<dt>${escapeHtml(t.term)}</dt><dd>${renderText(t.def)}</dd>`).join("");
@@ -364,6 +391,7 @@ function renderLesson() {
   } else {
     $("#externalGuide").innerHTML = "";
   }
+  renderFacilitator(p);
 
   bindCodeCopy();
 
@@ -375,6 +403,85 @@ function renderLesson() {
   $("#topPrevPage").disabled = atFirst;
   $("#topNextPage").disabled = atLast;
   $("#completePage").textContent = atLast ? "완료 ✓" : "완료하고 다음 →";
+}
+
+/* 강의 메타데이터(난이도·예상 시간·확인일·수료 조건) — 데이터 있을 때만 표시 (Phase 4) */
+function renderLessonMeta(p) {
+  const host = $("#lessonMeta2");
+  if (!host) return;
+  const diffMap = { beginner: "입문", intermediate: "중급", advanced: "심화" };
+  const badges = [];
+  if (p.difficulty) badges.push(`<span class="meta-badge diff-${escapeHtml(p.difficulty)}">${escapeHtml(diffMap[p.difficulty] || p.difficulty)}</span>`);
+  if (p.estimatedMinutes) badges.push(`<span class="meta-badge">⏱ 약 ${escapeHtml(String(p.estimatedMinutes))}분</span>`);
+  if (p.updatedAt) badges.push(`<span class="meta-badge muted">최신 확인 ${escapeHtml(p.updatedAt)}</span>`);
+  let html = badges.length ? `<div class="meta-badges">${badges.join("")}</div>` : "";
+  if (p.completionRequirements && p.completionRequirements.length) {
+    html += `<details class="completion-req"><summary>완료(수료) 조건 보기</summary><ul>${p.completionRequirements.map((r) => `<li>${renderText(r)}</li>`).join("")}</ul></details>`;
+  }
+  host.innerHTML = html;
+  host.hidden = !html;
+}
+
+/* 리그 수료 기준(핵심 역량·최종 결과물·선수 지식) — 데이터 있을 때만 표시 (Phase 4) */
+function renderLevelGraduation(item) {
+  const host = $("#levelGraduation");
+  if (!host) return;
+  const rows = [];
+  if (item.competency) rows.push(`<div><dt>핵심 역량</dt><dd>${escapeHtml(item.competency)}</dd></div>`);
+  if (item.finalOutput) rows.push(`<div><dt>최종 결과물</dt><dd>${escapeHtml(item.finalOutput)}</dd></div>`);
+  if (item.prerequisites) rows.push(`<div><dt>선수 지식</dt><dd>${escapeHtml(item.prerequisites)}</dd></div>`);
+  let html = rows.length ? `<dl class="grad-dl">${rows.join("")}</dl>` : "";
+  if (item.graduationRequirements && item.graduationRequirements.length) {
+    html += `<div class="grad-req"><strong>수료 기준</strong><ul>${item.graduationRequirements.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul></div>`;
+  }
+  if (item.capstone) {
+    html += `<div class="grad-req"><strong>완성하면 일상에서 쓰는 결과물</strong><p>${escapeHtml(item.capstone.deliverable)}</p></div>`;
+  }
+  host.innerHTML = html;
+  host.hidden = !html;
+}
+
+/* 교사 모드: 리그 단위 운영 개요 — state.teacherMode일 때만, 데이터 있을 때만 표시 */
+function renderFacilitatorIntro(item) {
+  const host = $("#facilitatorIntro");
+  if (!host) return;
+  if (!state.teacherMode || !item.facilitatorIntro) { host.hidden = true; host.innerHTML = ""; return; }
+  let html = `<div class="facilitator-card-title">교사용 리그 운영 개요</div><p>${renderText(item.facilitatorIntro)}</p>`;
+  if (item.runPlan && item.runPlan.length) {
+    const titleOf = (id) => {
+      const found = (item.pages || []).find((pg) => pg.id === id);
+      return found ? found.title : id;
+    };
+    html += item.runPlan.map((plan, i) => {
+      const sessions = (plan.sessions || []).map((s) =>
+        `<li><strong>${escapeHtml(s.title)}</strong><ul>${(s.pages || []).map((id) => `<li>${escapeHtml(titleOf(id))}</li>`).join("")}</ul></li>`
+      ).join("");
+      return `<details${i === 0 ? " open" : ""}><summary>운영 묶음: ${escapeHtml(plan.name)}</summary>${plan.note ? `<p class="facilitator-time">${renderText(plan.note)}</p>` : ""}<ul class="facilitator-runplan">${sessions}</ul></details>`;
+    }).join("");
+  }
+  host.innerHTML = html;
+  host.hidden = false;
+}
+
+/* 교사 모드: 강의 단위 진행 가이드(지도안) — state.teacherMode일 때만, 데이터 있을 때만 표시 */
+function renderFacilitator(p) {
+  const host = $("#facilitatorPanel");
+  if (!host) return;
+  if (!state.teacherMode || !p.facilitator) { host.hidden = true; host.innerHTML = ""; return; }
+  const f = p.facilitator;
+  let html = `<div class="facilitator-card-title">교사용 진행 가이드</div>`;
+  if (f.time) html += `<p class="facilitator-time">⏱ 권장 진행 시간: ${escapeHtml(f.time)}</p>`;
+  if (f.talkingPoints && f.talkingPoints.length) {
+    html += `<details open><summary>설명 포인트</summary><ul>${f.talkingPoints.map((t) => `<li>${renderText(t)}</li>`).join("")}</ul></details>`;
+  }
+  if (f.pitfalls && f.pitfalls.length) {
+    html += `<details><summary>자주 막히는 지점</summary><ul>${f.pitfalls.map((t) => `<li>${renderText(t)}</li>`).join("")}</ul></details>`;
+  }
+  if (f.faq && f.faq.length) {
+    html += `<details><summary>예상 질문(Q&A)</summary><dl>${f.faq.map((qa) => `<dt>${renderText(qa.q)}</dt><dd>${renderText(qa.a)}</dd>`).join("")}</dl></details>`;
+  }
+  host.innerHTML = html;
+  host.hidden = false;
 }
 
 function visualHasContent(v) {
@@ -482,7 +589,10 @@ function practiceHtml(p) {
     return wrapFields(inner + `<iframe id="miniPreview" class="mini-preview" title="미니 페이지 미리보기" sandbox=""></iframe>`);
   }
   if (pr.kind === "build") {
-    return wrapFields(inner + `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts allow-same-origin"></iframe>`);
+    return wrapFields(inner +
+      `<div id="previewWarn" class="preview-warn" hidden></div>` +
+      `<div class="preview-bar"><button id="stopPreview" type="button" class="ghost">■ 미리보기 중지</button><span class="preview-note">미리보기는 부모 앱과 분리된 격리 화면에서 실행됩니다.</span></div>` +
+      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>`);
   }
   if (pr.kind === "share") {
     return wrapFields(inner + shareExtraHtml());
@@ -562,6 +672,25 @@ function bindPractice() {
   });
   $("#copyShare")?.addEventListener("click", () => copyText(buildShareText(), "공유글을 복사했습니다."));
   $("#openPadlet")?.addEventListener("click", () => window.open(level().padletUrl, "_blank", "noopener"));
+  $("#stopPreview")?.addEventListener("click", () => {
+    const frame = $("#miniPreview");
+    if (frame) frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:grid;place-items:center;background:#f3f4f6;font-family:sans-serif;color:#6b7280;font-size:14px}</style></head><body>미리보기를 멈췄습니다. 입력칸을 수정하면 다시 실행됩니다.</body></html>`;
+    toast("미리보기를 멈췄습니다.");
+  });
+}
+
+/* 코드 미리보기에서 API 키·비밀 의심 문자열을 정적 검사한다(확정 아님, 경고용). */
+const SENSITIVE_PATTERNS = [
+  { re: /AIza[0-9A-Za-z\-_]{10,}/, label: "Google API 키(AIza…)" },
+  { re: /sk-[A-Za-z0-9]{16,}/, label: "OpenAI 키(sk-…)" },
+  { re: /ghp_[A-Za-z0-9]{16,}/, label: "GitHub 토큰(ghp_…)" },
+  { re: /xoxb-[A-Za-z0-9-]{10,}/, label: "Slack 토큰(xoxb-…)" },
+  { re: /SUPABASE_SERVICE_ROLE/i, label: "Supabase service role 키" },
+  { re: /client_secret/i, label: "client_secret" },
+  { re: /apiKey\s*[:=]\s*["'][^"']{8,}/i, label: "코드에 박힌 apiKey 값" }
+];
+function detectSensitiveStrings(code) {
+  return SENSITIVE_PATTERNS.filter((p) => p.re.test(code)).map((p) => p.label);
 }
 
 function updatePreview() {
@@ -570,6 +699,16 @@ function updatePreview() {
   const p = currentPage();
   if (p.practice?.kind === "build") {
     const code = field("htmlCode", "").trim();
+    const warn = $("#previewWarn");
+    if (warn) {
+      const hits = detectSensitiveStrings(code);
+      if (hits.length) {
+        warn.innerHTML = `⚠️ 민감정보로 의심되는 문자열이 있습니다: <strong>${hits.map(escapeHtml).join(", ")}</strong>. 키는 브라우저 코드에 두지 말고, 배포·공유 전 반드시 제거하세요.`;
+        warn.hidden = false;
+      } else {
+        warn.hidden = true;
+      }
+    }
     frame.srcdoc = code ||
       `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
     return;
@@ -603,8 +742,31 @@ function renderChecks() {
 }
 
 /* ----------------------------- 결과물 ----------------------------- */
+function findDeployUrl() {
+  for (const p of level().pages) {
+    const saved = courseState().pages[p.id];
+    const v = saved && saved.fields && saved.fields.deployUrl;
+    if (v && String(v).trim()) return String(v).trim();
+  }
+  return "";
+}
+function renderCapstoneSummary() {
+  const cap = level().capstone;
+  if (!cap) return "";
+  const url = findDeployUrl();
+  if (!url) return "";
+  return [
+    "## 내 완성 앱",
+    `결과물: ${cap.deliverable}`,
+    `링크: ${url}`,
+    `이렇게 씁니다: ${cap.useInDailyLife}`,
+    ""
+  ].join("\n");
+}
 function renderNotebook() {
   const parts = [`# VibeCoder Lab - ${level().name} 결과물`, `Padlet: ${level().padletUrl}`, ""];
+  const capSummary = renderCapstoneSummary();
+  if (capSummary) parts.push(capSummary);
   level().pages.forEach((p) => {
     const saved = courseState().pages[p.id];
     if (!saved) return;
@@ -642,6 +804,174 @@ function summarizePrd() {
   return lines.length ? lines.join("\n") : "PRD 입력값이 비어 있습니다.";
 }
 
+/* ---------------------- 학습 기록 백업·복원 (파일) ---------------------- */
+const APP_VERSION = "1.1.0";
+function downloadTextFile(filename, content, mimeType) {
+  const blob = new Blob([content], { type: (mimeType || "text/plain") + ";charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function todayStamp() {
+  const d = new Date(), p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`;
+}
+function exportProgressFile() {
+  const backup = { schemaVersion: 1, appVersion: APP_VERSION, exportedAt: new Date().toISOString(), data: state };
+  downloadTextFile(`vibecoder-progress-${todayStamp()}.json`, JSON.stringify(backup, null, 2), "application/json");
+  toast("학습 기록 파일을 저장했습니다.");
+}
+function importProgressFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let parsed;
+    try { parsed = JSON.parse(reader.result); } catch { toast("JSON 파일을 읽을 수 없습니다."); return; }
+    const data = (parsed && parsed.schemaVersion && parsed.data) ? parsed.data : parsed; // 구버전(데이터만) 호환
+    const looksValid = data && typeof data === "object" && (("levels" in data) || ("activeLevel" in data));
+    if (!looksValid) { toast("학습 기록 형식이 아닙니다."); return; }
+    if (!confirm("지금 기기에 저장된 학습 기록을 덮어쓰고 불러옵니다. 계속할까요?")) return;
+    state = data;
+    activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+    activePage = clampPage(activeLevel, state.activePage);
+    saveState(); render();
+    toast("학습 기록을 불러왔습니다.");
+  };
+  reader.onerror = () => toast("파일을 읽는 중 오류가 발생했습니다.");
+  reader.readAsText(file);
+}
+
+/* ---------------------- 포트폴리오 생성 (MD·HTML·인쇄) ---------------------- */
+function collectPortfolioData() {
+  const leagues = Object.entries(COURSE).map(([id, lv]) => {
+    const saved = state.levels?.[id]?.pages || {};
+    const total = lv.pages.length;
+    const done = lv.pages.filter((p) => saved[p.id]?.complete).length;
+    const pages = lv.pages.map((p) => {
+      const ps = saved[p.id];
+      if (!ps) return null;
+      const fields = Object.entries(ps.fields || {})
+        .filter(([, v]) => String(v || "").trim())
+        .map(([k, v]) => ({ label: fieldLabel(p, k), value: String(v) }));
+      if (!fields.length && !ps.complete) return null;
+      return { title: p.title, complete: !!ps.complete, fields };
+    }).filter(Boolean);
+    return { name: lv.name, pct: total ? Math.round(done / total * 100) : 0, done, total, padletUrl: lv.padletUrl, pages };
+  });
+  const allFields = {};
+  Object.values(state.levels || {}).forEach((lv) => Object.values(lv.pages || {}).forEach((ps) => Object.assign(allFields, ps.fields || {})));
+  return {
+    nickname: allFields.nickname || "",
+    title: allFields.title || allFields.appName || allFields.appIdea || "",
+    generatedAt: new Date().toLocaleString("ko-KR"),
+    leagues
+  };
+}
+function buildPortfolioMarkdown(d) {
+  const out = ["# VibeCoder Lab 포트폴리오", ""];
+  if (d.title) out.push(`**프로젝트**: ${d.title}`);
+  if (d.nickname) out.push(`**작성자**: ${d.nickname}`);
+  out.push(`**생성일**: ${d.generatedAt}`, "");
+  d.leagues.forEach((lg) => {
+    out.push(`## ${lg.name} — ${lg.pct}% (${lg.done}/${lg.total})`);
+    if (lg.padletUrl) out.push(`Padlet: ${lg.padletUrl}`);
+    if (!lg.pages.length) { out.push("_아직 작성한 내용이 없습니다._", ""); return; }
+    lg.pages.forEach((pg) => {
+      out.push(`### ${pg.title} ${pg.complete ? "✅" : ""}`.trim());
+      pg.fields.forEach((f) => out.push(`- **${f.label}**: ${f.value}`));
+      out.push("");
+    });
+  });
+  return out.join("\n");
+}
+function buildPortfolioHtml(d) {
+  const esc = escapeHtml;
+  const leagues = d.leagues.map((lg) => `
+    <section class="lg">
+      <h2>${esc(lg.name)} <span class="pct">${lg.pct}% (${lg.done}/${lg.total})</span></h2>
+      ${lg.pages.length ? lg.pages.map((pg) => `
+        <div class="pg">
+          <h3>${esc(pg.title)} ${pg.complete ? "✅" : ""}</h3>
+          <dl>${pg.fields.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd>`).join("")}</dl>
+        </div>`).join("") : `<p class="empty">아직 작성한 내용이 없습니다.</p>`}
+    </section>`).join("");
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>VibeCoder Lab 포트폴리오</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 26px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    .meta { color: #52606d; font-size: 14px; margin-bottom: 24px; }
+    h2 { font-size: 20px; margin-top: 28px; color: #1d4ed8; }
+    .pct { font-size: 14px; color: #52606d; font-weight: 500; }
+    .pg { margin: 12px 0 12px 4px; padding-left: 12px; border-left: 3px solid #e4e7eb; break-inside: avoid; }
+    h3 { font-size: 16px; margin: 10px 0 6px; }
+    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 8px; } dd { margin: 2px 0 0; font-size: 14px; white-space: pre-wrap; }
+    .empty { color: #9aa5b1; font-style: italic; }
+  </style></head><body>
+  <h1>VibeCoder Lab 포트폴리오</h1>
+  <p class="meta">${d.title ? `<strong>${esc(d.title)}</strong> · ` : ""}${d.nickname ? esc(d.nickname) + " · " : ""}${esc(d.generatedAt)}</p>
+  ${leagues}
+  </body></html>`;
+}
+function exportPortfolioMarkdown() {
+  downloadTextFile(`vibecoder-portfolio-${todayStamp()}.md`, buildPortfolioMarkdown(collectPortfolioData()), "text/markdown");
+  toast("포트폴리오(Markdown)를 저장했습니다.");
+}
+function exportPortfolioHtml() {
+  downloadTextFile(`vibecoder-portfolio-${todayStamp()}.html`, buildPortfolioHtml(collectPortfolioData()), "text/html");
+  toast("포트폴리오(HTML)를 저장했습니다.");
+}
+function printPortfolio() {
+  const frame = $("#printFrame");
+  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
+  frame.srcdoc = buildPortfolioHtml(collectPortfolioData());
+  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
+}
+
+/* ------------------------- 교사용 지도안 인쇄(유인물) ------------------------- */
+function buildHandoutHtml(item) {
+  const esc = escapeHtml;
+  const pagesHtml = item.pages.map((p) => {
+    const f = p.facilitator;
+    if (!f) return "";
+    return `<div class="hpage">
+      <h3>${esc(p.title)}</h3>
+      ${f.time ? `<p class="htime">⏱ 권장 진행 시간: ${esc(f.time)}</p>` : ""}
+      ${f.talkingPoints && f.talkingPoints.length ? `<p class="hlabel">설명 포인트</p><ul>${f.talkingPoints.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${f.pitfalls && f.pitfalls.length ? `<p class="hlabel">자주 막히는 지점</p><ul>${f.pitfalls.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${f.faq && f.faq.length ? `<p class="hlabel">예상 질문(Q&A)</p><dl>${f.faq.map((qa) => `<dt>${esc(qa.q)}</dt><dd>${esc(qa.a)}</dd>`).join("")}</dl>` : ""}
+    </div>`;
+  }).filter(Boolean).join("");
+  const grad = (item.graduationRequirements || []).map((r) => `<li>${esc(r)}</li>`).join("");
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(item.name)} 지도안</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 24px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    .meta { color: #52606d; font-size: 14px; margin-bottom: 20px; }
+    .hpage { margin: 16px 0; padding: 12px 16px; border: 1px solid #e4e7eb; border-radius: 6px; break-inside: avoid; }
+    h3 { font-size: 16px; margin: 0 0 6px; }
+    .htime { font-weight: 600; margin: 4px 0; }
+    .hlabel { font-weight: 700; font-size: 13px; color: #1d4ed8; margin: 8px 0 2px; }
+    ul { margin: 0; padding-left: 20px; font-size: 14px; }
+    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 6px; } dd { margin: 2px 0 0; font-size: 14px; }
+    .grad { margin-top: 20px; padding-top: 14px; border-top: 2px solid #e4e7eb; }
+    .empty { color: #9aa5b1; font-style: italic; }
+  </style></head><body>
+  <h1>${esc(item.name)} 지도안</h1>
+  <p class="meta">${item.facilitatorIntro ? esc(item.facilitatorIntro) : ""}</p>
+  ${pagesHtml || `<p class="empty">강의별 진행 가이드가 아직 없습니다.</p>`}
+  ${grad ? `<div class="grad"><p class="hlabel">수료 기준</p><ul>${grad}</ul></div>` : ""}
+  </body></html>`;
+}
+function printHandout() {
+  const frame = $("#printFrame");
+  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
+  frame.srcdoc = buildHandoutHtml(level());
+  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
+}
+
 /* ----------------------------- 막혔을 때 ----------------------------- */
 function renderHelp() {
   const type = $("#helpType").value;
@@ -667,6 +997,21 @@ function renderHelp() {
 /* ========================== 발표 모드 ========================== */
 let presSlides = [];
 let presIdx = 0;
+let presNotesVisible = false;
+
+/* 발표자 노트: 페이지의 presenterNotes[슬라이드타입]이 있을 때만, 토글(N) 시 표시 */
+function renderPresNotes() {
+  const host = $("#presNotes");
+  if (!host) return;
+  const slide = presSlides[presIdx];
+  const note = currentPage().presenterNotes?.[slide?.type];
+  if (note && presNotesVisible) {
+    host.innerHTML = `<span class="pres-notes-label">발표자 노트</span> ${renderText(note)}`;
+    host.hidden = false;
+  } else {
+    host.hidden = true;
+  }
+}
 
 function buildSlides(page) {
   const slides = [{ type: "title", title: page.title, goal: page.goal }];
@@ -677,6 +1022,8 @@ function buildSlides(page) {
     slides.push({ type: "visual", visual: page.visual });
   if (page.discussion && page.discussion.length) slides.push({ type: "discussion", items: page.discussion });
   if (page.steps && page.steps.length) slides.push({ type: "steps", items: page.steps });
+  if (page.practice && (page.practice.fields || []).length) slides.push({ type: "practice", practice: page.practice });
+  if (page.checks && page.checks.length) slides.push({ type: "checks", items: page.checks });
   return slides;
 }
 
@@ -729,8 +1076,24 @@ function renderPresSlide() {
         <ol class="pres-list">${slide.items.map((s) => `<li>${renderText(s)}</li>`).join("")}</ol>
       </div>`;
       break;
+    case "practice":
+      html = `<div class="pres-section-slide">
+        <p class="pres-section-label">실습하기</p>
+        <ul class="pres-list">${(slide.practice.fields || []).map((f) => {
+          const hint = f.placeholder || (f.options ? f.options.join(" / ") : "") || (f.choices ? f.choices.map((c) => c.value).join(" / ") : "");
+          return `<li><strong>${escapeHtml(f.label)}</strong>${hint ? `<span class="pres-field-hint"> — ${escapeHtml(hint)}</span>` : ""}</li>`;
+        }).join("")}</ul>
+      </div>`;
+      break;
+    case "checks":
+      html = `<div class="pres-section-slide">
+        <p class="pres-section-label">확인하기</p>
+        <ul class="pres-check-list">${slide.items.map((c) => `<li>${renderText(c)}</li>`).join("")}</ul>
+      </div>`;
+      break;
   }
   $("#presSlide").innerHTML = html;
+  renderPresNotes();
   bindCodeCopy();
   $("#presCounter").textContent = `${presIdx + 1} / ${presSlides.length}`;
   $("#presPrev").disabled = presIdx === 0;
@@ -768,6 +1131,9 @@ function handlePresKey(e) {
   } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
     e.preventDefault();
     if (presIdx > 0) { presIdx--; renderPresSlide(); }
+  } else if (e.key === "n" || e.key === "N") {
+    presNotesVisible = !presNotesVisible;
+    renderPresNotes();
   } else if (e.key === "Escape") {
     exitPresentation();
   }
@@ -824,6 +1190,13 @@ function bindGlobal() {
   $("#topNextPage").addEventListener("click", () => goNextLesson({ complete: false }));
   $("#completePage").addEventListener("click", () => goNextLesson({ complete: true }));
   $("#presentBtn").addEventListener("click", enterPresentation);
+  $("#teacherModeToggle")?.addEventListener("click", () => {
+    state.teacherMode = !state.teacherMode;
+    $("#teacherModeToggle").classList.toggle("active", state.teacherMode);
+    saveState();
+    render();
+    toast(state.teacherMode ? "교사 모드를 켰습니다." : "교사 모드를 껐습니다.");
+  });
   $("#presClose").addEventListener("click", exitPresentation);
   $("#presPrev").addEventListener("click", () => { if (presIdx > 0) { presIdx--; renderPresSlide(); } });
   $("#presNext").addEventListener("click", () => { if (presIdx < presSlides.length - 1) { presIdx++; renderPresSlide(); } });
@@ -833,6 +1206,36 @@ function bindGlobal() {
   });
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
+  $("#exportProgress")?.addEventListener("click", () => {
+    const code = exportProgressCode();
+    if (!code) { toast("내보낼 진행 내용이 없습니다."); return; }
+    copyText(code, "진행 코드를 복사했습니다. 다른 기기의 ‘진행 불러오기’에 붙여넣으세요.");
+  });
+  $("#importProgress")?.addEventListener("click", () => {
+    const code = prompt("다른 기기에서 복사한 ‘진행 코드’를 붙여넣으세요.");
+    if (code === null) return;
+    if (!confirm("지금 기기에 저장된 진행 내용을 덮어쓰고 불러옵니다. 계속할까요?")) return;
+    if (importProgressCode(code)) { render(); toast("진행 내용을 불러왔습니다."); }
+    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
+  });
+  $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  // 학습 기록 파일 백업·복원 (Phase 1)
+  $("#backupSave")?.addEventListener("click", exportProgressFile);
+  $("#backupLoad")?.addEventListener("click", () => $("#importFileInput")?.click());
+  $("#importFileInput")?.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) importProgressFile(file);
+    e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
+  });
+  // 포트폴리오 생성 (Phase 2)
+  $("#portfolioMd")?.addEventListener("click", exportPortfolioMarkdown);
+  $("#portfolioHtml")?.addEventListener("click", exportPortfolioHtml);
+  $("#portfolioPrint")?.addEventListener("click", printPortfolio);
+  $("#printHandout")?.addEventListener("click", printHandout);
+  $("#onboardingStart")?.addEventListener("click", () => {
+    state.onboarded = true; saveState();
+    const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;
+  });
   $("#helpType").addEventListener("change", renderHelp);
   $("#helpMemo").addEventListener("input", renderHelp);
   $("#resetAll").addEventListener("click", () => {
@@ -856,5 +1259,13 @@ function toast(message) {
   setTimeout(() => node.classList.remove("show"), 1700);
 }
 
+/* 첫 방문(state.onboarded 없음)일 때만 1회용 안내를 띄운다. */
+function maybeShowOnboarding() {
+  const overlay = $("#onboardingOverlay");
+  if (!overlay) return;
+  overlay.hidden = !!state.onboarded;
+}
+
 bindGlobal();
 render();
+maybeShowOnboarding();

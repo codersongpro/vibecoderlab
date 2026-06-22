@@ -19,9 +19,18 @@
  *               · 실습 입력은 비워 두고 placeholder로 예시를 보여 준다(사용자가 자기 앱을 작성).
  *   checks      확인하기 체크 [문자열]
  *   externalGuide 외부 도구 따라하기 안내(선택)
+ *   difficulty/estimatedMinutes/updatedAt/completionRequirements  Phase 4 메타데이터(선택, 없으면 숨김)
+ *   presenterNotes  발표 모드 발표자 노트(선택) {title, steps, checks}
  *
  * 기본 예시는 "여행 준비 앱"이 리그마다 성장하는 흐름이다.
  * 사용자는 예시를 그대로 따라 해도 되고, 캠핑·출장·이사·운동 준비처럼 자기 앱으로 바꿔도 된다.
+ *
+ * 톤 & 보이스 가이드라인 (학생 수업과 교사 연수 양쪽에서 그대로 쓰는 글)
+ *   - 이 콘텐츠는 학생과(연수에 참여하는) 성인 교사가 동일한 문장으로 읽는다. 한쪽만 겨냥한 어투를 쓰지 않는다.
+ *   - 유아적 권유체("~해볼까요?", "우리 함께", "재밌게", "화이팅", "친구들아")·과도한 감탄사·이모지를 쓰지 않는다.
+ *   - 학습 목표(goal)는 "~할 수 있다" 평서형을 유지한다. 지시(steps)는 간결한 명령형으로 쓴다.
+ *   - 학습자를 가리킬 때는 "여러분"처럼 중립적인 표현만 쓰고, 낮춤·아동 지칭은 쓰지 않는다.
+ *   - presenterNotes/facilitator 계열 필드는 교사를 동료 전문가로 대하는 톤(설명보다 운영 팁 중심)으로 쓴다.
  */
 
 const COURSE = {
@@ -30,15 +39,55 @@ const COURSE = {
     name: "루키리그",
     theme: "#0056d2",
     label: "AI에게 코드를 받아 내 첫 앱을 만들고 배포한다",
-    description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 자기 아이디어가 있다면 캠핑·출장·이사·운동 준비 앱으로 바꿔도 됩니다.",
+    description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 같은 구조로 캠핑·출장·이사·운동 준비, 가계부, 식단 체크, 동아리 회비 정산 앱 등 자기 일상에 바로 쓰는 앱으로 바꿔도 됩니다.",
     tags: ["Prompt·Context·Harness", "AI 코드 받기", "Netlify/Vercel 배포", "첫 앱 완성"],
     padletUrl: "https://padlet.com/dungstme/_-guhr4cbmj43e82ew",
+    competency: "AI에게 요청해 한 파일짜리 앱을 완성하고 인터넷에 배포한다",
+    finalOutput: "실제로 쓸 수 있는 HTML 단일 파일 앱 + 공개 배포 링크",
+    prerequisites: "브라우저와 이메일 주소(코딩 경험 불필요)",
+    graduationRequirements: [
+      "내 아이디어를 한 문장과 PRD로 정리했다",
+      "AI에게 받은 코드를 실행해 한 화면 앱을 완성했다",
+      "오류를 1개 이상 직접 수정했다",
+      "Netlify/Vercel로 배포해 공개 링크를 얻었다"
+    ],
+    capstone: {
+      deliverable: "준비물 체크·후보 뽑기·예산 합계를 담은 한 파일짜리 미니앱(또는 같은 구조의 자기 아이디어 앱)",
+      doneCriteria: [
+        "배포 링크가 실제로 열리고 핵심 기능 1개 이상이 동작한다",
+        "PRD에 적은 문제·기능·완료 기준이 실제 앱과 일치한다",
+        "오류를 직접 고친 기록이 남아 있다"
+      ],
+      useInDailyLife: "다음 여행을 준비할 때 메모장 대신 이 링크를 열어 준비물·예산을 정리하고, 같은 구조를 가계부·운동 루틴·할 일 관리 앱으로 바꿔 계속 쓸 수 있습니다."
+    },
+    facilitatorIntro: "1차시(45~50분) 또는 단기 연수 한 모듈로 운영할 수 있습니다. 코딩 경험이 없는 참가자도 'AI에게 요청 → 받은 코드 실행 → 배포'까지 같은 시간에 끝낼 수 있도록 설계되어 있습니다. 진행 중 막히는 지점은 대부분 계정 가입·이메일 인증이므로, 시작 전 네트워크·메일 정책을 먼저 확인하면 흐름이 끊기지 않습니다.",
+    runPlan: [
+      {
+        name: "1차시 압축형(45~50분)",
+        note: "gemini·canva는 과제 또는 다음 시간으로 미룬다.",
+        sessions: [{ title: "전체 한 번에", pages: ["setup-rookie", "vibe", "pch", "rules", "chatgpt", "prd-basic", "build-rookie", "deploy-rookie", "share"] }]
+      },
+      {
+        name: "4차시 표준형(차시당 45~50분)",
+        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다.",
+        sessions: [
+          { title: "1차시 — 환경·개념 시작", pages: ["setup-rookie", "vibe", "pch", "rules"] },
+          { title: "2차시 — AI에게 요청하기", pages: ["chatgpt", "prd-basic"] },
+          { title: "3차시 — 만들고 배포하기", pages: ["build-rookie", "deploy-rookie"] },
+          { title: "4차시 — 확장과 공유", pages: ["gemini", "canva", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-rookie",
         group: "환경 준비",
         title: "루키 환경 준비하기",
         goal: "루키리그 수업에 필요한 계정을 모두 만들어 준비한다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["AI 도구 1개 이상 로그인", "Canva 로그인", "Netlify 로그인"],
         summary: "설치 없이 브라우저만으로 모든 실습을 진행합니다. 아래 계정들이 준비되면 바로 시작할 수 있습니다.",
         reading: "루키리그는 별도 설치 없이 웹에서 모든 작업을 처리합니다. 필요한 것은 브라우저와 이메일 주소뿐입니다. 코딩을 처음 시작한다면 각 강의를 위에서 아래로 읽고, 실습 칸에 직접 적고, 확인하기 체크를 누르는 순서로 진행하세요. 막히는 부분은 정답을 맞히려 하지 말고 메모한 뒤 AI에게 질문하면 됩니다. 코드 작성에는 ChatGPT·Gemini·Claude 중 편한 것을 선택하면 됩니다. Gemini Gems는 나만의 전용 AI를 구성할 때 씁니다. Canva는 화면 초안을 빠르게 만들 때, Netlify는 파일을 드래그&드롭으로 배포할 때 사용합니다. 모두 무료 플랜으로 충분합니다.",
         terms: [
@@ -87,13 +136,37 @@ const COURSE = {
             { key: "setupNote", label: "막힌 부분 메모", input: "text", placeholder: "예: Netlify 가입 중 이메일 인증 메일이 안 옴" }
           ]
         },
-        checks: ["ChatGPT·Claude·Gemini 중 하나 이상 로그인했다", "Canva에 로그인했다", "Netlify에 로그인했다"]
+        checks: ["ChatGPT·Claude·Gemini 중 하나 이상 로그인했다", "Canva에 로그인했다", "Netlify에 로그인했다"],
+        presenterNotes: {
+          title: "이 강의의 목표는 '계정 준비' 하나다. 시작 전 교실 와이파이와 로그인 상태를 미리 점검한다.",
+          steps: "가입에서 막히는 사람이 가장 많은 구간이다. 이메일 인증 메일, 학교 계정 차단 여부를 먼저 확인하도록 안내한다.",
+          checks: "세 가지 로그인만 되면 다음으로 넘어간다. 완벽한 설정보다 '로그인 성공'에 집중하도록 한다."
+        },
+        facilitator: {
+          time: "20분(계정 가입 10분 + 점검 10분)",
+          talkingPoints: [
+            "이 강의는 코드를 다루지 않는다. 목표는 '다섯 계정 로그인 성공' 하나뿐임을 먼저 밝힌다.",
+            "학교·기관 네트워크에서는 특정 가입 메일이 차단될 수 있어 사전에 와이파이/메일 정책을 확인한다."
+          ],
+          pitfalls: [
+            "이메일 인증 메일이 스팸함으로 가거나 도착이 늦는 경우가 가장 많다 — 개인 메일 사용을 권장한다.",
+            "학교 계정으로 Google 가입 시 관리자 제한에 걸리는 경우가 있다 — 막히면 개인 Gmail로 전환하게 한다."
+          ],
+          faq: [
+            { q: "다섯 개를 다 안 만들어도 되나요?", a: "AI 도구 1개 + Canva + Netlify 세 가지만 있으면 다음 강의로 진행할 수 있다고 안내한다." },
+            { q: "회사/학교 보안 정책 때문에 가입이 막히면 어떻게 하나요?", a: "개인 기기·개인 이메일로 가입하게 하거나, 쉬는 시간에 완료하고 다음 시간에 합류하도록 한다." }
+          ]
+        }
       },
       {
         id: "vibe",
         group: "기초 개념",
         title: "바이브코딩 시작하기",
         goal: "바이브코딩이 무엇인지 내 말로 설명할 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["바이브코딩을 내 말로 설명", "만들 것을 한 문장으로 작성"],
         summary: "바이브코딩은 코드를 외우는 게 아니라, 만들고 싶은 것을 AI와 주고받으며 완성하는 방식입니다.",
         reading: "바이브코딩에서 가장 중요한 능력은 문법 암기가 아닙니다. 만들고 싶은 결과를 말로 또렷이 정리하고, AI에게 필요한 배경을 건네고, 나온 결과가 맞는지 직접 확인하는 습관입니다. 루키리그의 예시 앱은 '여행 준비 미니앱'입니다. 준비물 체크, 코스 후보 랜덤 뽑기, 간단 예산 합계를 한 화면에서 해 보는 앱입니다. 예시 그대로 따라 해도 되고, 캠핑 준비·출장 준비·이사 준비·운동 루틴 준비 앱으로 바꿔도 됩니다. 처음부터 완벽한 앱을 노리지 말고, 한 화면에서 바로 눌러 볼 수 있는 작은 기능부터 만들어 눈으로 확인해 보세요.",
         terms: [
@@ -128,13 +201,22 @@ const COURSE = {
             { key: "firstQ", label: "AI에게 던질 첫 질문", placeholder: "예: 여행 준비 미니앱의 가장 간단한 첫 화면부터 만들어 주세요. 준비물 체크, 코스 뽑기, 예산 합계가 필요해요. 불명확한 부분이 있으면 먼저 물어봐 줘.", chips: ["불명확한 부분이 있으면 먼저 물어봐 줘", "한 화면짜리로 만들어 줘", "API·로그인·DB는 넣지 마", "준비물 체크 기능을 넣어 줘", "랜덤 추천 버튼을 넣어 줘", "예산 합계를 계산해 줘", "내 아이디어에 맞게 항목명을 바꿔 줘", "<!DOCTYPE html>부터 </html>까지 전체를 줘"] }
           ]
         },
-        checks: ["바이브코딩을 내 말로 설명했다", "만들고 싶은 것을 한 문장으로 적었다"]
+        checks: ["바이브코딩을 내 말로 설명했다", "만들고 싶은 것을 한 문장으로 적었다"],
+        presenterNotes: {
+          summary: "핵심 메시지: '문법 암기가 아니라 요청·확인의 반복'. 이 한 문장을 학습자가 따라 말하게 한다.",
+          discussion: "한 문장 설명을 서로 발표시키면 좋다. 막연한 아이디어를 구체화하는 것이 이 강의의 진짜 목표다.",
+          practice: "예시(여행 준비 앱)를 그대로 따라가도 되고, 자기 일상 앱으로 바꿔도 된다고 분명히 안내한다."
+        }
       },
       {
         id: "pch",
         group: "기초 개념",
         title: "Prompt · Context · Harness",
         goal: "P-C-H 세 가지의 역할을 구분해 설명할 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["Prompt를 한 문장으로 적었다", "Context에 화면 구성을 적었다", "Harness에 지킬 범위·확인 방법을 적었다"],
         summary: "Prompt는 요청, Context는 배경 자료, Harness는 똑똑하지만 가끔 엉뚱한 AI를 원하는 방향으로 안전하게 부리는 '제어 구조'입니다.",
         reading: "바이브코딩의 기본 한 벌은 Prompt, Context, Harness입니다. Prompt는 'AI에게 무엇을 해 달라'는 요청, Context는 'AI가 상황을 이해하도록 주는 자료'입니다. Harness는 원래 말에 씌우는 '마구(馬具)'에서 온 말로, 힘센 말을 억누르는 게 아니라 원하는 방향으로 안전하게 부리는 장치를 뜻합니다. AI도 똑똑하지만 그냥 두면 엉뚱하게 굴 수 있어서, ① 정해진 범위 안에서만 움직이게 하고(제어), ② 무엇을 하는지 지켜보고(감시), ③ 잘못된 점을 다음에 고치게(개선) 하는 구조 전체를 Harness라고 합니다. 즉 Harness는 AI의 속도를 늦추는 브레이크가 아니라, 사고 없이 목적지까지 데려다주는 핸들이자 안전벨트입니다.",
         terms: [
@@ -176,6 +258,10 @@ const COURSE = {
         group: "기초 개념",
         title: "좋은 지침 만들기",
         goal: "AI가 지킬 작업 규칙(지침)을 만들 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["해야 할 일을 적었다", "하면 안 되는 일을 적었다", "보안 규칙을 넣었다"],
         summary: "지침은 AI가 멋대로 범위를 넓히거나 위험한 일을 하지 않도록 세우는 울타리(가드레일)입니다.",
         reading: "지침은 Harness의 '제어' 부분을 직접 만드는 일입니다. AI는 빠르지만, 시키지 않은 기능을 덧붙이거나 비밀 값을 코드에 적어 두는 실수를 하기도 합니다. 그래서 작업 전에 '해야 할 일'과 '하면 안 되는 일'을 미리 정해 두면 안전합니다. 예를 들어 '요청하지 않은 기능은 추가하지 마', '비밀번호나 키를 코드에 넣지 마', '바로 만들지 말고 모르는 건 먼저 물어봐' 같은 규칙이 도움이 됩니다. 지침은 한 번 만들고 끝이 아니라, 작업하며 계속 다듬는 기준표입니다.",
         terms: [
@@ -216,6 +302,10 @@ const COURSE = {
         group: "루키PRD 만들기",
         title: "AI 도구로 질문 연습하기",
         goal: "ChatGPT·Claude·Gemini 중 하나로 목표·배경·형식을 담은 질문을 만들 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["목표·배경·형식을 담은 질문을 만들었다", "AI가 먼저 되묻게 하는 문구를 넣었다"],
         summary: "어떤 AI를 쓰든 핵심은 같습니다 — 목표·배경·원하는 형식을 함께 전달하면 훨씬 쓸 만한 답이 나옵니다.",
         reading: "ChatGPT·Claude·Gemini는 모두 같은 방식으로 작동합니다. 어떤 것을, 어떤 상황에서, 어떤 형태로 원하는지를 함께 알려주면 답의 질이 크게 달라집니다. 특히 코드를 처음 요청할 때는 'AI가 먼저 불명확한 점을 물어보도록' 유도하는 것이 효과적입니다. 그래야 AI가 잘못 짐작해 엉뚱한 코드를 쏟아내는 상황을 막을 수 있습니다. 세 도구의 차이점: ChatGPT는 범용성이 높고, Claude는 긴 문서나 코드 분석에 강하며, Gemini는 Google 서비스와 연동이 편리합니다. 어떤 것이든 루키 단계에서는 큰 차이 없이 활용할 수 있습니다.",
         terms: [
@@ -267,6 +357,10 @@ const COURSE = {
         group: "루키PRD 만들기",
         title: "루키 PRD 만들기",
         goal: "내가 만들고 싶은 앱 설명서(PRD)를 완성한다.",
+        difficulty: "beginner",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["앱 이름·사용자·문제를 적었다", "기능 3개를 적었다", "성공 확인 방법을 적었다", "AI에게 요청할 PRD를 만들었다"],
         summary: "루키 PRD는 AI에게 요청할 앱 제작 설명서입니다.",
         reading: "PRD는 '내가 만들고 싶은 것 설명서'입니다. 앱 이름, 사용할 사람, 해결할 문제, 꼭 필요한 기능 3개, 성공 확인 방법만 정리해도 AI에게 훨씬 정확히 일을 맡길 수 있습니다. 이번 단계의 목표는 예쁜 문서가 아니라, AI에게 요청할 PRD를 완성하는 것입니다. 기능을 욕심내지 말고, 정말 필요한 3개만 골라 적으세요. 다음 제작 단계에서 결과가 한 번에 완성되지 않아도 괜찮습니다. 이 PRD를 기준으로 수정하고 디버그하는 과정이 핵심입니다.",
         terms: [
@@ -297,8 +391,8 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱", chips: ["여행 준비 미니앱", "캠핑 준비 미니앱", "출장 준비 미니앱", "이사 준비 미니앱", "운동 루틴 준비 앱", "장보기 준비 앱"] },
-            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람", chips: ["여행 전날 준비물을 확인하는 사람", "가족 여행을 준비하는 사람", "캠핑 장비를 챙기는 사람", "출장 짐을 빠뜨리기 싫은 사람", "운동 루틴을 시작하는 사람"] },
+            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱", chips: ["여행 준비 미니앱", "캠핑 준비 미니앱", "출장 준비 미니앱", "이사 준비 미니앱", "운동 루틴 준비 앱", "장보기 준비 앱", "한 달 가계부 앱", "식단 체크 앱", "동아리 회비 정산 앱"] },
+            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람", chips: ["여행 전날 준비물을 확인하는 사람", "가족 여행을 준비하는 사람", "캠핑 장비를 챙기는 사람", "출장 짐을 빠뜨리기 싫은 사람", "운동 루틴을 시작하는 사람", "매달 지출을 정리하고 싶은 사람", "동아리 회비를 관리하는 사람"] },
             { key: "problem", label: "어떤 문제를 해결하나요?", placeholder: "예: 여행 전 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.", chips: ["준비물이 여러 메모에 흩어져 있다", "어디를 갈지 매번 고민한다", "예상 비용을 머릿속으로만 계산한다", "필요한 물건을 빠뜨리기 쉽다", "내 앱 주제의 관리 항목이 흩어져 있다"] },
             { key: "features", label: "꼭 필요한 기능 3개", placeholder: "예: 1) 준비물 체크  2) 코스 후보 랜덤 뽑기  3) 예산 합계 계산", chips: ["1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산", "1) 항목 추가 2) 완료 체크 3) 총액 계산", "1) 후보 목록 2) 랜덤 추천 3) 메모 저장", "1) 할 일 체크 2) 우선순위 표시 3) 진행률 표시"] },
             { key: "success", label: "성공 확인 방법", placeholder: "예: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.", chips: ["체크 버튼이 눌린다", "랜덤 추천 결과가 바뀐다", "비용을 입력하면 합계가 맞다", "모바일에서 화면이 밀리지 않는다", "새로 만든 항목명이 내 주제에 맞다"] },
@@ -312,6 +406,10 @@ const COURSE = {
         group: "내 앱 만들기",
         title: "AI에게 코드 받아 실행하기",
         goal: "ChatGPT·Claude·Gemini 중 하나로 HTML 코드를 받아 직접 실행해 본다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
         summary: "6번 루키 PRD를 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
         reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 6번에서 만든 루키 PRD 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
         terms: [
@@ -364,6 +462,10 @@ const COURSE = {
         group: "내 앱 만들기",
         title: "Netlify/Vercel로 배포하기",
         goal: "AI에게 받은 HTML 파일을 Netlify 또는 Vercel에 올려 인터넷 링크를 만든다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["Netlify 또는 Vercel에 파일을 올렸다", "배포 링크가 실제로 열린다", "배포 URL을 기록했다"],
         summary: "Netlify는 HTML 파일을 드래그&드롭 하나로 인터넷에 올려 주는 서비스입니다. 가입 후 파일을 끌어다 놓으면 바로 링크가 생깁니다.",
         reading: "Netlify는 HTML 파일을 무료로 배포해 주는 서비스입니다. 복잡한 설정 없이, 웹사이트에서 파일을 직접 끌어다 놓으면 수 초 안에 링크가 생깁니다. 절차는 세 단계입니다. ① netlify.com에서 가입하고 ② 'Sites' 탭에서 HTML 파일을 드래그&드롭으로 올린 뒤 ③ 자동으로 생성된 URL을 확인합니다. 원한다면 'Site configuration → Change site name'에서 주소 이름을 바꿀 수도 있습니다. 비슷한 서비스로 Vercel(vercel.com)도 있습니다. GitHub 저장소와 연결해 쓰면 편리하지만, 지금은 Netlify 드래그&드롭이 가장 빠른 방법입니다. 이제 내가 만든 앱이 실제로 인터넷에 올라간 겁니다.",
         terms: [
@@ -412,6 +514,10 @@ const COURSE = {
         group: "공유",
         title: "루키 결과물 공유하기",
         goal: "내가 만든 앱의 배포 링크와 소감을 Padlet에 공유한다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["배포 링크가 실제로 열린다", "공유글을 만들었다", "공개 점검을 했다"],
         summary: "이제 실제로 인터넷에서 열리는 내 첫 앱이 있습니다. 링크와 함께 배운 점을 공유해 서로 보고 배웁니다.",
         reading: "루키리그를 마친 여러분은 AI에게 코드를 받아 실제로 배포한 첫 앱을 갖게 되었습니다. 공유글에는 배포된 앱 링크, 만든 것, 배운 점, 도움받고 싶은 점을 담습니다. 다른 사람의 앱 링크를 열어 보면 내가 놓친 아이디어를 발견하게 됩니다. 올리기 전에는 개인정보, 비밀번호, API 키처럼 공개하면 안 되는 내용이 없는지 꼭 확인하세요.",
         terms: [
@@ -446,6 +552,10 @@ const COURSE = {
         group: "AI 도구 연습",
         title: "Gemini Gems 만들기",
         goal: "반복해서 쓸 나만의 AI 역할(Gems)을 만들 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["Gems 이름을 정했다", "Gems 지침을 작성했다"],
         summary: "Gemini Gems는 매번 다시 쓰기 번거로운 역할과 규칙을 저장해 두는 '나만의 AI 코치'입니다.",
         reading: "Gemini Gems는 Gemini 안에서 반복해 쓸 역할과 지침을 저장하는 공간입니다. 매번 '쉬운 말로 설명해 줘, 먼저 질문해 줘'를 다시 타이핑하지 않고, 한 번 만들어 두면 됩니다. 루키 단계에서는 완벽한 Gems보다 '초보자에게 쉬운 말로 설명하고, 만들기 전에 먼저 질문하고, 비밀 값 노출을 확인하는 도우미' 정도면 충분합니다. 이렇게 만든 코치를 내 앱을 만드는 내내 부르면 됩니다.",
         terms: [
@@ -484,6 +594,10 @@ const COURSE = {
         group: "AI 도구 연습",
         title: "Canva AI로 화면 초안 만들기",
         goal: "Canva Magic Design에 붙여넣을 화면 요청문을 만들고, 생성된 초안을 저장할 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["화면에 들어갈 요소를 정했다", "Canva Magic Design 요청문을 만들었다", "초안을 생성하거나 스크린샷을 저장했다"],
         summary: "Canva의 Magic Design에 한 문장을 붙여넣으면 앱 화면처럼 생긴 디자인 초안이 나옵니다. 코드는 없지만, 이 그림을 AI에게 보여 주면 훨씬 정확한 코드를 받을 수 있습니다.",
         reading: "Canva의 Magic Design은 텍스트로 원하는 화면을 설명하면 여러 디자인 초안을 자동으로 만들어 주는 AI 기능입니다. 여기서 만들어지는 건 실제로 동작하는 앱이 아니라, '이런 모양이면 좋겠다'는 화면 그림입니다. 하지만 이 그림이 있으면 ChatGPT나 Claude에 '이 화면처럼 만들어 줘'라고 보여 줄 수 있어, 코드 요청이 훨씬 정확해집니다. 사용 흐름은 이렇습니다: ① 아래에 요청문을 작성 → ② canva.com에서 Magic Design에 붙여넣기 → ③ 마음에 드는 초안 선택 → ④ 스크린샷 저장 → ⑤ AI 코드 요청 시 참고로 첨부.",
         terms: [
@@ -540,12 +654,55 @@ const COURSE = {
     description: "시나리오: 루키 미니앱을 API 연동 여행 준비 앱으로 확장합니다. 여행지·날짜 입력, Open-Meteo 날씨 확인, 네이버 쇼핑 API 구조 설계, 준비물·예산 정리를 연결합니다. 자기 아이디어가 있다면 같은 구조로 캠핑·출장·행사 준비 앱을 만들 수 있습니다.",
     tags: ["여행 준비 앱", "Open-Meteo", "네이버 쇼핑 API", "API 보안", "예산 정리"],
     padletUrl: "https://padlet.com/dungstme/_-othnocro968oryg4",
+    competency: "외부 API를 보안 기준에 맞게 연동하고, 화면·서버 역할을 구분해 실제 데이터로 동작하는 앱을 배포한다",
+    finalOutput: "실시간 외부 데이터(날씨·쇼핑 등)를 연동한 배포 앱 + API 보안 점검 기록",
+    prerequisites: "루키리그 수료(앱 1개 배포 경험) 또는 동등한 HTML/AI 코드 받기 경험",
+    graduationRequirements: [
+      "화면·기능·데이터를 정리한 프로 PRD를 완성했다",
+      "최소 1개 이상의 외부 API를 연동했다",
+      "Secret이 필요한 API와 직접 호출 가능한 API를 구분해 처리했다",
+      "Repository·Branch·Commit으로 코드를 관리하며 배포했다"
+    ],
+    capstone: {
+      deliverable: "실시간 날씨·가격 정보를 보여주는 여행 준비 앱(또는 같은 구조의 자기 아이디어 앱)",
+      doneCriteria: [
+        "배포 링크에서 실제 외부 API 데이터가 화면에 표시된다",
+        "API 키 등 비밀 값이 브라우저 코드에 노출되지 않는다",
+        "준비물·예산 같은 핵심 기능이 배포 링크에서 그대로 동작한다"
+      ],
+      useInDailyLife: "여행 갈 때마다 날씨를 다시 검색하지 않고 이 링크 하나로 확인하고, 같은 구조를 바꿔 출장·캠핑 준비용으로 계속 쓸 수 있습니다."
+    },
+    facilitatorIntro: "4차시 안팎(또는 하루 연수)으로 운영하기 좋습니다. 루키리그 수료자를 전제로 하며, 핵심은 'Secret이 필요한 API'와 '브라우저에서 직접 호출 가능한 API'를 구분하는 보안 감각입니다. 참가자가 API 키를 코드에 그대로 박아 넣는 실수를 가장 많이 하므로, 보안 강의(api-security-pro)에서 시간을 더 배정하는 것을 권장합니다.",
+    runPlan: [
+      {
+        name: "4차시 표준형(차시당 45~50분)",
+        note: "api-security-pro는 분량을 줄이지 말고 그대로 한 차시 전체를 쓴다.",
+        sessions: [
+          { title: "1차시 — 기획·구조 설계", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data"] },
+          { title: "2차시 — API 연동과 보안", pages: ["frontend-backend", "api", "api-security-pro"] },
+          { title: "3차시 — AI와 함께 만들기", pages: ["prd-product", "cursor", "build-pro"] },
+          { title: "4차시 — 배포와 공유", pages: ["github", "deploy", "share"] }
+        ]
+      },
+      {
+        name: "하루 연수형(6시간 안팎)",
+        note: "오전·오후 사이 점심시간을 3차시와 4차시 경계로 둔다.",
+        sessions: [
+          { title: "오전 — 기획부터 보안까지", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
+          { title: "오후 — 제작부터 배포까지", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-pro",
         group: "환경 준비",
         title: "프로 환경 준비하기",
         goal: "Git과 GitHub를 설정하고 AI 에이전트(Claude Code·Codex·Antigravity) 중 하나를 골라 Windows GUI 프로그램으로 실행할 수 있다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["Git이 준비됐다", "AI 에이전트를 선택했다", "프로젝트 폴더를 열었다", "GitHub 계정을 만들었다", "GitHub 연결 정보를 확인했다"],
         summary: "프로의 핵심 스택은 AI 에이전트 + Git + GitHub입니다. 에이전트가 코드를 만들고, Git이 기록하고, GitHub가 보관·배포합니다.",
         reading: "프로리그에서는 Windows GUI 프로그램 형태의 AI 에이전트가 코드를 직접 만들고 수정합니다. Claude Code, Codex, Antigravity를 각각 실행한 뒤 내 프로젝트 폴더를 열고, 작업 지시서를 붙여넣어 파일 수정과 기능 구현을 맡깁니다. 세 도구 모두 화면에서 프로젝트를 열고 요청을 넣고 결과를 확인하는 흐름으로 사용합니다. 공통으로 필요한 건 Git(변경 기록)과 GitHub(클라우드 저장·배포)입니다. 코드를 직접 열어 확인하고 싶다면 편집기를 추가로 써도 되지만, 핵심은 GUI 에이전트에서 프로젝트 폴더를 안전하게 열고 작업 범위와 보안 금지사항을 분명히 주는 것입니다.",
         terms: [
@@ -601,6 +758,10 @@ const COURSE = {
         group: "제작 방향",
         title: "웹앱과 exe 방향 정하기",
         goal: "여행 준비 앱을 웹앱으로 만들지 exe로 만들지 미리 판단한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["웹앱과 exe의 장단점을 비교했다", "이번 과정에서 만들 앱 형태를 선택했다", "선택 이유를 적었다"],
         summary: "초반에 앱 형태를 정해야 화면 구성, 파일 구조, 배포 방식, 보안 안내가 흔들리지 않습니다.",
         reading: "웹앱과 exe 중 무엇을 고를지는 사용자 상황에 달려 있습니다. 웹앱은 링크로 공유하기 쉽고, 수정하면 바로 업데이트할 수 있으며, 모바일에서도 접근하기 좋고 API 연동 실습과 잘 맞습니다. 대신 인터넷 연결과 브라우저 환경의 영향을 받습니다. exe는 파일로 전달하거나 오프라인에서 실행하기 좋고 설치형 앱처럼 느껴지지만, 패키징 과정이 필요하고 용량이 커질 수 있으며 업데이트가 번거롭고 Windows 보안 경고나 코드 서명 문제가 생길 수 있습니다. 프로리그의 여행 준비 앱은 날씨·쇼핑·예산을 함께 다루므로 기본 추천은 웹앱입니다. 다만 인터넷이 불안정한 현장에서 쓰거나 데스크톱 프로그램처럼 배포해야 한다면 exe 방향을 검토할 수 있습니다.",
         terms: [
@@ -644,6 +805,10 @@ const COURSE = {
         group: "설계",
         title: "문제와 사용자 정의",
         goal: "앱이 해결할 문제와 사용자를 정한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["문제를 적었다", "사용자를 적었다"],
         summary: "좋은 앱은 기능보다 먼저 '누구의 어떤 문제'를 분명히 합니다.",
         reading: "프로 단계는 '무엇을 만들까'보다 '누가 어떤 불편을 겪고, 이 앱이 어떻게 돕는가'에서 출발합니다. 이번 리그의 예시 앱은 'API 연동 여행 준비 앱'입니다. 여행지와 날짜를 입력하면 날씨를 확인하고, 준비물을 정리하고, 네이버 쇼핑 검색으로 구매 후보와 가격을 확인하며, 예산까지 한곳에서 정리합니다. 예시 그대로 따라 해도 되고, 캠핑 준비·출장 준비·이사 준비처럼 자기 앱으로 바꿔도 됩니다. 핵심은 날씨 API처럼 바로 호출 가능한 API와, 네이버 쇼핑 API처럼 키 보안이 필요한 API의 차이를 이해하는 것입니다.",
         terms: [
@@ -685,6 +850,10 @@ const COURSE = {
         group: "설계",
         title: "화면 목록 만들기",
         goal: "필요한 화면을 목록으로 나눈다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["화면 목록을 적었다", "각 화면 목적을 적었다"],
         summary: "화면 목록은 앱의 목차입니다. 사용자가 보게 될 단위로 나누면 구조가 보입니다.",
         reading: "화면 목록은 앱의 지도이자 목차입니다. 홈, 작성, 목록, 상세, 설정처럼 사용자가 이동할 장소를 나누면 앱의 구조가 드러나고, AI에게 '어떤 화면부터 만들지'를 설명하기 쉬워집니다. 단순한 앱은 메인 화면 하나로도 시작할 수 있고, 나중에 다른 화면을 더할 수 있습니다.",
         terms: [
@@ -715,6 +884,10 @@ const COURSE = {
         group: "설계",
         title: "기능 목록 만들기",
         goal: "화면마다 필요한 기능을 정리한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["핵심 기능을 적었다", "우선순위를 정했다"],
         summary: "기능은 사용자가 눌러서 얻는 동작입니다. 필수와 나중을 나눠야 길을 잃지 않습니다.",
         reading: "기능은 사용자가 실제로 할 수 있는 행동의 목록입니다. 추가하기, 완료 체크, 삭제, 검색처럼 동작을 적고 '꼭 필요한 것'과 '나중에 할 것'을 나눕니다. 모든 기능을 한 번에 만들려 하면 AI도 사람도 방향을 잃습니다. 핵심 기능 몇 개를 먼저 두고, 부가 기능은 나중으로 미루는 식이 좋습니다.",
         terms: [
@@ -745,6 +918,10 @@ const COURSE = {
         group: "설계",
         title: "데이터 목록 만들기",
         goal: "앱이 저장할 데이터를 정한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["저장할 데이터를 적었다", "공개하면 안 되는 값을 구분했다"],
         summary: "데이터는 앱이 기억해야 하는 정보입니다. 저장할 것과 공개하면 안 되는 것을 함께 가립니다.",
         reading: "데이터는 앱이 기억해야 하는 정보입니다. 여행 준비 앱이라면 여행지, 여행 날짜, 준비물명, 체크 여부, 쇼핑 검색어, 상품명, 가격, 구매 예정 여부, 예산 합계가 데이터가 됩니다. 데이터 목록을 만들 때는 '저장할 것'과 '절대 공개하면 안 되는 것'을 함께 구분해야 안전합니다. 네이버 쇼핑 API의 Client Secret 같은 값은 데이터가 아니라 비밀 설정이므로 화면이나 공개 코드에 넣으면 안 됩니다. 프로리그에서도 실습 데이터에는 실제 주소·전화번호·여권번호 같은 개인정보를 넣지 않고, 공개 가능한 샘플 데이터만 사용합니다.",
         terms: [
@@ -783,6 +960,10 @@ const COURSE = {
         group: "설계",
         title: "프론트엔드와 백엔드 나누기",
         goal: "화면과 서버의 역할을 구분한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["프론트엔드 역할을 적었다", "백엔드 역할을 적었다"],
         summary: "프론트엔드는 사용자가 보는 화면, 백엔드는 뒤에서 데이터를 처리하는 부분입니다.",
         reading: "역할을 나누면 AI에게 어떤 일을 맡길지 또렷해집니다. 프론트엔드는 사용자가 보고 누르는 화면이고, 백엔드는 저장·계산·권한 확인처럼 뒤에서 처리하는 부분입니다. 앱을 브라우저 안에만 두면 백엔드 없이도 동작하지만, 비밀 키가 필요한 API를 호출하거나 여러 기기에서 같은 데이터를 보려면 백엔드가 필요해집니다. 프로리그에서는 프론트에서 안전하게 할 수 있는 Open-Meteo 호출과 샘플 쇼핑 응답을 다루고, Secret이 필요한 실제 쇼핑 호출은 서버 프록시가 필요하다고 설계에 표시합니다.",
         terms: [
@@ -823,6 +1004,10 @@ const COURSE = {
         group: "설계",
         title: "API 요청·응답 읽기",
         goal: "화면과 서버가 주고받는 대화 예시를 만든다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["요청 예시를 만들었다", "응답 예시를 만들었다", "Secret이 필요한 API를 구분했다"],
         summary: "API는 화면과 외부 서비스가 주고받는 약속입니다. 프로리그에서는 날씨 API와 네이버 쇼핑 API의 요청·응답을 여행 준비 앱에 연결합니다.",
         reading: "API는 화면과 외부 서비스가 대화하는 약속입니다. 여행 준비 앱에서는 두 종류의 API를 구분합니다. Open-Meteo 날씨 API는 API 키 없이 바로 호출할 수 있어 프로리그에서 실제 요청을 실습하기 좋습니다. 네이버 쇼핑 검색 API는 여행 준비물의 상품명, 가격, 링크, 이미지를 찾을 수 있지만 Client ID와 Client Secret이 필요합니다. Secret은 브라우저 코드에 직접 넣으면 노출되므로, 프로리그에서는 실제 Secret 없이 요청 구조와 샘플 응답을 설계합니다. 프로 결과물에도 '실제 네이버 호출은 서버 프록시 필요'라는 보안 조건을 남겨 두고, 브라우저 코드는 Open-Meteo처럼 공개 호출 가능한 API와 샘플 데이터만 사용합니다.",
         toolGuides: ["openMeteo", "naverShopping"],
@@ -868,6 +1053,10 @@ const COURSE = {
         group: "보안",
         title: "프로 API 보안 가드레일",
         goal: "프로리그 앱을 만들 때 지켜야 할 API 보안 기준을 정한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["직접 호출 가능한 API를 적었다", "Secret 필요 API를 브라우저 코드에서 제외했다", "샘플 응답을 정했다", "배포 전 검색어를 적었다"],
         summary: "프로리그에서도 보안은 적용됩니다. 공개 가능한 API는 직접 호출하고, Secret이 필요한 API는 샘플 응답이나 서버 프록시 설계로 다룹니다.",
         reading: "프로리그는 마스터리그처럼 로그인·DB·서버를 완성하는 단계는 아니지만, 보안을 미루는 단계도 아닙니다. 여행 준비 앱에서 Open-Meteo처럼 키가 없는 공개 API는 브라우저에서 직접 호출할 수 있습니다. 반대로 네이버 쇼핑 API처럼 Client Secret이 필요한 API는 브라우저 코드에 넣지 않습니다. 프로 실습에서는 실제 Secret 대신 샘플 응답을 사용하거나, 서버 프록시가 필요하다는 구조를 PRD와 작업 지시서에 명시합니다. 또한 여행지·예산·준비물 정도의 샘플 데이터만 쓰고, 실제 연락처·여권번호·정확한 숙소 주소 같은 개인정보는 넣지 않습니다. 배포 전에는 코드와 공유글에 키, 비밀번호, 개인정보가 없는지 확인합니다.",
         toolGuides: ["openMeteo", "naverShopping"],
@@ -914,6 +1103,10 @@ const COURSE = {
         group: "제작 지시",
         title: "프로 PRD 작성하기",
         goal: "AI에게 제작을 맡길 수 있는 앱 PRD를 완성한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["문제 정의를 넣었다", "화면·기능·데이터를 넣었다", "프로 보안 기준을 넣었다", "완료 기준을 넣었다"],
         summary: "프로 PRD는 화면·기능·데이터·API·보안·배포 기준까지 담은 '제작용 설명서'입니다.",
         reading: "프로 PRD는 아이디어를 'AI가 바로 작업할 수 있는 설계'로 바꾼 문서입니다. 문제·사용자·화면·기능·데이터·API·보안·배포 기준이 들어가면, AI는 막연한 부탁이 아니라 구체적인 작업으로 이해합니다. 지금까지 프로리그에서 적어 온 내 앱 내용을 한곳에 모으면 그대로 프로 PRD가 됩니다. 특히 API를 쓰는 앱에서는 '브라우저 코드에 넣으면 안 되는 값'과 '샘플 응답으로 처리할 범위'를 PRD에 넣어야 합니다.",
         terms: [
@@ -961,6 +1154,10 @@ const COURSE = {
         group: "제작 지시",
         title: "AI 에이전트 선택과 작업 지시서",
         goal: "어떤 AI 에이전트를 쓸지 선택하고, 해당 도구에 붙여넣을 작업 지시서를 만든다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["작업 지시서를 만들었다", "보안 금지사항을 넣었다", "먼저 질문하라는 문구를 넣었다"],
         summary: "Claude Code·Codex·Antigravity, 세 GUI 에이전트는 각각 강점이 다릅니다. 어느 것을 쓰든 '이번에 이만큼, 이 범위 안에서'라는 명확한 지시서가 핵심입니다.",
         reading: "프로리그에서 사용하는 AI 에이전트는 세 가지입니다. Claude Code는 프로젝트 폴더를 열어 여러 파일을 함께 수정하고 테스트 흐름을 점검하는 데 강합니다. Codex는 기존 코드를 읽고 문제를 찾거나 수정 방향을 빠르게 제안받을 때 좋습니다. Antigravity는 화면 흐름을 보며 여러 단계의 작업을 이어서 맡기기 좋습니다. 세 도구 모두 Windows GUI 프로그램으로 실행해 프로젝트 폴더를 열고, 작업 지시서를 입력해 사용합니다. 어느 도구를 선택하든 작업 지시서는 같습니다 — PRD 요약, 이번 작업 범위, 손대지 말 것, 먼저 물어볼 조건.",
         terms: [
@@ -1013,6 +1210,10 @@ const COURSE = {
         group: "제작",
         title: "AI 에이전트로 프로젝트 구현하기",
         goal: "선택한 AI 에이전트로 여러 파일 프로젝트를 수정하고, 기능·보안·실행 결과를 점검한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["변경된 파일을 기록했다", "실행 위치를 기록했다", "PRD의 기능이 모두 동작한다", "Secret·개인정보 노출을 점검했다"],
         summary: "프로리그 앱은 단일 HTML 붙여넣기가 아니라 프로젝트 폴더에서 구현합니다. 변경 파일, 실행 주소, 기능 점검, 보안 점검을 기록합니다.",
         reading: "이 단계에서는 앞에서 만든 작업 지시서를 실제로 AI 에이전트에 넣어 프로젝트를 수정합니다. Claude Code, Codex, Antigravity 중 선택한 Windows GUI 프로그램에서 프로젝트 폴더를 열고 지시서를 붙여넣습니다. 프로리그 앱은 Open-Meteo 호출, 샘플 쇼핑 응답, 예산 계산, 보안 점검이 함께 들어가므로 단일 HTML 파일로 붙여넣어 확인하는 방식이 맞지 않습니다. 대신 에이전트가 어떤 파일을 만들거나 수정했는지, 어떤 주소나 파일로 실행 확인했는지, 어떤 기능이 통과했는지를 기록합니다. 동시에 코드에 Secret, API_KEY, password, token 같은 값이 들어가지 않았는지 확인합니다. '기능 A는 동작하지만 B가 안 된다'처럼 구체적으로 재요청하는 것이 포인트입니다.",
         terms: [
@@ -1069,6 +1270,10 @@ const COURSE = {
         group: "배포",
         title: "GitHub 저장소·브랜치·커밋 관리",
         goal: "Repository·Branch·Commit의 역할을 이해하고 안전하게 코드를 관리한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["Repository를 만들었다", "기능 브랜치를 사용했다", "커밋 메시지를 만들었다", "민감 정보 점검을 했다"],
         summary: "GitHub는 코드를 버전별로 기록하는 공간입니다. Repository는 보관함, Branch는 작업 분리선, Commit은 변경 기록 단위입니다.",
         reading: "GitHub로 코드를 관리하면 '언제 무엇을 바꿨는지' 기록이 남고, 실수해도 이전 상태로 되돌릴 수 있습니다. Repository(저장소)는 프로젝트 파일 전체를 담는 보관함이고, main 브랜치는 항상 잘 동작하는 안전한 버전을 유지하는 기본 줄기입니다. Branch(브랜치)는 main을 건드리지 않고 새 기능을 시험하는 별도 작업 공간입니다. 기능 브랜치를 만들어 작업하고, 잘 되면 main에 합칩니다(Merge). Commit은 '이 시점의 변경을 저장한다'는 기록 단위로, 메시지는 '추가 기능 구현'처럼 사람이 읽고 알 수 있게 적습니다. Push는 내 컴퓨터의 기록을 GitHub에 올리는 것이고, Pull은 GitHub의 최신 상태를 내 컴퓨터로 내려받는 것입니다. 올리기 전엔 반드시 API 키·비밀번호·개인정보가 없는지 확인하세요.",
         terms: [
@@ -1125,6 +1330,10 @@ const COURSE = {
         group: "배포",
         title: "웹 배포 준비하기",
         goal: "웹 배포 플랫폼과 확인 기준을 정한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["배포 플랫폼을 골랐다", "실제 배포 URL이 열린다", "주요 기능을 배포 URL에서 확인했다"],
         summary: "배포는 만든 앱을 남이 접속할 수 있게 공개하는 일입니다. '버튼을 눌렀다'가 아니라 '링크가 실제로 열린다'가 기준입니다.",
         reading: "배포는 앱을 다른 사람이 열어 볼 수 있게 공개하는 단계입니다. GitHub Pages, Vercel, Netlify, Cloudflare Pages 같은 서비스를 씁니다. 배포가 끝났다는 건 링크가 열리고 주요 기능이 동작하며 모바일에서도 깨지지 않는다는 뜻입니다. 실패할 때를 대비해 플랫폼, 에러 화면, 파일 구조를 기록해 두면 도움을 받기 쉽습니다. 배포 후 링크를 직접 열어 주요 기능이 되는지 확인해 봅니다.",
         terms: [
@@ -1163,6 +1372,10 @@ const COURSE = {
         group: "공유",
         title: "프로 결과물 공유하기",
         goal: "완성된 앱의 배포 링크와 PRD를 Padlet에 공유한다.",
+        difficulty: "intermediate",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["배포 링크가 실제로 열린다", "공유글을 만들었다", "보안 점검 메모를 넣었다", "공개 점검을 했다"],
         summary: "프로리그를 마친 여러분은 실제로 배포된 앱을 갖게 되었습니다. 링크·PRD 요약·도움받고 싶은 점을 함께 공유해 피드백을 받아 보세요.",
         reading: "프로 단계 공유글에는 배포된 앱 링크, PRD 요약, 구현 소감을 담습니다. 다른 사람이 링크를 열어 직접 써 보고 피드백을 줄 수 있도록 핵심을 추립니다. 앱 링크를 공유할 때는 개인정보·API 키가 코드와 화면에 없는지 먼저 확인하세요. 네이버 쇼핑은 실제 Secret 호출이 아니라 샘플 응답 또는 서버 프록시 설계로 처리했다는 점도 적어 두면 안전합니다. 배포가 안 됐다면 가장 완성된 상태의 코드 스크린샷이라도 담아 공유합니다.",
         terms: [
@@ -1204,12 +1417,47 @@ const COURSE = {
     description: "시나리오: API 연동 여행 준비 앱을 운영형 여행 플래너로 확장합니다. 로그인, 사용자별 DB 저장, 동행자 공유, 서버/환경변수 기반 API 보안, Gemini API 요약 추천을 연결합니다. 자기 아이디어가 있다면 같은 구조로 사용자별 데이터가 필요한 앱을 만들 수 있습니다.",
     tags: ["여행 플래너", "DB·로그인", "Gemini API", "API 보안"],
     padletUrl: "https://padlet.com/dungstme/_-6tfn9vwj7wv8p4f",
+    competency: "로그인·데이터베이스·AI API를 연결해 사용자별 데이터를 안전하게 다루는 운영형 서비스를 릴리즈한다",
+    finalOutput: "로그인·DB가 연결된 다중 사용자 서비스 v1.0 릴리즈 + 운영 점검 체크리스트",
+    prerequisites: "프로리그 수료(API 연동 앱 배포 경험) 또는 동등한 백엔드 연동 경험",
+    graduationRequirements: [
+      "릴리즈·운영까지 포함한 PRD를 완성했다",
+      "로그인과 사용자별 데이터 저장 구조를 설계하고 연결했다",
+      "정상·실패 테스트 케이스를 만들어 점검했다",
+      "v1.0으로 공식 릴리즈하고 운영 체크리스트를 작성했다"
+    ],
+    capstone: {
+      deliverable: "로그인하면 내 데이터만 보이는 다중 사용자 여행 플래너(또는 같은 구조의 자기 아이디어 서비스)",
+      doneCriteria: [
+        "로그인한 사용자마다 자신의 데이터만 저장·조회된다",
+        "v1.0 릴리즈 링크가 실제로 동작하며 운영 체크리스트가 존재한다",
+        "API 키·DB 접근 권한 등 비밀 값이 서버/환경변수로 분리되어 있다"
+      ],
+      useInDailyLife: "가족·친구와 계정을 나눠 로그인해 각자의 여행 계획을 따로 저장하고 동행자와 공유하면서, 실제 다음 여행부터 이 서비스를 계속 운영해 쓸 수 있습니다."
+    },
+    facilitatorIntro: "다회차 연수(주 1회 × 4주 등)에 적합한 분량입니다. 로그인·DB·릴리즈를 처음 다루는 참가자가 많으므로, 강의 순서를 건너뛰지 않고 release-harness(릴리즈 전 점검 구조)부터 차례로 짚어 주는 것이 중요합니다. 마지막 차시는 반드시 실제 v1.0 배포까지 마치고 끝내야 '완성 경험'이 남습니다.",
+    runPlan: [
+      {
+        name: "4주 연수형(주 1회, 회당 90분)",
+        note: "매회 시작 5분은 직전 주 산출물(릴리즈·로그)을 함께 확인한다.",
+        sessions: [
+          { title: "1주차 — 도구와 점검 체계", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
+          { title: "2주차 — 보안과 인프라", pages: ["security", "env", "travel-api-gemini", "db-auth-integration", "auth"] },
+          { title: "3주차 — 설계와 배포 준비", pages: ["prd-release", "deploy-check", "logs", "cicd"] },
+          { title: "4주차 — 운영과 v1.0 출시", pages: ["exe", "releases", "warning", "ops", "share"] }
+        ]
+      }
+    ],
     pages: [
       {
         id: "setup-master",
         group: "환경 준비",
         title: "마스터 환경 준비하기",
         goal: "Claude Code·Antigravity·Codex 중 어떤 도구로 마스터 작업을 진행할지 정한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["세 도구의 역할을 구분했다", "맡길 첫 작업을 정했다", "사람이 확인할 기준을 적었다"],
         summary: "이번 리그의 예시 앱은 로그인·DB·AI 연동 여행 플래너입니다. 프로리그에서 남겨 둔 Secret 보안 문제를 해결하며 운영형 앱으로 키웁니다.",
         reading: "마스터리그에서는 Claude Code, Antigravity, Codex 세 가지 도구만 다룹니다. 이번 예시 앱은 '로그인·DB·AI 연동 여행 플래너'입니다. 프로리그에서 브라우저에 넣지 않았던 네이버 쇼핑 Secret과 Gemini API 키를 서버와 환경변수로 안전하게 분리하고, 로그인한 사용자별로 여행 계획·준비물·예산·동행자 공유 데이터를 저장합니다. Claude Code는 프로젝트 구조를 읽고 긴 코드 수정과 리팩터링을 맡길 때 좋습니다. Antigravity는 브라우저에서 화면 흐름을 보며 여러 단계를 이어서 작업시키기 좋습니다. Codex는 기존 코드의 문제를 찾고 수정 방향을 빠르게 제안받을 때 씁니다. 예시 그대로 따라 해도 되고, 출장·캠핑·이사 준비처럼 자기 앱의 사용자별 데이터 저장 구조로 바꿔도 됩니다.",
         terms: [
@@ -1260,6 +1508,10 @@ const COURSE = {
         group: "환경 준비",
         title: "Claude Code·Antigravity·Codex 활용",
         goal: "세 도구에 맡길 작업과 사람이 확인할 작업을 나눌 수 있다.",
+        difficulty: "advanced",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["세 도구 중 하나를 선택했다", "위임할 작업 범위를 정의했다", "사람이 확인할 테스트를 적었다"],
         summary: "마스터 단계에서는 세 도구를 기능 구현보다 운영형 점검에 연결합니다. DB·로그인·보안처럼 위험한 부분은 AI에게 맡기되 사람이 끝까지 확인합니다.",
         reading: "Claude Code, Antigravity, Codex는 모두 코딩을 돕지만 맡기기 좋은 일이 다릅니다. Claude Code는 여러 파일을 함께 읽고 구조를 정리하거나 큰 수정 계획을 세울 때 좋습니다. Antigravity는 실제 브라우저 화면과 사용자 흐름을 보며 로그인, 입력, 저장 같은 과정을 점검할 때 좋습니다. Codex는 기존 코드에서 문제를 찾고 수정안을 빠르게 만들어 볼 때 좋습니다. 마스터리그에서는 이 세 도구를 단순 기능 추가가 아니라 데이터베이스 연동, 로그인 흐름, 권한 분리, 보안 점검, 릴리즈 준비에 연결합니다. 단, 비밀번호·API 키·개인정보 같은 값은 AI에게 붙여넣지 않습니다.",
         terms: [
@@ -1309,6 +1561,10 @@ const COURSE = {
         group: "릴리즈 설계",
         title: "릴리즈 하네스 설계",
         goal: "릴리즈 전에 통과해야 할 제어·점검 구조를 만든다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["릴리즈 통과 기준을 적었다", "사용자 관점 확인을 넣었다"],
         summary: "릴리즈 하네스는 내보내기 전에 AI·코드가 정해진 기준 안에서 움직이는지 제어·감시하고, 문제를 걸러 내는 운용 구조입니다.",
         reading: "마스터리그의 하네스는 루키에서 배운 Harness(제어·감시·개선)를 릴리즈 단계로 키운 것입니다. 기능 테스트, 보안 점검, 배포 URL 확인, 사용자 안내가 매 릴리즈마다 같은 순서로 통과되도록 묶습니다. 사람이 매번 기억해서 확인하는 대신, '이 단계들을 통과하지 못하면 내보내지 않는다'는 틀을 만드는 것이 핵심입니다. 그러면 '대충 되는 것 같다'가 아니라 '사용자에게 내보낼 준비가 됐다'고 판단할 수 있습니다.",
         terms: [
@@ -1350,6 +1606,10 @@ const COURSE = {
         group: "릴리즈 설계",
         title: "테스트 케이스 만들기",
         goal: "주요 기능의 테스트 케이스를 만든다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["정상 테스트를 적었다", "실패 테스트를 적었다"],
         summary: "테스트 케이스는 '무엇을 하면 무엇이 나와야 한다'를 적은 확인표입니다. 성공뿐 아니라 실패 상황도 적습니다.",
         reading: "테스트 케이스는 기능이 맞게 동작하는지 확인하는 문장입니다. 여행 플래너라면 '로그인한 뒤 여행을 만들면 내 계정에만 보인다', '날씨 API가 실패하면 대체 안내가 보인다', 'Gemini 요약이 준비물·예산·날씨를 반영한다'처럼 행동과 기대 결과를 함께 씁니다. 마스터 단계에서는 정상 상황만이 아니라 로그인 만료, API 실패, 권한 없는 공유 접근 같은 실패·예외 상황도 함께 적어야 합니다. 이렇게 적어 두면 AI에게 '이 케이스들이 통과하게 고쳐 줘'라고 정확히 맡길 수 있습니다.",
         terms: [
@@ -1388,6 +1648,10 @@ const COURSE = {
         group: "보안",
         title: "보안 위험 찾기",
         goal: "공개하면 안 되는 정보와 위험한 흐름을 찾는다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["민감 정보 점검을 했다", "권한 위험을 적었다"],
         summary: "보안은 나중에 붙이는 장식이 아니라 처음부터 지켜야 할 기준입니다. 최종 확인은 사람이 직접 합니다.",
         reading: "보안 위험은 앱이 커진 뒤에만 생기는 게 아닙니다. 여행 플래너도 네이버 Client Secret, Gemini API 키, 로그인 토큰, 비공개 여행 일정이 노출되면 문제가 됩니다. 마스터 단계에서는 AI에게도 보안 점검을 맡기되, 최종 확인은 사람이 체크리스트로 직접 합니다. 앱에 로그인을 붙인다면 초대받지 않은 사람이 남의 여행 데이터나 예산을 볼 수 있는지 같은 위험을 미리 살펴야 합니다.",
         terms: [
@@ -1428,6 +1692,10 @@ const COURSE = {
         group: "보안",
         title: "환경변수 이해하기",
         goal: "API 키를 코드 밖에서 관리하는 이유를 이해한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["환경변수 항목을 정했다", "공개 금지 값을 구분했다"],
         summary: "환경변수는 네이버 Secret, Gemini API 키, DB 연결 정보를 코드에 직접 쓰지 않고 따로 보관하는 방법입니다.",
         reading: "환경변수는 비밀 값을 코드 밖에서 관리하는 방법입니다. 마스터리그의 여행 플래너에서는 NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY, DB 연결 정보처럼 공개하면 안 되는 값을 환경변수로 둡니다. Open-Meteo는 키 없이 시작할 수 있지만, 네이버 쇼핑 API와 Gemini API는 브라우저 코드에 직접 넣으면 노출됩니다. 배포 서비스마다 환경변수를 넣는 화면이 따로 있으니, 어떤 값이 필요한지와 어디에 등록할지를 문서로 남겨 둡니다. 앱에 외부 서비스를 붙여 키가 생기면, 그 키를 코드가 아니라 서버와 환경변수로 옮깁니다.",
         toolGuides: ["naverShopping", "geminiApi"],
@@ -1474,6 +1742,10 @@ const COURSE = {
         group: "API·AI 연동",
         title: "일반 API와 Gemini API 연동",
         goal: "여행 플래너에서 일반 API와 Gemini API가 맡는 역할을 나누고 안전한 호출 구조를 설계한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"],
         summary: "일반 API는 날씨·쇼핑·환율·장소 데이터를 가져오고, Gemini API는 그 데이터를 바탕으로 준비 요약과 추천 문구를 만듭니다.",
         reading: "마스터리그의 여행 플래너는 프로리그보다 API 구조가 한 단계 깊어집니다. Open-Meteo 같은 날씨 API는 여행 날짜의 기온과 강수 가능성을 가져오고, 네이버 쇼핑 API는 준비물 구매 후보와 가격을 가져옵니다. 필요하면 환율 API나 장소 검색 API를 추가할 수 있습니다. Gemini API는 이 데이터를 그대로 보여 주는 대신, 날씨·예산·준비물·일정을 묶어 '비가 올 가능성이 높으니 우비와 방수팩을 챙기세요'처럼 사용자가 이해하기 쉬운 요약과 추천 문구를 만듭니다. 단, 네이버 Secret과 Gemini API 키는 브라우저 화면이나 입력칸에 넣지 않습니다. 서버 라우트나 프록시가 환경변수에서 키를 읽고, 화면은 서버가 정리해 준 결과만 받도록 설계합니다.",
         toolGuides: ["openMeteo", "naverShopping", "geminiApi"],
@@ -1522,6 +1794,10 @@ const COURSE = {
         group: "DB·로그인",
         title: "데이터베이스와 로그인 연동",
         goal: "로그인한 사용자와 데이터베이스 데이터를 안전하게 연결하는 구조를 설계한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"],
         summary: "프로리그가 저장할 여행 데이터를 정리하는 단계였다면, 마스터리그는 로그인한 사용자별로 여행 계획이 분리되도록 DB와 인증을 연결합니다.",
         reading: "데이터베이스와 로그인 시스템을 연결하면 여행 플래너는 '모두가 같은 데이터를 보는 화면'에서 '각 사용자가 자기 여행 계획만 보는 서비스'로 바뀝니다. 여행 플래너라면 trips, itineraryItems, packingItems, budgetItems, collaborators 같은 데이터를 사용자 ID와 연결해야 합니다. 각 여행에는 ownerId가 있고, 동행자 공유가 필요하면 collaborators 테이블이나 공유 권한 필드를 둡니다. 화면에서는 로그인하지 않은 사용자를 막고, 서버나 DB 규칙에서는 초대받지 않은 사람이 다른 사람의 일정·예산·준비물을 읽거나 수정하지 못하게 해야 합니다. Supabase, Firebase, Clerk 같은 서비스를 쓸 수 있지만 핵심은 같습니다. 로그인 확인, 사용자 ID 연결, 사용자별 데이터 분리, 동행자 권한 규칙, 환경변수 관리입니다.",
         terms: [
@@ -1575,6 +1851,10 @@ const COURSE = {
         group: "DB·로그인",
         title: "인증과 권한",
         goal: "로그인과 권한의 차이를 설명한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["사용자 역할을 정했다", "권한 규칙을 적었다"],
         summary: "인증은 '누구인지' 확인하는 것, 권한은 '무엇을 할 수 있는지' 정하는 것입니다.",
         reading: "인증과 권한은 비슷해 보이지만 다릅니다. 인증은 사용자가 누구인지 확인하는 것이고, 권한은 그 사용자가 무엇을 할 수 있는지 정하는 것입니다. 운영할 앱이라면 관리자, 일반 사용자, 비로그인 사용자가 볼 수 있는 화면과 데이터가 달라야 합니다. 앱에 로그인을 붙이면, 인증으로 '내가 나임'을 확인하고, 권한으로 '나는 내 데이터만 볼 수 있음'을 정합니다.",
         terms: [
@@ -1613,6 +1893,10 @@ const COURSE = {
         group: "운영형 PRD",
         title: "운영형 PRD 작성하기",
         goal: "릴리즈와 운영까지 포함한 PRD를 만든다.",
+        difficulty: "advanced",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["DB 설계를 넣었다", "로그인 연동 기준을 넣었다", "보안 요구사항을 넣었다", "테스트 기준을 넣었다"],
         summary: "운영형 PRD는 기능뿐 아니라 DB·로그인·보안·테스트·배포·운영 기준까지 담는 문서입니다.",
         reading: "운영형 PRD는 '무엇을 만들지'를 넘어 '어떻게 안전하게 내보내고 계속 운영할지'까지 담습니다. 마스터리그에서는 프로리그의 화면·기능 설계를 확장해 데이터베이스, 로그인 시스템, 사용자별 권한, 보안 기준, 통과할 테스트, 배포 방식, 릴리즈 조건, 운영 점검을 함께 적습니다. 이것은 AI에게 기능 구현만이 아니라 운영까지 고려한 작업을 맡기는 기준 문서입니다. 지금까지 마스터리그에서 내 앱에 대해 점검한 내용을 한곳에 모으면 운영형 PRD가 됩니다.",
         terms: [
@@ -1663,6 +1947,10 @@ const COURSE = {
         group: "배포·점검",
         title: "배포 URL 점검하기",
         goal: "사용자 관점에서 배포 URL을 확인한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["배포 URL을 기록했다", "사용자 관점 확인을 했다"],
         summary: "'내 컴퓨터에선 됨'은 끝이 아닙니다. 배포된 링크에서 첫 화면·새로고침·모바일까지 직접 확인합니다.",
         reading: "배포 URL 점검은 사용자가 실제로 겪을 첫 경험을 확인하는 일입니다. 내 컴퓨터에서는 잘 되더라도 배포된 링크에서는 경로·환경변수·새로고침 문제가 생길 수 있습니다. 반드시 배포 URL을 직접 열어 첫 화면이 뜨는지, 주요 버튼이 동작하는지, 모바일에서 깨지지 않는지, 새로고침해도 유지되는지 확인합니다.",
         terms: [
@@ -1694,6 +1982,10 @@ const COURSE = {
         group: "배포·점검",
         title: "로그와 에러 보고",
         goal: "문제가 생겼을 때 AI에게 줄 정보를 정리한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["에러 보고 템플릿을 만들었다", "로그에서 볼 항목을 적었다"],
         summary: "'안 돼요' 대신 언제·어디서·무엇을 눌렀고 어떤 메시지가 나왔는지를 묶어야 원인을 좁힐 수 있습니다.",
         reading: "로그는 앱이 남기는 상황 기록이고, 에러 보고는 문제를 해결하기 위한 Context입니다. 그냥 '안 돼요'라고 하면 AI도 사람도 어디부터 봐야 할지 모릅니다. 언제, 어디서, 무엇을 눌렀고, 어떤 메시지가 나왔는지를 묶어야 원인을 좁힐 수 있습니다. 예를 들어 'Gemini 요약 생성 버튼을 눌렀을 때 화면 하단에 빨간 메시지가 떴다'처럼 적어 두는 식입니다.",
         terms: [
@@ -1724,6 +2016,10 @@ const COURSE = {
         group: "배포·점검",
         title: "CI/CD 쉽게 이해하기",
         goal: "자동 검사와 자동 배포의 흐름을 이해한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["CI 단계를 적었다", "CD 단계를 적었다"],
         summary: "CI는 올릴 때 자동으로 검사, CD는 검사 후 자동으로 배포 — 사람이 반복하던 일을 자동 흐름으로 바꾸는 것입니다.",
         reading: "CI/CD는 반복되는 확인과 배포를 자동화하는 흐름입니다. CI는 코드를 올릴 때 자동으로 테스트·검사를 돌리는 것, CD는 검사를 통과하면 배포까지 이어지는 것으로 이해하면 됩니다. 처음에는 개념만 알아도 충분하지만, 릴리즈가 잦아질수록 중요한 운영 도구가 됩니다. 'GitHub에 올리면 테스트가 자동으로 돌고, 통과하면 자동 배포'가 목표 그림입니다.",
         terms: [
@@ -1765,6 +2061,10 @@ const COURSE = {
         group: "패키징·릴리즈",
         title: "exe 패키징 준비",
         goal: "exe 배포 전 필요한 정보를 정리한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["exe 파일명을 정했다", "보안 경고 안내를 적었다"],
         summary: "exe 패키징은 사용자가 파일로 받아 실행하게 묶는 일입니다. 파일명·아이콘·버전·보안 안내가 필요합니다.",
         reading: "exe 패키징은 사용자가 앱을 파일로 받아 실행할 수 있게 묶는 과정입니다. 파일명, 아이콘, 버전, 포함할 파일, 보안 경고 안내를 준비합니다. 실제 빌드 도구는 앱 기술에 따라 다르므로, 먼저 내 앱이 Python인지(PyInstaller) 웹 기술 기반인지(Electron·Tauri) 판단해야 합니다. 웹앱은 보통 exe가 필요 없지만, 굳이 데스크톱 앱으로 만든다면 이 항목들을 채웁니다.",
         terms: [
@@ -1801,6 +2101,10 @@ const COURSE = {
         group: "패키징·릴리즈",
         title: "GitHub Releases 안내문",
         goal: "사용자에게 보여 줄 릴리즈 안내문을 작성한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["릴리즈 노트를 작성했다", "다운로드 안내를 넣었다"],
         summary: "릴리즈 노트는 개발 기록이 아니라, 사용자에게 필요한 '변화 안내'입니다.",
         reading: "GitHub Releases는 사용자에게 배포 파일과 변경 내용을 제공하는 공간입니다. 릴리즈 노트에는 내부 개발 기록(커밋 해시, 검증 명령 등)보다 사용자가 알아야 할 변화, 다운로드 방법, 주의사항을 적습니다. 예를 들어 '이번 버전부터 새 기능이 추가되었습니다, 아래 파일을 받아 실행하세요'처럼 사용자 언어로 씁니다.",
         terms: [
@@ -1835,6 +2139,10 @@ const COURSE = {
         group: "패키징·릴리즈",
         title: "Windows 보안 경고 안내",
         goal: "보안 경고를 줄이는 방법과 사용자 안내문을 함께 만든다.",
+        difficulty: "advanced",
+        estimatedMinutes: 25,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["경고를 줄이는 방법을 적었다", "공식 다운로드 위치를 적었다", "사용자 확인 문구를 넣었다", "보안 경고 안내문을 만들었다"],
         summary: "Windows 경고는 완전히 무시할 대상이 아닙니다. 배포 전에는 경고를 줄이고, 배포 후에는 사용자가 출처를 확인하도록 안내합니다.",
         reading: "Windows는 새로 만든 exe나 다운로드 수가 적은 실행 파일에 보안 경고를 띄울 수 있습니다. 경고를 줄이려면 먼저 배포 파일의 출처를 분명하게 만들어야 합니다. 공식 GitHub Releases나 공식 웹사이트처럼 한 곳에서만 배포하고, 파일명과 버전을 일정하게 쓰며, 가능하면 코드 서명 인증서로 exe에 서명합니다. 설치형 앱이라면 Microsoft Store, 신뢰할 수 있는 설치 프로그램, 백신 오탐 신고 절차도 검토할 수 있습니다. 그래도 개인·소규모 프로젝트에서는 처음 배포할 때 경고가 남을 수 있으므로 사용자 안내문이 필요합니다. 안내문에는 '무조건 실행하세요'가 아니라 다운로드 위치, 파일명, 버전, 게시자, 실행 전 확인할 점을 적습니다. 사용자가 다른 곳에서 받은 파일이거나 이름이 다르면 실행하지 말라고 안내해야 합니다.",
         terms: [
@@ -1880,6 +2188,10 @@ const COURSE = {
         group: "운영",
         title: "운영 체크리스트 만들기",
         goal: "릴리즈 이후에도 확인할 운영 항목을 만든다.",
+        difficulty: "advanced",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["운영 체크리스트를 만들었다", "업데이트 기준을 적었다"],
         summary: "운영은 배포 후 사용자가 문제없이 계속 쓰도록 살피는 일입니다. 릴리즈는 끝이 아니라 다음 개선의 시작입니다.",
         reading: "운영은 배포 이후에도 앱을 계속 살피는 일입니다. 사용자 문의, 오류 보고, 업데이트 필요성, 보안 재점검을 주기적으로 확인해야 합니다. 마스터리그에서는 릴리즈가 끝이 아니라 다음 개선을 준비하는 시작점이라는 관점을 배웁니다. 앱을 내보낸 뒤에도 '오류는 없는지, 사용자가 무엇을 불편해하는지'를 정해진 주기로 점검하는 체크리스트를 둡니다.",
         terms: [
@@ -1910,6 +2222,10 @@ const COURSE = {
         group: "운영",
         title: "마스터 결과물 공유하기",
         goal: "v1.0으로 공식 릴리즈된 앱 링크와 운영형 PRD를 Padlet에 공유한다.",
+        difficulty: "advanced",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["v1.0 배포 링크가 실제로 열린다", "공유글을 만들었다", "공개 점검을 했다"],
         summary: "마스터리그를 마친 여러분은 보안·테스트·릴리즈를 모두 거친 v1.0 앱을 갖게 되었습니다. 링크와 회고를 공유해 서로 배웁니다.",
         reading: "마스터 단계 공유글에는 v1.0 배포 링크(또는 GitHub Releases URL), 운영형 PRD 요약, 릴리즈를 준비하며 가장 어려웠던 점을 담습니다. 다른 사람이 보고 운영 관점까지 배울 수 있도록 핵심을 추리고, 막힌 부분도 솔직히 적어 두면 좋은 피드백을 받습니다. 올리기 전에는 민감 정보와 내부 URL이 없는지 반드시 확인하세요.",
         terms: [

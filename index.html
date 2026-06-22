@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=20">
+  <link rel="stylesheet" href="styles.css?v=25">
 </head>
 <body>
   <header class="topbar">
@@ -34,6 +34,10 @@
     </div>
     <div class="top-actions">
       <button id="presentBtn" type="button">▶ 발표 모드</button>
+      <button id="teacherModeToggle" type="button" title="교사용 진행 가이드(차시 운영 팁)를 강의마다 펼쳐 보여줍니다">교사 모드</button>
+      <button id="printHandout" type="button" title="현재 리그의 지도안(운영 개요·강의별 진행 가이드)을 인쇄용으로 엽니다">지도안 인쇄</button>
+      <button id="exportProgress" type="button" title="진행 상황을 코드로 복사해 다른 기기로 옮깁니다">진행 내보내기</button>
+      <button id="importProgress" type="button" title="다른 기기에서 복사한 진행 코드를 붙여넣어 이어서 합니다">진행 불러오기</button>
       <button id="copyAll" type="button">결과물 복사</button>
       <button id="resetAll" class="ghost danger" type="button">초기화</button>
     </div>
@@ -45,6 +49,8 @@
         <h2>리그</h2>
         <div id="levelList" class="level-list"></div>
         <p id="levelIntro" class="level-intro"></p>
+        <div id="levelGraduation" class="level-graduation" hidden></div>
+        <div id="facilitatorIntro" class="facilitator-card" hidden></div>
       </section>
       <section class="panel">
         <div class="panel-title">
@@ -75,6 +81,7 @@
 
         <h2 id="pageTitle"></h2>
         <p id="pageGoal" class="goal"></p>
+        <div id="lessonMeta2" class="lesson-meta2" hidden></div>
 
         <section class="summary-card">
           <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> 한 줄 핵심</h3>
@@ -104,6 +111,7 @@
         </section>
 
         <div id="externalGuide" class="external-guide"></div>
+        <div id="facilitatorPanel" class="facilitator-card" hidden></div>
 
         <section class="practice-card">
           <div class="section-head">
@@ -128,8 +136,23 @@
         <div class="resource-body">
           <p class="resource-hint">지금까지 작성한 내용이 자동으로 모입니다. 상단의 ‘결과물 복사’로 한 번에 가져갈 수 있어요.</p>
           <textarea id="notebook" readonly></textarea>
+          <div class="resource-tools">
+            <div class="resource-tool-group">
+              <span class="resource-tool-label">학습 기록 백업</span>
+              <button id="backupSave" type="button" title="학습 기록 전체를 JSON 파일로 저장합니다">파일로 저장</button>
+              <button id="backupLoad" type="button" title="저장한 JSON 파일에서 학습 기록을 복원합니다">파일에서 복원</button>
+            </div>
+            <div class="resource-tool-group">
+              <span class="resource-tool-label">포트폴리오 만들기</span>
+              <button id="portfolioMd" type="button">Markdown</button>
+              <button id="portfolioHtml" type="button">HTML</button>
+              <button id="portfolioPrint" type="button">인쇄·PDF</button>
+            </div>
+          </div>
+          <input id="importFileInput" type="file" accept="application/json,.json" hidden>
         </div>
       </details>
+      <iframe id="printFrame" title="인쇄 미리보기" aria-hidden="true" tabindex="-1"></iframe>
 
       <details class="resource" id="helpResource">
         <summary>막혔을 때 도움받기</summary>
@@ -157,6 +180,21 @@
 
   <div id="toast" role="status" aria-live="polite"></div>
 
+  <!-- 첫 방문 안내 -->
+  <div id="onboardingOverlay" class="onboarding-overlay" hidden>
+    <div class="onboarding-card">
+      <p class="onboarding-eyebrow">처음 오셨나요?</p>
+      <h2>VibeCoder Lab 사용법</h2>
+      <ul class="onboarding-steps">
+        <li><strong>읽고 이해하기 → 실습하기 → 확인하기</strong> 순서로 한 강의를 진행합니다.</li>
+        <li>막히면 <strong>‘막혔을 때 도움받기’</strong> 패널에서 AI에게 보낼 질문을 만들어 사용합니다.</li>
+        <li>기기를 바꿀 때는 <strong>‘진행 내보내기’</strong>로 코드를 복사해 두면 이어서 진행할 수 있습니다.</li>
+        <li>수업·발표 때는 <strong>‘발표 모드’</strong>로 강의를 슬라이드처럼 띄울 수 있습니다.</li>
+      </ul>
+      <button id="onboardingStart" type="button" class="primary">시작하기</button>
+    </div>
+  </div>
+
   <!-- 발표 모드 오버레이 -->
   <div id="presentationOverlay" class="pres-overlay" role="dialog" aria-modal="true" aria-hidden="true">
     <header class="pres-header">
@@ -169,17 +207,19 @@
         <span id="presCounter" class="pres-counter">1 / 1</span>
         <button id="presNext" class="pres-nav-btn" type="button" aria-label="다음 슬라이드">→</button>
       </div>
+      <button id="presNotesToggle" class="pres-notes-btn" type="button" title="발표자 노트 켜기/끄기 (N)">🗒 노트</button>
       <button id="presClose" class="pres-close-btn" type="button">✕ 닫기</button>
     </header>
     <main class="pres-stage">
       <div id="presSlide" class="pres-slide"></div>
     </main>
     <footer class="pres-footer">
+      <div id="presNotes" class="pres-notes" hidden></div>
       <div id="presDots" class="pres-dots"></div>
     </footer>
   </div>
 
-  <script src="content.js?v=20"></script>
-  <script src="app.js?v=20"></script>
+  <script src="content.js?v=25"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>
