@@ -693,8 +693,31 @@ function renderChecks() {
 }
 
 /* ----------------------------- 결과물 ----------------------------- */
+function findDeployUrl() {
+  for (const p of level().pages) {
+    const saved = courseState().pages[p.id];
+    const v = saved && saved.fields && saved.fields.deployUrl;
+    if (v && String(v).trim()) return String(v).trim();
+  }
+  return "";
+}
+function renderCapstoneSummary() {
+  const cap = level().capstone;
+  if (!cap) return "";
+  const url = findDeployUrl();
+  if (!url) return "";
+  return [
+    "## 내 완성 앱",
+    `결과물: ${cap.deliverable}`,
+    `링크: ${url}`,
+    `이렇게 씁니다: ${cap.useInDailyLife}`,
+    ""
+  ].join("\n");
+}
 function renderNotebook() {
   const parts = [`# VibeCoder Lab - ${level().name} 결과물`, `Padlet: ${level().padletUrl}`, ""];
+  const capSummary = renderCapstoneSummary();
+  if (capSummary) parts.push(capSummary);
   level().pages.forEach((p) => {
     const saved = courseState().pages[p.id];
     if (!saved) return;
