@@ -7,8 +7,9 @@
 
 const storeKey = "vibecoder-lab-redesign-v2";
 let state = loadState();
-let activeLevel = "rookie";
-let activePage = 0;
+// 재방문 시 마지막으로 보던 리그·강의로 복귀(없거나 범위를 벗어나면 처음부터)
+let activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+let activePage = clampPage(activeLevel, state.activePage);
 
 const $ = (selector) => document.querySelector(selector);
 
@@ -20,6 +21,28 @@ function saveState() {
   state.activeLevel = activeLevel;
   state.activePage = activePage;
   localStorage.setItem(storeKey, JSON.stringify(state));
+}
+function clampPage(levelId, value) {
+  const max = (COURSE[levelId]?.pages.length || 1) - 1;
+  const n = Number(value);
+  return (Number.isInteger(n) && n >= 0 && n <= max) ? n : 0;
+}
+
+/* 진행 상황을 짧은 코드로 내보내고 되돌린다(로그인·서버 없이 기기 이동). */
+function exportProgressCode() {
+  try { return btoa(encodeURIComponent(JSON.stringify(state))); } catch { return ""; }
+}
+function importProgressCode(code) {
+  const trimmed = String(code || "").trim();
+  if (!trimmed) return false;
+  let parsed;
+  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return false; }
+  if (!parsed || typeof parsed !== "object") return false;
+  state = parsed;
+  activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+  activePage = clampPage(activeLevel, state.activePage);
+  saveState();
+  return true;
 }
 function level() { return COURSE[activeLevel]; }
 function courseState() {
@@ -667,6 +690,21 @@ function renderHelp() {
 /* ========================== 발표 모드 ========================== */
 let presSlides = [];
 let presIdx = 0;
+let presNotesVisible = false;
+
+/* 발표자 노트: 페이지의 presenterNotes[슬라이드타입]이 있을 때만, 토글(N) 시 표시 */
+function renderPresNotes() {
+  const host = $("#presNotes");
+  if (!host) return;
+  const slide = presSlides[presIdx];
+  const note = currentPage().presenterNotes?.[slide?.type];
+  if (note && presNotesVisible) {
+    host.innerHTML = `<span class="pres-notes-label">발표자 노트</span> ${renderText(note)}`;
+    host.hidden = false;
+  } else {
+    host.hidden = true;
+  }
+}
 
 function buildSlides(page) {
   const slides = [{ type: "title", title: page.title, goal: page.goal }];
@@ -677,6 +715,8 @@ function buildSlides(page) {
     slides.push({ type: "visual", visual: page.visual });
   if (page.discussion && page.discussion.length) slides.push({ type: "discussion", items: page.discussion });
   if (page.steps && page.steps.length) slides.push({ type: "steps", items: page.steps });
+  if (page.practice && (page.practice.fields || []).length) slides.push({ type: "practice", practice: page.practice });
+  if (page.checks && page.checks.length) slides.push({ type: "checks", items: page.checks });
   return slides;
 }
 
@@ -729,8 +769,24 @@ function renderPresSlide() {
         <ol class="pres-list">${slide.items.map((s) => `<li>${renderText(s)}</li>`).join("")}</ol>
       </div>`;
       break;
+    case "practice":
+      html = `<div class="pres-section-slide">
+        <p class="pres-section-label">실습하기</p>
+        <ul class="pres-list">${(slide.practice.fields || []).map((f) => {
+          const hint = f.placeholder || (f.options ? f.options.join(" / ") : "") || (f.choices ? f.choices.map((c) => c.value).join(" / ") : "");
+          return `<li><strong>${escapeHtml(f.label)}</strong>${hint ? `<span class="pres-field-hint"> — ${escapeHtml(hint)}</span>` : ""}</li>`;
+        }).join("")}</ul>
+      </div>`;
+      break;
+    case "checks":
+      html = `<div class="pres-section-slide">
+        <p class="pres-section-label">확인하기</p>
+        <ul class="pres-check-list">${slide.items.map((c) => `<li>${renderText(c)}</li>`).join("")}</ul>
+      </div>`;
+      break;
   }
   $("#presSlide").innerHTML = html;
+  renderPresNotes();
   bindCodeCopy();
   $("#presCounter").textContent = `${presIdx + 1} / ${presSlides.length}`;
   $("#presPrev").disabled = presIdx === 0;
@@ -768,6 +824,9 @@ function handlePresKey(e) {
   } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
     e.preventDefault();
     if (presIdx > 0) { presIdx--; renderPresSlide(); }
+  } else if (e.key === "n" || e.key === "N") {
+    presNotesVisible = !presNotesVisible;
+    renderPresNotes();
   } else if (e.key === "Escape") {
     exitPresentation();
   }
@@ -833,6 +892,23 @@ function bindGlobal() {
   });
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
+  $("#exportProgress")?.addEventListener("click", () => {
+    const code = exportProgressCode();
+    if (!code) { toast("내보낼 진행 내용이 없습니다."); return; }
+    copyText(code, "진행 코드를 복사했습니다. 다른 기기의 ‘진행 불러오기’에 붙여넣으세요.");
+  });
+  $("#importProgress")?.addEventListener("click", () => {
+    const code = prompt("다른 기기에서 복사한 ‘진행 코드’를 붙여넣으세요.");
+    if (code === null) return;
+    if (!confirm("지금 기기에 저장된 진행 내용을 덮어쓰고 불러옵니다. 계속할까요?")) return;
+    if (importProgressCode(code)) { render(); toast("진행 내용을 불러왔습니다."); }
+    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
+  });
+  $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  $("#onboardingStart")?.addEventListener("click", () => {
+    state.onboarded = true; saveState();
+    const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;
+  });
   $("#helpType").addEventListener("change", renderHelp);
   $("#helpMemo").addEventListener("input", renderHelp);
   $("#resetAll").addEventListener("click", () => {
@@ -856,5 +932,13 @@ function toast(message) {
   setTimeout(() => node.classList.remove("show"), 1700);
 }
 
+/* 첫 방문(state.onboarded 없음)일 때만 1회용 안내를 띄운다. */
+function maybeShowOnboarding() {
+  const overlay = $("#onboardingOverlay");
+  if (!overlay) return;
+  overlay.hidden = !!state.onboarded;
+}
+
 bindGlobal();
 render();
+maybeShowOnboarding();
