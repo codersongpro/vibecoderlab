@@ -916,6 +916,49 @@ function printPortfolio() {
   frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
 }
 
+/* ------------------------- 교사용 지도안 인쇄(유인물) ------------------------- */
+function buildHandoutHtml(item) {
+  const esc = escapeHtml;
+  const pagesHtml = item.pages.map((p) => {
+    const f = p.facilitator;
+    if (!f) return "";
+    return `<div class="hpage">
+      <h3>${esc(p.title)}</h3>
+      ${f.time ? `<p class="htime">⏱ 권장 진행 시간: ${esc(f.time)}</p>` : ""}
+      ${f.talkingPoints && f.talkingPoints.length ? `<p class="hlabel">설명 포인트</p><ul>${f.talkingPoints.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${f.pitfalls && f.pitfalls.length ? `<p class="hlabel">자주 막히는 지점</p><ul>${f.pitfalls.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+      ${f.faq && f.faq.length ? `<p class="hlabel">예상 질문(Q&A)</p><dl>${f.faq.map((qa) => `<dt>${esc(qa.q)}</dt><dd>${esc(qa.a)}</dd>`).join("")}</dl>` : ""}
+    </div>`;
+  }).filter(Boolean).join("");
+  const grad = (item.graduationRequirements || []).map((r) => `<li>${esc(r)}</li>`).join("");
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(item.name)} 지도안</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 24px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    .meta { color: #52606d; font-size: 14px; margin-bottom: 20px; }
+    .hpage { margin: 16px 0; padding: 12px 16px; border: 1px solid #e4e7eb; border-radius: 6px; break-inside: avoid; }
+    h3 { font-size: 16px; margin: 0 0 6px; }
+    .htime { font-weight: 600; margin: 4px 0; }
+    .hlabel { font-weight: 700; font-size: 13px; color: #1d4ed8; margin: 8px 0 2px; }
+    ul { margin: 0; padding-left: 20px; font-size: 14px; }
+    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 6px; } dd { margin: 2px 0 0; font-size: 14px; }
+    .grad { margin-top: 20px; padding-top: 14px; border-top: 2px solid #e4e7eb; }
+    .empty { color: #9aa5b1; font-style: italic; }
+  </style></head><body>
+  <h1>${esc(item.name)} 지도안</h1>
+  <p class="meta">${item.facilitatorIntro ? esc(item.facilitatorIntro) : ""}</p>
+  ${pagesHtml || `<p class="empty">강의별 진행 가이드가 아직 없습니다.</p>`}
+  ${grad ? `<div class="grad"><p class="hlabel">수료 기준</p><ul>${grad}</ul></div>` : ""}
+  </body></html>`;
+}
+function printHandout() {
+  const frame = $("#printFrame");
+  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
+  frame.srcdoc = buildHandoutHtml(level());
+  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
+}
+
 /* ----------------------------- 막혔을 때 ----------------------------- */
 function renderHelp() {
   const type = $("#helpType").value;
@@ -1175,6 +1218,7 @@ function bindGlobal() {
   $("#portfolioMd")?.addEventListener("click", exportPortfolioMarkdown);
   $("#portfolioHtml")?.addEventListener("click", exportPortfolioHtml);
   $("#portfolioPrint")?.addEventListener("click", printPortfolio);
+  $("#printHandout")?.addEventListener("click", printHandout);
   $("#onboardingStart")?.addEventListener("click", () => {
     state.onboarded = true; saveState();
     const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;
