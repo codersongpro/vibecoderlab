@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=22">
+  <link rel="stylesheet" href="styles.css?v=23">
 </head>
 <body>
   <header class="topbar">
@@ -34,6 +34,7 @@
     </div>
     <div class="top-actions">
       <button id="presentBtn" type="button">▶ 발표 모드</button>
+      <button id="teacherModeToggle" type="button" title="교사용 진행 가이드(차시 운영 팁)를 강의마다 펼쳐 보여줍니다">교사 모드</button>
       <button id="exportProgress" type="button" title="진행 상황을 코드로 복사해 다른 기기로 옮깁니다">진행 내보내기</button>
       <button id="importProgress" type="button" title="다른 기기에서 복사한 진행 코드를 붙여넣어 이어서 합니다">진행 불러오기</button>
       <button id="copyAll" type="button">결과물 복사</button>
@@ -48,6 +49,7 @@
         <div id="levelList" class="level-list"></div>
         <p id="levelIntro" class="level-intro"></p>
         <div id="levelGraduation" class="level-graduation" hidden></div>
+        <div id="facilitatorIntro" class="facilitator-card" hidden></div>
       </section>
       <section class="panel">
         <div class="panel-title">
@@ -108,6 +110,7 @@
         </section>
 
         <div id="externalGuide" class="external-guide"></div>
+        <div id="facilitatorPanel" class="facilitator-card" hidden></div>
 
         <section class="practice-card">
           <div class="section-head">
@@ -215,7 +218,7 @@
     </footer>
   </div>
 
-  <script src="content.js?v=22"></script>
-  <script src="app.js?v=22"></script>
+  <script src="content.js?v=23"></script>
+  <script src="app.js?v=23"></script>
 </body>
 </html>

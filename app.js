@@ -271,6 +271,7 @@ function renderToolManuals(p) {
 
 /* ------------------------------ 렌더 ------------------------------ */
 function render() {
+  $("#teacherModeToggle")?.classList.toggle("active", !!state.teacherMode);
   renderLevels();
   renderPages();
   renderHeader();
@@ -336,6 +337,7 @@ function renderHeader() {
   setLeagueClass(activeLevel);
   $("#levelIntro").textContent = item.description;
   renderLevelGraduation(item);
+  renderFacilitatorIntro(item);
 
   // 전체 코스 진행률 (모든 리그 합산)
   let total = 0, done = 0;
@@ -389,6 +391,7 @@ function renderLesson() {
   } else {
     $("#externalGuide").innerHTML = "";
   }
+  renderFacilitator(p);
 
   bindCodeCopy();
 
@@ -431,8 +434,41 @@ function renderLevelGraduation(item) {
   if (item.graduationRequirements && item.graduationRequirements.length) {
     html += `<div class="grad-req"><strong>수료 기준</strong><ul>${item.graduationRequirements.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul></div>`;
   }
+  if (item.capstone) {
+    html += `<div class="grad-req"><strong>완성하면 일상에서 쓰는 결과물</strong><p>${escapeHtml(item.capstone.deliverable)}</p></div>`;
+  }
   host.innerHTML = html;
   host.hidden = !html;
+}
+
+/* 교사 모드: 리그 단위 운영 개요 — state.teacherMode일 때만, 데이터 있을 때만 표시 */
+function renderFacilitatorIntro(item) {
+  const host = $("#facilitatorIntro");
+  if (!host) return;
+  if (!state.teacherMode || !item.facilitatorIntro) { host.hidden = true; host.innerHTML = ""; return; }
+  host.innerHTML = `<div class="facilitator-card-title">교사용 리그 운영 개요</div><p>${renderText(item.facilitatorIntro)}</p>`;
+  host.hidden = false;
+}
+
+/* 교사 모드: 강의 단위 진행 가이드(지도안) — state.teacherMode일 때만, 데이터 있을 때만 표시 */
+function renderFacilitator(p) {
+  const host = $("#facilitatorPanel");
+  if (!host) return;
+  if (!state.teacherMode || !p.facilitator) { host.hidden = true; host.innerHTML = ""; return; }
+  const f = p.facilitator;
+  let html = `<div class="facilitator-card-title">교사용 진행 가이드</div>`;
+  if (f.time) html += `<p class="facilitator-time">⏱ 권장 진행 시간: ${escapeHtml(f.time)}</p>`;
+  if (f.talkingPoints && f.talkingPoints.length) {
+    html += `<details open><summary>설명 포인트</summary><ul>${f.talkingPoints.map((t) => `<li>${renderText(t)}</li>`).join("")}</ul></details>`;
+  }
+  if (f.pitfalls && f.pitfalls.length) {
+    html += `<details><summary>자주 막히는 지점</summary><ul>${f.pitfalls.map((t) => `<li>${renderText(t)}</li>`).join("")}</ul></details>`;
+  }
+  if (f.faq && f.faq.length) {
+    html += `<details><summary>예상 질문(Q&A)</summary><dl>${f.faq.map((qa) => `<dt>${renderText(qa.q)}</dt><dd>${renderText(qa.a)}</dd>`).join("")}</dl></details>`;
+  }
+  host.innerHTML = html;
+  host.hidden = false;
 }
 
 function visualHasContent(v) {
@@ -1098,6 +1134,13 @@ function bindGlobal() {
   $("#topNextPage").addEventListener("click", () => goNextLesson({ complete: false }));
   $("#completePage").addEventListener("click", () => goNextLesson({ complete: true }));
   $("#presentBtn").addEventListener("click", enterPresentation);
+  $("#teacherModeToggle")?.addEventListener("click", () => {
+    state.teacherMode = !state.teacherMode;
+    $("#teacherModeToggle").classList.toggle("active", state.teacherMode);
+    saveState();
+    render();
+    toast(state.teacherMode ? "교사 모드를 켰습니다." : "교사 모드를 껐습니다.");
+  });
   $("#presClose").addEventListener("click", exitPresentation);
   $("#presPrev").addEventListener("click", () => { if (presIdx > 0) { presIdx--; renderPresSlide(); } });
   $("#presNext").addEventListener("click", () => { if (presIdx < presSlides.length - 1) { presIdx++; renderPresSlide(); } });

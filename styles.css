@@ -1177,3 +1177,18 @@ ol.pres-list li { padding-left: 0; }
 .grad-req { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
 .grad-req strong { font-size: 12px; color: var(--accent-strong); }
 .grad-req ul { margin: 6px 0 0; padding-left: 18px; color: var(--body); line-height: 1.55; }
+.grad-req p { margin: 6px 0 0; color: var(--body); line-height: 1.55; }
+
+#teacherModeToggle.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+.facilitator-card { margin: 14px 0; padding: 14px 16px; border: 1px solid var(--accent); border-radius: var(--radius-sm); background: var(--surface-soft); font-size: 13.5px; }
+.facilitator-card-title { font-weight: 800; color: var(--accent-strong); font-size: 12px; text-transform: uppercase; letter-spacing: .02em; margin-bottom: 6px; }
+.facilitator-card p { margin: 4px 0; color: var(--body); line-height: 1.55; }
+.facilitator-time { font-weight: 600; }
+.facilitator-card details { margin-top: 8px; }
+.facilitator-card summary { cursor: pointer; font-weight: 700; color: var(--accent-strong); }
+.facilitator-card ul { margin: 6px 0 0; padding-left: 18px; color: var(--body); line-height: 1.6; }
+.facilitator-card dl { margin: 6px 0 0; }
+.facilitator-card dt { font-weight: 700; margin-top: 6px; }
+.facilitator-card dd { margin: 2px 0 0; color: var(--body); line-height: 1.5; }
+@media print { .facilitator-card { break-inside: avoid; } }
