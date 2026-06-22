@@ -1131,3 +1131,49 @@ ol.pres-list li { padding-left: 0; }
   .pres-notes { font-size: 14px; }
   .pres-check-list li { font-size: 15.5px; padding-left: 40px; }
 }
+
+/* ============================================================
+   고도화 — 미리보기 보안 · 백업 · 포트폴리오 (Phase 1·2·3)
+   ============================================================ */
+/* 코드 미리보기 보안 경고 / 제어 바 */
+.preview-warn { margin: 8px 0; padding: 10px 14px; border-radius: var(--radius-sm); background: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; font-size: 13.5px; line-height: 1.55; }
+.preview-bar { display: flex; align-items: center; gap: 10px; margin: 8px 0; flex-wrap: wrap; }
+.preview-bar #stopPreview { padding: 6px 12px; font-size: 13px; }
+.preview-note { font-size: 12.5px; color: var(--muted); }
+
+/* 결과물 저장소 — 백업·포트폴리오 도구 */
+.resource-tools { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 14px; }
+.resource-tool-group { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 10px 12px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-soft); }
+.resource-tool-label { font-size: 12px; font-weight: 800; color: var(--accent-strong); margin-right: 2px; }
+.resource-tools button { padding: 7px 12px; font-size: 13px; }
+
+/* 숨겨진 인쇄용 iframe (화면에 보이지 않음) */
+#printFrame { position: absolute; width: 0; height: 0; border: 0; visibility: hidden; }
+
+@media (max-width: 760px) {
+  .resource-tools { flex-direction: column; gap: 10px; }
+  .resource-tool-group { width: 100%; }
+}
+
+/* ============================================================
+   고도화 — 강의 메타데이터 · 리그 수료 기준 (Phase 4)
+   ============================================================ */
+.lesson-meta2 { margin: -6px 0 18px; }
+.meta-badges { display: flex; flex-wrap: wrap; gap: 8px; }
+.meta-badge { display: inline-flex; align-items: center; font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--surface-soft); border: 1px solid var(--line); color: var(--body); }
+.meta-badge.muted { color: var(--muted); font-weight: 600; }
+.meta-badge.diff-beginner { background: #ecfdf5; border-color: #6ee7b7; color: #047857; }
+.meta-badge.diff-intermediate { background: #eff6ff; border-color: #93c5fd; color: #1d4ed8; }
+.meta-badge.diff-advanced { background: #fef3c7; border-color: #fcd34d; color: #b45309; }
+.completion-req { margin-top: 10px; font-size: 13.5px; }
+.completion-req summary { cursor: pointer; font-weight: 700; color: var(--accent-strong); }
+.completion-req ul { margin: 8px 0 0; padding-left: 20px; color: var(--body); line-height: 1.6; }
+
+.level-graduation { margin-top: 12px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface-soft); font-size: 13px; }
+.grad-dl { margin: 0; display: grid; gap: 8px; }
+.grad-dl > div { display: grid; grid-template-columns: 72px 1fr; gap: 8px; }
+.grad-dl dt { font-weight: 800; color: var(--accent-strong); font-size: 12px; }
+.grad-dl dd { margin: 0; color: var(--body); line-height: 1.5; }
+.grad-req { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); }
+.grad-req strong { font-size: 12px; color: var(--accent-strong); }
+.grad-req ul { margin: 6px 0 0; padding-left: 18px; color: var(--body); line-height: 1.55; }

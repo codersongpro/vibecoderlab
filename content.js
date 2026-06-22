@@ -33,12 +33,25 @@ const COURSE = {
     description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 자기 아이디어가 있다면 캠핑·출장·이사·운동 준비 앱으로 바꿔도 됩니다.",
     tags: ["Prompt·Context·Harness", "AI 코드 받기", "Netlify/Vercel 배포", "첫 앱 완성"],
     padletUrl: "https://padlet.com/dungstme/_-guhr4cbmj43e82ew",
+    competency: "AI에게 요청해 한 파일짜리 앱을 완성하고 인터넷에 배포한다",
+    finalOutput: "실제로 쓸 수 있는 HTML 단일 파일 앱 + 공개 배포 링크",
+    prerequisites: "브라우저와 이메일 주소(코딩 경험 불필요)",
+    graduationRequirements: [
+      "내 아이디어를 한 문장과 PRD로 정리했다",
+      "AI에게 받은 코드를 실행해 한 화면 앱을 완성했다",
+      "오류를 1개 이상 직접 수정했다",
+      "Netlify/Vercel로 배포해 공개 링크를 얻었다"
+    ],
     pages: [
       {
         id: "setup-rookie",
         group: "환경 준비",
         title: "루키 환경 준비하기",
         goal: "루키리그 수업에 필요한 계정을 모두 만들어 준비한다.",
+        difficulty: "beginner",
+        estimatedMinutes: 20,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["AI 도구 1개 이상 로그인", "Canva 로그인", "Netlify 로그인"],
         summary: "설치 없이 브라우저만으로 모든 실습을 진행합니다. 아래 계정들이 준비되면 바로 시작할 수 있습니다.",
         reading: "루키리그는 별도 설치 없이 웹에서 모든 작업을 처리합니다. 필요한 것은 브라우저와 이메일 주소뿐입니다. 코딩을 처음 시작한다면 각 강의를 위에서 아래로 읽고, 실습 칸에 직접 적고, 확인하기 체크를 누르는 순서로 진행하세요. 막히는 부분은 정답을 맞히려 하지 말고 메모한 뒤 AI에게 질문하면 됩니다. 코드 작성에는 ChatGPT·Gemini·Claude 중 편한 것을 선택하면 됩니다. Gemini Gems는 나만의 전용 AI를 구성할 때 씁니다. Canva는 화면 초안을 빠르게 만들 때, Netlify는 파일을 드래그&드롭으로 배포할 때 사용합니다. 모두 무료 플랜으로 충분합니다.",
         terms: [
@@ -99,6 +112,10 @@ const COURSE = {
         group: "기초 개념",
         title: "바이브코딩 시작하기",
         goal: "바이브코딩이 무엇인지 내 말로 설명할 수 있다.",
+        difficulty: "beginner",
+        estimatedMinutes: 15,
+        updatedAt: "2026-06-22",
+        completionRequirements: ["바이브코딩을 내 말로 설명", "만들 것을 한 문장으로 작성"],
         summary: "바이브코딩은 코드를 외우는 게 아니라, 만들고 싶은 것을 AI와 주고받으며 완성하는 방식입니다.",
         reading: "바이브코딩에서 가장 중요한 능력은 문법 암기가 아닙니다. 만들고 싶은 결과를 말로 또렷이 정리하고, AI에게 필요한 배경을 건네고, 나온 결과가 맞는지 직접 확인하는 습관입니다. 루키리그의 예시 앱은 '여행 준비 미니앱'입니다. 준비물 체크, 코스 후보 랜덤 뽑기, 간단 예산 합계를 한 화면에서 해 보는 앱입니다. 예시 그대로 따라 해도 되고, 캠핑 준비·출장 준비·이사 준비·운동 루틴 준비 앱으로 바꿔도 됩니다. 처음부터 완벽한 앱을 노리지 말고, 한 화면에서 바로 눌러 볼 수 있는 작은 기능부터 만들어 눈으로 확인해 보세요.",
         terms: [

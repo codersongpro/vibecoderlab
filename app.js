@@ -335,6 +335,7 @@ function renderHeader() {
   document.documentElement.style.setProperty("--accent-soft", softTheme(activeLevel));
   setLeagueClass(activeLevel);
   $("#levelIntro").textContent = item.description;
+  renderLevelGraduation(item);
 
   // 전체 코스 진행률 (모든 리그 합산)
   let total = 0, done = 0;
@@ -363,6 +364,7 @@ function renderLesson() {
 
   $("#pageTitle").textContent = p.title;
   $("#pageGoal").textContent = p.goal;
+  renderLessonMeta(p);
   $("#summary").textContent = p.summary || "";
   $("#reading").innerHTML = renderReading(p.reading || "");
   $("#terms").innerHTML = (p.terms || []).map((t) => `<dt>${escapeHtml(t.term)}</dt><dd>${renderText(t.def)}</dd>`).join("");
@@ -398,6 +400,39 @@ function renderLesson() {
   $("#topPrevPage").disabled = atFirst;
   $("#topNextPage").disabled = atLast;
   $("#completePage").textContent = atLast ? "완료 ✓" : "완료하고 다음 →";
+}
+
+/* 강의 메타데이터(난이도·예상 시간·확인일·수료 조건) — 데이터 있을 때만 표시 (Phase 4) */
+function renderLessonMeta(p) {
+  const host = $("#lessonMeta2");
+  if (!host) return;
+  const diffMap = { beginner: "입문", intermediate: "중급", advanced: "심화" };
+  const badges = [];
+  if (p.difficulty) badges.push(`<span class="meta-badge diff-${escapeHtml(p.difficulty)}">${escapeHtml(diffMap[p.difficulty] || p.difficulty)}</span>`);
+  if (p.estimatedMinutes) badges.push(`<span class="meta-badge">⏱ 약 ${escapeHtml(String(p.estimatedMinutes))}분</span>`);
+  if (p.updatedAt) badges.push(`<span class="meta-badge muted">최신 확인 ${escapeHtml(p.updatedAt)}</span>`);
+  let html = badges.length ? `<div class="meta-badges">${badges.join("")}</div>` : "";
+  if (p.completionRequirements && p.completionRequirements.length) {
+    html += `<details class="completion-req"><summary>완료(수료) 조건 보기</summary><ul>${p.completionRequirements.map((r) => `<li>${renderText(r)}</li>`).join("")}</ul></details>`;
+  }
+  host.innerHTML = html;
+  host.hidden = !html;
+}
+
+/* 리그 수료 기준(핵심 역량·최종 결과물·선수 지식) — 데이터 있을 때만 표시 (Phase 4) */
+function renderLevelGraduation(item) {
+  const host = $("#levelGraduation");
+  if (!host) return;
+  const rows = [];
+  if (item.competency) rows.push(`<div><dt>핵심 역량</dt><dd>${escapeHtml(item.competency)}</dd></div>`);
+  if (item.finalOutput) rows.push(`<div><dt>최종 결과물</dt><dd>${escapeHtml(item.finalOutput)}</dd></div>`);
+  if (item.prerequisites) rows.push(`<div><dt>선수 지식</dt><dd>${escapeHtml(item.prerequisites)}</dd></div>`);
+  let html = rows.length ? `<dl class="grad-dl">${rows.join("")}</dl>` : "";
+  if (item.graduationRequirements && item.graduationRequirements.length) {
+    html += `<div class="grad-req"><strong>수료 기준</strong><ul>${item.graduationRequirements.map((r) => `<li>${escapeHtml(r)}</li>`).join("")}</ul></div>`;
+  }
+  host.innerHTML = html;
+  host.hidden = !html;
 }
 
 function visualHasContent(v) {
@@ -505,7 +540,10 @@ function practiceHtml(p) {
     return wrapFields(inner + `<iframe id="miniPreview" class="mini-preview" title="미니 페이지 미리보기" sandbox=""></iframe>`);
   }
   if (pr.kind === "build") {
-    return wrapFields(inner + `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts allow-same-origin"></iframe>`);
+    return wrapFields(inner +
+      `<div id="previewWarn" class="preview-warn" hidden></div>` +
+      `<div class="preview-bar"><button id="stopPreview" type="button" class="ghost">■ 미리보기 중지</button><span class="preview-note">미리보기는 부모 앱과 분리된 격리 화면에서 실행됩니다.</span></div>` +
+      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>`);
   }
   if (pr.kind === "share") {
     return wrapFields(inner + shareExtraHtml());
@@ -585,6 +623,25 @@ function bindPractice() {
   });
   $("#copyShare")?.addEventListener("click", () => copyText(buildShareText(), "공유글을 복사했습니다."));
   $("#openPadlet")?.addEventListener("click", () => window.open(level().padletUrl, "_blank", "noopener"));
+  $("#stopPreview")?.addEventListener("click", () => {
+    const frame = $("#miniPreview");
+    if (frame) frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:grid;place-items:center;background:#f3f4f6;font-family:sans-serif;color:#6b7280;font-size:14px}</style></head><body>미리보기를 멈췄습니다. 입력칸을 수정하면 다시 실행됩니다.</body></html>`;
+    toast("미리보기를 멈췄습니다.");
+  });
+}
+
+/* 코드 미리보기에서 API 키·비밀 의심 문자열을 정적 검사한다(확정 아님, 경고용). */
+const SENSITIVE_PATTERNS = [
+  { re: /AIza[0-9A-Za-z\-_]{10,}/, label: "Google API 키(AIza…)" },
+  { re: /sk-[A-Za-z0-9]{16,}/, label: "OpenAI 키(sk-…)" },
+  { re: /ghp_[A-Za-z0-9]{16,}/, label: "GitHub 토큰(ghp_…)" },
+  { re: /xoxb-[A-Za-z0-9-]{10,}/, label: "Slack 토큰(xoxb-…)" },
+  { re: /SUPABASE_SERVICE_ROLE/i, label: "Supabase service role 키" },
+  { re: /client_secret/i, label: "client_secret" },
+  { re: /apiKey\s*[:=]\s*["'][^"']{8,}/i, label: "코드에 박힌 apiKey 값" }
+];
+function detectSensitiveStrings(code) {
+  return SENSITIVE_PATTERNS.filter((p) => p.re.test(code)).map((p) => p.label);
 }
 
 function updatePreview() {
@@ -593,6 +650,16 @@ function updatePreview() {
   const p = currentPage();
   if (p.practice?.kind === "build") {
     const code = field("htmlCode", "").trim();
+    const warn = $("#previewWarn");
+    if (warn) {
+      const hits = detectSensitiveStrings(code);
+      if (hits.length) {
+        warn.innerHTML = `⚠️ 민감정보로 의심되는 문자열이 있습니다: <strong>${hits.map(escapeHtml).join(", ")}</strong>. 키는 브라우저 코드에 두지 말고, 배포·공유 전 반드시 제거하세요.`;
+        warn.hidden = false;
+      } else {
+        warn.hidden = true;
+      }
+    }
     frame.srcdoc = code ||
       `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
     return;
@@ -663,6 +730,131 @@ function summarizePrd() {
     .filter(([, v]) => String(v || "").trim())
     .map(([k, v]) => `- ${fieldLabel(prdPage, k)}: ${v}`);
   return lines.length ? lines.join("\n") : "PRD 입력값이 비어 있습니다.";
+}
+
+/* ---------------------- 학습 기록 백업·복원 (파일) ---------------------- */
+const APP_VERSION = "1.1.0";
+function downloadTextFile(filename, content, mimeType) {
+  const blob = new Blob([content], { type: (mimeType || "text/plain") + ";charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+function todayStamp() {
+  const d = new Date(), p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}`;
+}
+function exportProgressFile() {
+  const backup = { schemaVersion: 1, appVersion: APP_VERSION, exportedAt: new Date().toISOString(), data: state };
+  downloadTextFile(`vibecoder-progress-${todayStamp()}.json`, JSON.stringify(backup, null, 2), "application/json");
+  toast("학습 기록 파일을 저장했습니다.");
+}
+function importProgressFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    let parsed;
+    try { parsed = JSON.parse(reader.result); } catch { toast("JSON 파일을 읽을 수 없습니다."); return; }
+    const data = (parsed && parsed.schemaVersion && parsed.data) ? parsed.data : parsed; // 구버전(데이터만) 호환
+    const looksValid = data && typeof data === "object" && (("levels" in data) || ("activeLevel" in data));
+    if (!looksValid) { toast("학습 기록 형식이 아닙니다."); return; }
+    if (!confirm("지금 기기에 저장된 학습 기록을 덮어쓰고 불러옵니다. 계속할까요?")) return;
+    state = data;
+    activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
+    activePage = clampPage(activeLevel, state.activePage);
+    saveState(); render();
+    toast("학습 기록을 불러왔습니다.");
+  };
+  reader.onerror = () => toast("파일을 읽는 중 오류가 발생했습니다.");
+  reader.readAsText(file);
+}
+
+/* ---------------------- 포트폴리오 생성 (MD·HTML·인쇄) ---------------------- */
+function collectPortfolioData() {
+  const leagues = Object.entries(COURSE).map(([id, lv]) => {
+    const saved = state.levels?.[id]?.pages || {};
+    const total = lv.pages.length;
+    const done = lv.pages.filter((p) => saved[p.id]?.complete).length;
+    const pages = lv.pages.map((p) => {
+      const ps = saved[p.id];
+      if (!ps) return null;
+      const fields = Object.entries(ps.fields || {})
+        .filter(([, v]) => String(v || "").trim())
+        .map(([k, v]) => ({ label: fieldLabel(p, k), value: String(v) }));
+      if (!fields.length && !ps.complete) return null;
+      return { title: p.title, complete: !!ps.complete, fields };
+    }).filter(Boolean);
+    return { name: lv.name, pct: total ? Math.round(done / total * 100) : 0, done, total, padletUrl: lv.padletUrl, pages };
+  });
+  const allFields = {};
+  Object.values(state.levels || {}).forEach((lv) => Object.values(lv.pages || {}).forEach((ps) => Object.assign(allFields, ps.fields || {})));
+  return {
+    nickname: allFields.nickname || "",
+    title: allFields.title || allFields.appName || allFields.appIdea || "",
+    generatedAt: new Date().toLocaleString("ko-KR"),
+    leagues
+  };
+}
+function buildPortfolioMarkdown(d) {
+  const out = ["# VibeCoder Lab 포트폴리오", ""];
+  if (d.title) out.push(`**프로젝트**: ${d.title}`);
+  if (d.nickname) out.push(`**작성자**: ${d.nickname}`);
+  out.push(`**생성일**: ${d.generatedAt}`, "");
+  d.leagues.forEach((lg) => {
+    out.push(`## ${lg.name} — ${lg.pct}% (${lg.done}/${lg.total})`);
+    if (lg.padletUrl) out.push(`Padlet: ${lg.padletUrl}`);
+    if (!lg.pages.length) { out.push("_아직 작성한 내용이 없습니다._", ""); return; }
+    lg.pages.forEach((pg) => {
+      out.push(`### ${pg.title} ${pg.complete ? "✅" : ""}`.trim());
+      pg.fields.forEach((f) => out.push(`- **${f.label}**: ${f.value}`));
+      out.push("");
+    });
+  });
+  return out.join("\n");
+}
+function buildPortfolioHtml(d) {
+  const esc = escapeHtml;
+  const leagues = d.leagues.map((lg) => `
+    <section class="lg">
+      <h2>${esc(lg.name)} <span class="pct">${lg.pct}% (${lg.done}/${lg.total})</span></h2>
+      ${lg.pages.length ? lg.pages.map((pg) => `
+        <div class="pg">
+          <h3>${esc(pg.title)} ${pg.complete ? "✅" : ""}</h3>
+          <dl>${pg.fields.map((f) => `<dt>${esc(f.label)}</dt><dd>${esc(f.value)}</dd>`).join("")}</dl>
+        </div>`).join("") : `<p class="empty">아직 작성한 내용이 없습니다.</p>`}
+    </section>`).join("");
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>VibeCoder Lab 포트폴리오</title>
+  <style>
+    @page { size: A4; margin: 18mm; }
+    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
+    h1 { font-size: 26px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
+    .meta { color: #52606d; font-size: 14px; margin-bottom: 24px; }
+    h2 { font-size: 20px; margin-top: 28px; color: #1d4ed8; }
+    .pct { font-size: 14px; color: #52606d; font-weight: 500; }
+    .pg { margin: 12px 0 12px 4px; padding-left: 12px; border-left: 3px solid #e4e7eb; break-inside: avoid; }
+    h3 { font-size: 16px; margin: 10px 0 6px; }
+    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 8px; } dd { margin: 2px 0 0; font-size: 14px; white-space: pre-wrap; }
+    .empty { color: #9aa5b1; font-style: italic; }
+  </style></head><body>
+  <h1>VibeCoder Lab 포트폴리오</h1>
+  <p class="meta">${d.title ? `<strong>${esc(d.title)}</strong> · ` : ""}${d.nickname ? esc(d.nickname) + " · " : ""}${esc(d.generatedAt)}</p>
+  ${leagues}
+  </body></html>`;
+}
+function exportPortfolioMarkdown() {
+  downloadTextFile(`vibecoder-portfolio-${todayStamp()}.md`, buildPortfolioMarkdown(collectPortfolioData()), "text/markdown");
+  toast("포트폴리오(Markdown)를 저장했습니다.");
+}
+function exportPortfolioHtml() {
+  downloadTextFile(`vibecoder-portfolio-${todayStamp()}.html`, buildPortfolioHtml(collectPortfolioData()), "text/html");
+  toast("포트폴리오(HTML)를 저장했습니다.");
+}
+function printPortfolio() {
+  const frame = $("#printFrame");
+  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
+  frame.srcdoc = buildPortfolioHtml(collectPortfolioData());
+  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
 }
 
 /* ----------------------------- 막혔을 때 ----------------------------- */
@@ -905,6 +1097,18 @@ function bindGlobal() {
     else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
   });
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  // 학습 기록 파일 백업·복원 (Phase 1)
+  $("#backupSave")?.addEventListener("click", exportProgressFile);
+  $("#backupLoad")?.addEventListener("click", () => $("#importFileInput")?.click());
+  $("#importFileInput")?.addEventListener("change", (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (file) importProgressFile(file);
+    e.target.value = ""; // 같은 파일 다시 선택 가능하게 초기화
+  });
+  // 포트폴리오 생성 (Phase 2)
+  $("#portfolioMd")?.addEventListener("click", exportPortfolioMarkdown);
+  $("#portfolioHtml")?.addEventListener("click", exportPortfolioHtml);
+  $("#portfolioPrint")?.addEventListener("click", printPortfolio);
   $("#onboardingStart")?.addEventListener("click", () => {
     state.onboarded = true; saveState();
     const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;

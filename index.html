@@ -47,6 +47,7 @@
         <h2>리그</h2>
         <div id="levelList" class="level-list"></div>
         <p id="levelIntro" class="level-intro"></p>
+        <div id="levelGraduation" class="level-graduation" hidden></div>
       </section>
       <section class="panel">
         <div class="panel-title">
@@ -77,6 +78,7 @@
 
         <h2 id="pageTitle"></h2>
         <p id="pageGoal" class="goal"></p>
+        <div id="lessonMeta2" class="lesson-meta2" hidden></div>
 
         <section class="summary-card">
           <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/></svg> 한 줄 핵심</h3>
@@ -130,8 +132,23 @@
         <div class="resource-body">
           <p class="resource-hint">지금까지 작성한 내용이 자동으로 모입니다. 상단의 ‘결과물 복사’로 한 번에 가져갈 수 있어요.</p>
           <textarea id="notebook" readonly></textarea>
+          <div class="resource-tools">
+            <div class="resource-tool-group">
+              <span class="resource-tool-label">학습 기록 백업</span>
+              <button id="backupSave" type="button" title="학습 기록 전체를 JSON 파일로 저장합니다">파일로 저장</button>
+              <button id="backupLoad" type="button" title="저장한 JSON 파일에서 학습 기록을 복원합니다">파일에서 복원</button>
+            </div>
+            <div class="resource-tool-group">
+              <span class="resource-tool-label">포트폴리오 만들기</span>
+              <button id="portfolioMd" type="button">Markdown</button>
+              <button id="portfolioHtml" type="button">HTML</button>
+              <button id="portfolioPrint" type="button">인쇄·PDF</button>
+            </div>
+          </div>
+          <input id="importFileInput" type="file" accept="application/json,.json" hidden>
         </div>
       </details>
+      <iframe id="printFrame" title="인쇄 미리보기" aria-hidden="true" tabindex="-1"></iframe>
 
       <details class="resource" id="helpResource">
         <summary>막혔을 때 도움받기</summary>
