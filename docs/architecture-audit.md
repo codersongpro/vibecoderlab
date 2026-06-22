@@ -50,6 +50,7 @@
 - 실습 입력: `practiceHtml`/`fieldHtml` → `bindPractice` → `updatePreview`/`updateResult`
 - 결과물: `renderNotebook` · `buildShareText` · `summarizePrd`
 - 백업/포트폴리오: `exportProgressFile`/`importProgressFile`, `collectPortfolioData`/`buildPortfolioMarkdown`/`buildPortfolioHtml`/`printPortfolio`, `downloadTextFile`
+- 캡스톤: `findDeployUrl`/`renderCapstoneSummary`(리그 `capstone` 필드 + 저장된 `deployUrl` 입력이 있을 때만 결과물 저장소 최상단에 노출)
 - 진행 코드(기기 이동): `exportProgressCode`/`importProgressCode`
 - 발표 모드: `buildSlides` · `renderPresSlide` · `renderPresNotes` · `enterPresentation`/`exitPresentation` · `handlePresKey`
 - 도움: `renderHelp`(상황별 AI 프롬프트 생성)
