@@ -52,6 +52,7 @@
 - 백업/포트폴리오: `exportProgressFile`/`importProgressFile`, `collectPortfolioData`/`buildPortfolioMarkdown`/`buildPortfolioHtml`/`printPortfolio`, `downloadTextFile`
 - 캡스톤: `findDeployUrl`/`renderCapstoneSummary`(리그 `capstone` 필드 + 저장된 `deployUrl` 입력이 있을 때만 결과물 저장소 최상단에 노출)
 - 교사 모드: `renderFacilitatorIntro`(리그 `facilitatorIntro` + `runPlan` 배열 — 1차시/다차시 운영 묶음을 `details`로 표시), `renderFacilitator`(강의 단위 `facilitator` 지도안), `buildHandoutHtml`/`printHandout`(인쇄용 지도안)
+- 자동 점검 루브릭(Phase 6): `auditHtml`(구조·제목·언어·이미지 alt·입력칸 안내·비밀 값을 통과/주의/위험으로 평가, 코드 미실행) · `auditGrade` · `renderAutoCheck`(build 실습 미리보기 아래 표시) · `findBuiltHtml`(저장된 `htmlCode` 탐색) → `collectPortfolioData.audit`로 포트폴리오에 요약
 - 진행 코드(기기 이동, 전체 상태): `exportProgressCode`/`importProgressCode`
 - 완료율 코드(교사 수합용, 증분 4): `computeCompletionSnapshot`/`exportCompletionCode`/`decodeCompletionCode`(입력 텍스트는 담지 않고 리그별 완료 개수만 인코딩) · `renderCompletionSubmit`(학생 화면 코드·QR 표시) · `isCollectMode`/`initCollectMode`/`addCollectCodes`/`renderCollectTable`/`buildCollectTsv`(교사용 `?mode=collect` 화면, 별도 localStorage 키 `vibecoder-lab-collect-v1`)
 - 발표 모드: `buildSlides` · `renderPresSlide` · `renderPresNotes` · `enterPresentation`/`exitPresentation` · `handlePresKey`

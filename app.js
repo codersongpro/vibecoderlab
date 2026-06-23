@@ -616,7 +616,8 @@ function practiceHtml(p) {
     return wrapFields(inner +
       `<div id="previewWarn" class="preview-warn" hidden></div>` +
       `<div class="preview-bar"><button id="stopPreview" type="button" class="ghost">■ 미리보기 중지</button><span class="preview-note">미리보기는 부모 앱과 분리된 격리 화면에서 실행됩니다.</span></div>` +
-      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>`);
+      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>` +
+      `<div id="autoCheck" class="audit-card" hidden></div>`);
   }
   if (pr.kind === "share") {
     return wrapFields(inner + shareExtraHtml());
@@ -717,6 +718,73 @@ function detectSensitiveStrings(code) {
   return SENSITIVE_PATTERNS.filter((p) => p.re.test(code)).map((p) => p.label);
 }
 
+/* ----------------------------- 자동 점검 루브릭 -----------------------------
+ * 학생이 붙여넣은 HTML을 정적으로 훑어 구조·접근성·보안을 통과/주의/위험으로 평가한다.
+ * 브라우저에서 코드를 실행하지 않고 문자열 패턴만 본다(미리보기 격리와 별개).
+ */
+const AUDIT_BADGE = { pass: "통과", caution: "주의", danger: "위험" };
+const AUDIT_GRADE_LABEL = { pass: "이상 없음", caution: "보완 권장", danger: "수정 필요" };
+
+function auditHtml(code) {
+  const html = String(code || "");
+  const trimmed = html.trim();
+  if (!trimmed) {
+    return [{ label: "코드 입력", status: "caution", detail: "아직 코드가 비어 있습니다. AI에게 받은 HTML을 붙여넣으면 자동으로 점검합니다." }];
+  }
+  const results = [];
+  const has = (re) => re.test(html);
+
+  results.push(has(/<html[\s>]/i) || has(/<body[\s>]/i)
+    ? { label: "문서 구조", status: "pass", detail: "HTML 문서 골격(<html>/<body>)이 있습니다." }
+    : { label: "문서 구조", status: "caution", detail: "<html>·<body> 골격이 보이지 않습니다. 일부만 붙여넣지 않았는지 확인하세요." });
+
+  results.push(has(/<title[\s>]/i) || has(/<h1[\s>]/i)
+    ? { label: "제목", status: "pass", detail: "페이지 제목(<title> 또는 <h1>)이 있습니다." }
+    : { label: "제목", status: "caution", detail: "제목이 없습니다. 탭·화면에 보일 <title>이나 <h1>을 넣으면 좋습니다." });
+
+  results.push(has(/<html[^>]*\blang\s*=/i)
+    ? { label: "언어 설정", status: "pass", detail: "<html lang=…>로 언어가 지정돼 있습니다." }
+    : { label: "언어 설정", status: "caution", detail: '<html lang="ko">처럼 언어를 지정하면 접근성·번역에 도움이 됩니다.' });
+
+  const imgs = html.match(/<img\b[^>]*>/gi) || [];
+  const imgNoAlt = imgs.filter((t) => !/\balt\s*=/i.test(t));
+  if (imgs.length) {
+    results.push(imgNoAlt.length === 0
+      ? { label: "이미지 대체 텍스트", status: "pass", detail: `이미지 ${imgs.length}개 모두 alt 설명이 있습니다.` }
+      : { label: "이미지 대체 텍스트", status: "caution", detail: `이미지 ${imgNoAlt.length}개에 alt 설명이 없습니다. 화면을 못 보는 사람을 위해 alt를 넣어 주세요.` });
+  }
+
+  const inputs = html.match(/<input\b[^>]*>/gi) || [];
+  const inputNoHint = inputs.filter((t) => !/\b(aria-label|placeholder|id)\s*=/i.test(t) && !/\btype\s*=\s*["']?(hidden|submit|button|checkbox|radio)/i.test(t));
+  if (inputs.length) {
+    results.push(inputNoHint.length === 0
+      ? { label: "입력칸 안내", status: "pass", detail: "입력칸에 안내(라벨·placeholder)가 있습니다." }
+      : { label: "입력칸 안내", status: "caution", detail: `입력칸 ${inputNoHint.length}개에 안내가 없습니다. 무엇을 적는지 알려 주세요.` });
+  }
+
+  const hits = detectSensitiveStrings(html);
+  results.push(hits.length
+    ? { label: "비밀 값 노출", status: "danger", detail: `비밀 값으로 의심되는 문자열이 있습니다: ${hits.join(", ")}. 배포·공유 전 반드시 제거하세요.` }
+    : { label: "비밀 값 노출", status: "pass", detail: "API 키 등 비밀 값으로 의심되는 문자열이 없습니다." });
+
+  return results;
+}
+function auditGrade(results) {
+  if (results.some((r) => r.status === "danger")) return "danger";
+  if (results.some((r) => r.status === "caution")) return "caution";
+  return "pass";
+}
+/* 저장된 학습 기록에서 학생이 붙여넣은 HTML(htmlCode)을 찾는다(포트폴리오 요약용). */
+function findBuiltHtml() {
+  for (const lv of Object.values(state.levels || {})) {
+    for (const ps of Object.values(lv.pages || {})) {
+      const code = ps.fields?.htmlCode;
+      if (code && String(code).trim()) return String(code);
+    }
+  }
+  return "";
+}
+
 function updatePreview() {
   const frame = $("#miniPreview");
   if (!frame) return;
@@ -735,10 +803,27 @@ function updatePreview() {
     }
     frame.srcdoc = code ||
       `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
+    renderAutoCheck(code);
     return;
   }
   const color = /^#[0-9a-fA-F]{6}$/.test(field("color", "#0056d2")) ? field("color", "#0056d2") : "#0056d2";
   frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f8faf6;font-family:sans-serif;color:#1f292c}main{width:min(88%,520px);border:1px solid #d8ded4;border-radius:8px;background:white;padding:24px}h1{color:${color};margin-top:0}button{border:0;border-radius:8px;background:${color};color:white;padding:10px 14px}</style></head><body><main><h1>${escapeHtml(field("appName", "오늘 할 일"))}</h1><p>${escapeHtml(field("screenText", "오늘 해야 할 일을 적고 하나씩 체크해 보세요."))}</p><button>할 일 추가</button></main></body></html>`;
+}
+
+/* 자동 점검 패널 렌더링(build 실습에서만). 입력이 바뀔 때마다 updatePreview에서 호출. */
+function renderAutoCheck(code) {
+  const host = $("#autoCheck");
+  if (!host) return;
+  const results = auditHtml(code);
+  const grade = auditGrade(results);
+  const items = results.map((r) =>
+    `<li class="audit-item audit-${r.status}"><span class="audit-badge">${AUDIT_BADGE[r.status]}</span><span class="audit-text"><strong>${escapeHtml(r.label)}</strong> — ${escapeHtml(r.detail)}</span></li>`
+  ).join("");
+  host.innerHTML =
+    `<div class="audit-head"><span class="audit-h">자동 점검</span><span class="audit-grade audit-${grade}">${AUDIT_GRADE_LABEL[grade]}</span></div>` +
+    `<ul class="audit-list">${items}</ul>` +
+    `<p class="audit-foot">자동 점검은 코드를 실행하지 않고 형태만 살펴보는 참고용입니다. ‘주의’는 더 좋게 만들 거리이고, ‘위험’은 공유 전에 꼭 고쳐야 합니다.</p>`;
+  host.hidden = false;
 }
 
 function updateResult() {
@@ -885,10 +970,13 @@ function collectPortfolioData() {
   });
   const allFields = {};
   Object.values(state.levels || {}).forEach((lv) => Object.values(lv.pages || {}).forEach((ps) => Object.assign(allFields, ps.fields || {})));
+  const builtHtml = findBuiltHtml();
+  const audit = builtHtml ? { grade: auditGrade(auditHtml(builtHtml)), results: auditHtml(builtHtml) } : null;
   return {
     nickname: allFields.nickname || "",
     title: allFields.title || allFields.appName || allFields.appIdea || "",
     generatedAt: new Date().toLocaleString("ko-KR"),
+    audit,
     leagues
   };
 }
@@ -897,6 +985,11 @@ function buildPortfolioMarkdown(d) {
   if (d.title) out.push(`**프로젝트**: ${d.title}`);
   if (d.nickname) out.push(`**작성자**: ${d.nickname}`);
   out.push(`**생성일**: ${d.generatedAt}`, "");
+  if (d.audit) {
+    out.push(`## 내 앱 자동 점검 — ${AUDIT_GRADE_LABEL[d.audit.grade]}`);
+    d.audit.results.forEach((r) => out.push(`- [${AUDIT_BADGE[r.status]}] **${r.label}**: ${r.detail}`));
+    out.push("");
+  }
   d.leagues.forEach((lg) => {
     out.push(`## ${lg.name} — ${lg.pct}% (${lg.done}/${lg.total})`);
     if (lg.padletUrl) out.push(`Padlet: ${lg.padletUrl}`);
@@ -911,6 +1004,11 @@ function buildPortfolioMarkdown(d) {
 }
 function buildPortfolioHtml(d) {
   const esc = escapeHtml;
+  const auditBlock = d.audit ? `
+    <section class="audit">
+      <h2>내 앱 자동 점검 <span class="audit-pill audit-${d.audit.grade}">${AUDIT_GRADE_LABEL[d.audit.grade]}</span></h2>
+      <ul>${d.audit.results.map((r) => `<li><b>[${AUDIT_BADGE[r.status]}]</b> ${esc(r.label)} — ${esc(r.detail)}</li>`).join("")}</ul>
+    </section>` : "";
   const leagues = d.leagues.map((lg) => `
     <section class="lg">
       <h2>${esc(lg.name)} <span class="pct">${lg.pct}% (${lg.done}/${lg.total})</span></h2>
@@ -932,9 +1030,14 @@ function buildPortfolioHtml(d) {
     h3 { font-size: 16px; margin: 10px 0 6px; }
     dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 8px; } dd { margin: 2px 0 0; font-size: 14px; white-space: pre-wrap; }
     .empty { color: #9aa5b1; font-style: italic; }
+    .audit { margin-top: 24px; padding: 14px 16px; border: 1px solid #e4e7eb; border-radius: 8px; background: #fafafa; break-inside: avoid; }
+    .audit ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+    .audit-pill { font-size: 13px; padding: 2px 10px; border-radius: 999px; vertical-align: middle; }
+    .audit-pass { background: #dcfce7; color: #166534; } .audit-caution { background: #fef9c3; color: #854d0e; } .audit-danger { background: #fee2e2; color: #991b1b; }
   </style></head><body>
   <h1>VibeCoder Lab 포트폴리오</h1>
   <p class="meta">${d.title ? `<strong>${esc(d.title)}</strong> · ` : ""}${d.nickname ? esc(d.nickname) + " · " : ""}${esc(d.generatedAt)}</p>
+  ${auditBlock}
   ${leagues}
   </body></html>`;
 }
