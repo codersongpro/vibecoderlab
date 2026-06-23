@@ -27,24 +27,6 @@ function clampPage(levelId, value) {
   const n = Number(value);
   return (Number.isInteger(n) && n >= 0 && n <= max) ? n : 0;
 }
-
-/* 진행 상황을 짧은 코드로 내보내고 되돌린다(로그인·서버 없이 기기 이동). */
-function exportProgressCode() {
-  try { return btoa(encodeURIComponent(JSON.stringify(state))); } catch { return ""; }
-}
-function importProgressCode(code) {
-  const trimmed = String(code || "").trim();
-  if (!trimmed) return false;
-  let parsed;
-  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return false; }
-  if (!parsed || typeof parsed !== "object") return false;
-  state = parsed;
-  activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
-  activePage = clampPage(activeLevel, state.activePage);
-  saveState();
-  return true;
-}
-
 /* 완료율만 담은 짧은 코드(교사 수합용) — 입력 내용(개인정보 포함 가능)은 담지 않는다. */
 function computeCompletionSnapshot() {
   // at(생성 시각)는 넣지 않는다 — 코드가 매 렌더마다 바뀌어 QR을 재요청하는 것을 막고,
@@ -1058,50 +1040,6 @@ function printPortfolio() {
   frame.srcdoc = buildPortfolioHtml(collectPortfolioData());
   frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
 }
-
-/* ------------------------- 교사용 지도안 인쇄(유인물) ------------------------- */
-function buildHandoutHtml(item) {
-  const esc = escapeHtml;
-  const pagesHtml = item.pages.map((p) => {
-    const f = p.facilitator;
-    if (!f) return "";
-    return `<div class="hpage">
-      <h3>${esc(p.title)}</h3>
-      ${f.time ? `<p class="htime">⏱ 권장 진행 시간: ${esc(f.time)}</p>` : ""}
-      ${f.talkingPoints && f.talkingPoints.length ? `<p class="hlabel">설명 포인트</p><ul>${f.talkingPoints.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-      ${f.pitfalls && f.pitfalls.length ? `<p class="hlabel">자주 막히는 지점</p><ul>${f.pitfalls.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-      ${f.faq && f.faq.length ? `<p class="hlabel">예상 질문(Q&A)</p><dl>${f.faq.map((qa) => `<dt>${esc(qa.q)}</dt><dd>${esc(qa.a)}</dd>`).join("")}</dl>` : ""}
-    </div>`;
-  }).filter(Boolean).join("");
-  const grad = (item.graduationRequirements || []).map((r) => `<li>${esc(r)}</li>`).join("");
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(item.name)} 지도안</title>
-  <style>
-    @page { size: A4; margin: 18mm; }
-    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
-    h1 { font-size: 24px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
-    .meta { color: #52606d; font-size: 14px; margin-bottom: 20px; }
-    .hpage { margin: 16px 0; padding: 12px 16px; border: 1px solid #e4e7eb; border-radius: 6px; break-inside: avoid; }
-    h3 { font-size: 16px; margin: 0 0 6px; }
-    .htime { font-weight: 600; margin: 4px 0; }
-    .hlabel { font-weight: 700; font-size: 13px; color: #1d4ed8; margin: 8px 0 2px; }
-    ul { margin: 0; padding-left: 20px; font-size: 14px; }
-    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 6px; } dd { margin: 2px 0 0; font-size: 14px; }
-    .grad { margin-top: 20px; padding-top: 14px; border-top: 2px solid #e4e7eb; }
-    .empty { color: #9aa5b1; font-style: italic; }
-  </style></head><body>
-  <h1>${esc(item.name)} 지도안</h1>
-  <p class="meta">${item.facilitatorIntro ? esc(item.facilitatorIntro) : ""}</p>
-  ${pagesHtml || `<p class="empty">강의별 진행 가이드가 아직 없습니다.</p>`}
-  ${grad ? `<div class="grad"><p class="hlabel">수료 기준</p><ul>${grad}</ul></div>` : ""}
-  </body></html>`;
-}
-function printHandout() {
-  const frame = $("#printFrame");
-  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
-  frame.srcdoc = buildHandoutHtml(level());
-  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
-}
-
 /* ----------------------------- 막혔을 때 ----------------------------- */
 function renderHelp() {
   const type = $("#helpType").value;
@@ -1355,18 +1293,6 @@ function bindGlobal() {
   });
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
-  $("#exportProgress")?.addEventListener("click", () => {
-    const code = exportProgressCode();
-    if (!code) { toast("내보낼 진행 내용이 없습니다."); return; }
-    copyText(code, "진행 코드를 복사했습니다. 다른 기기의 ‘진행 불러오기’에 붙여넣으세요.");
-  });
-  $("#importProgress")?.addEventListener("click", () => {
-    const code = prompt("다른 기기에서 복사한 ‘진행 코드’를 붙여넣으세요.");
-    if (code === null) return;
-    if (!confirm("지금 기기에 저장된 진행 내용을 덮어쓰고 불러옵니다. 계속할까요?")) return;
-    if (importProgressCode(code)) { render(); toast("진행 내용을 불러왔습니다."); }
-    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
-  });
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
   // 완료율 코드 제출(증분 4)
   $("#studentNameInput")?.addEventListener("input", (e) => {
@@ -1388,7 +1314,6 @@ function bindGlobal() {
   $("#portfolioMd")?.addEventListener("click", exportPortfolioMarkdown);
   $("#portfolioHtml")?.addEventListener("click", exportPortfolioHtml);
   $("#portfolioPrint")?.addEventListener("click", printPortfolio);
-  $("#printHandout")?.addEventListener("click", printHandout);
   $("#onboardingStart")?.addEventListener("click", () => {
     state.onboarded = true; saveState();
     const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;
