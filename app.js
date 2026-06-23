@@ -47,7 +47,9 @@ function importProgressCode(code) {
 
 /* 완료율만 담은 짧은 코드(교사 수합용) — 입력 내용(개인정보 포함 가능)은 담지 않는다. */
 function computeCompletionSnapshot() {
-  const snap = { name: state.studentName || "", at: Date.now(), levels: {} };
+  // at(생성 시각)는 넣지 않는다 — 코드가 매 렌더마다 바뀌어 QR을 재요청하는 것을 막고,
+  // 수합 쪽(addCollectCodes)에서 붙여넣은 시점을 받은 시각으로 기록한다.
+  const snap = { name: state.studentName || "", levels: {} };
   for (const id of Object.keys(COURSE)) {
     const saved = state.levels?.[id]?.pages || {};
     const total = COURSE[id].pages.length;
@@ -971,7 +973,8 @@ function collectPortfolioData() {
   const allFields = {};
   Object.values(state.levels || {}).forEach((lv) => Object.values(lv.pages || {}).forEach((ps) => Object.assign(allFields, ps.fields || {})));
   const builtHtml = findBuiltHtml();
-  const audit = builtHtml ? { grade: auditGrade(auditHtml(builtHtml)), results: auditHtml(builtHtml) } : null;
+  const auditResults = builtHtml ? auditHtml(builtHtml) : null;
+  const audit = auditResults ? { grade: auditGrade(auditResults), results: auditResults } : null;
   return {
     nickname: allFields.nickname || "",
     title: allFields.title || allFields.appName || allFields.appIdea || "",
