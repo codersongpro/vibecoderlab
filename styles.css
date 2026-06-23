@@ -1242,3 +1242,18 @@ ol.pres-list li { padding-left: 0; }
 .track-rookie { background: #dcfce7; color: #166534; }
 .track-pro { background: #dbeafe; color: #1d4ed8; }
 .track-master { background: #f3e8ff; color: #6b21a8; }
+
+/* 집중 모드 — 접이식 보조 섹션(읽고 이해하기·용어 사전·생각해보기) */
+.lesson-collapse[hidden] { display: none; }
+.lesson-collapse > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.lesson-collapse > summary::-webkit-details-marker { display: none; }
+.lesson-collapse > summary > h3 { margin-bottom: 0; }
+.lesson-collapse > summary::after {
+  content: ""; margin-left: auto; flex: none;
+  width: 8px; height: 8px;
+  border-right: 2px solid var(--muted); border-bottom: 2px solid var(--muted);
+  transform: rotate(45deg); transition: transform .2s;
+}
+.lesson-collapse[open] > summary::after { transform: rotate(-135deg); }
+.lesson-collapse[open] > summary { margin-bottom: 14px; }
+.lesson-collapse > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 8px; }

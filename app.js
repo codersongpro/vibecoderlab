@@ -90,6 +90,13 @@ function renderReading(text) {
   const paragraphs = splitReading(text);
   return paragraphs.map((p) => `<p>${renderText(p)}</p>`).join("");
 }
+/* 보조 섹션 접기/펼치기: 내용 없으면 숨기고, 저장된 펼침 선호를 반영한다. */
+function applyCollapse(sel, key, hasContent) {
+  const el = $(sel);
+  if (!el) return;
+  el.hidden = !hasContent;
+  el.open = !!(state.expandedSections && state.expandedSections[key]);
+}
 function bindCodeCopy() {
   document.querySelectorAll(".inline-code").forEach((el) => {
     el.addEventListener("click", () => {
@@ -382,6 +389,10 @@ function renderLesson() {
   $("#discussion").innerHTML = (p.discussion || []).map((q) =>
     `<li><span class="q-dot"></span><span>${renderText(q)}</span></li>`
   ).join("");
+  // 집중 모드: 보조 섹션은 내용이 있을 때만 두고, 기본은 접되 펼친 적이 있으면 펼친 상태 유지
+  applyCollapse("#readingSection", "reading", !!(p.reading || "").trim());
+  applyCollapse("#termsSection", "terms", (p.terms || []).length > 0);
+  applyCollapse("#discussionSection", "discussion", (p.discussion || []).length > 0);
   $("#steps").innerHTML = (p.steps || []).map((s, i) =>
     `<li><span class="step-num">${i + 1}</span><span class="step-body">${renderText(s)}</span></li>`
   ).join("");
@@ -1294,6 +1305,14 @@ function bindGlobal() {
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  // 집중 모드: 보조 섹션을 펼치면 그 선호를 기억해 다른 강의에서도 펼친 채로 보여 준다
+  document.querySelectorAll("[data-collapse-key]").forEach((el) => {
+    el.addEventListener("toggle", () => {
+      state.expandedSections = state.expandedSections || {};
+      state.expandedSections[el.dataset.collapseKey] = el.open;
+      saveState();
+    });
+  });
   // 완료율 코드 제출(증분 4)
   $("#studentNameInput")?.addEventListener("input", (e) => {
     state.studentName = e.target.value;
