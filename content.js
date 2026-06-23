@@ -513,6 +513,16 @@ const COURSE = {
         id: "share",
         group: "공유",
         title: "루키 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "공유글에 담을 것",
+          items: [
+            { label: "앱 링크", text: "인터넷에서 열리는 배포 주소" },
+            { label: "만든 것", text: "어떤 앱을 만들었는지 한 줄" },
+            { label: "배운 점", text: "이번에 새로 알게 된 것" },
+            { label: "도움받고 싶은 점", text: "더 나아지고 싶은 부분" }
+          ]
+        },
         goal: "내가 만든 앱의 배포 링크와 소감을 Padlet에 공유한다.",
         difficulty: "beginner",
         estimatedMinutes: 20,
@@ -551,6 +561,16 @@ const COURSE = {
         id: "gemini",
         group: "AI 도구 연습",
         title: "Gemini Gems 만들기",
+        visual: {
+          type: "flow",
+          caption: "Gems로 AI 코치 재사용하기",
+          steps: [
+            { label: "역할·지침 작성", sub: "쉬운 말·먼저 질문 등" },
+            { label: "Gem으로 저장", sub: "한 번만 만들면 끝" },
+            { label: "매번 호출", sub: "다시 타이핑 불필요" },
+            { label: "일관된 도움", sub: "같은 규칙으로 응답" }
+          ]
+        },
         goal: "반복해서 쓸 나만의 AI 역할(Gems)을 만들 수 있다.",
         difficulty: "beginner",
         estimatedMinutes: 15,
@@ -849,6 +869,17 @@ const COURSE = {
         id: "screens",
         group: "설계",
         title: "화면 목록 만들기",
+        visual: {
+          type: "cards",
+          caption: "자주 쓰는 화면",
+          items: [
+            { label: "홈", text: "앱을 여는 첫 화면" },
+            { label: "목록", text: "내용을 모아 보는 화면" },
+            { label: "상세", text: "하나를 자세히 보는 화면" },
+            { label: "작성", text: "새로 추가하는 화면" },
+            { label: "설정", text: "환경을 바꾸는 화면" }
+          ]
+        },
         goal: "필요한 화면을 목록으로 나눈다.",
         difficulty: "intermediate",
         estimatedMinutes: 15,
@@ -883,6 +914,14 @@ const COURSE = {
         id: "features",
         group: "설계",
         title: "기능 목록 만들기",
+        visual: {
+          type: "compare",
+          caption: "기능 우선순위 나누기",
+          columns: [
+            { label: "꼭 필요한 것(먼저)", items: ["핵심 동작 한두 개", "없으면 앱이 안 됨", "예: 추가·완료 체크"] },
+            { label: "나중에 할 것(미루기)", items: ["있으면 좋은 부가 기능", "없어도 핵심은 동작", "예: 검색·정렬·테마"] }
+          ]
+        },
         goal: "화면마다 필요한 기능을 정리한다.",
         difficulty: "intermediate",
         estimatedMinutes: 15,
@@ -1329,6 +1368,16 @@ const COURSE = {
         id: "deploy",
         group: "배포",
         title: "웹 배포 준비하기",
+        visual: {
+          type: "flow",
+          caption: "배포하고 확인하기",
+          steps: [
+            { label: "플랫폼 선택", sub: "Vercel·Netlify 등" },
+            { label: "배포", sub: "파일 올리기" },
+            { label: "링크 열기", sub: "직접 접속" },
+            { label: "기능·모바일 확인", sub: "실제로 동작?" }
+          ]
+        },
         goal: "웹 배포 플랫폼과 확인 기준을 정한다.",
         difficulty: "intermediate",
         estimatedMinutes: 20,
@@ -1371,6 +1420,15 @@ const COURSE = {
         id: "share",
         group: "공유",
         title: "프로 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "프로 공유글에 담을 것",
+          items: [
+            { label: "배포 링크", text: "남이 직접 써 볼 주소" },
+            { label: "PRD 요약", text: "무엇을 왜 만들었는지" },
+            { label: "구현 소감", text: "어렵던 점·배운 점" }
+          ]
+        },
         goal: "완성된 앱의 배포 링크와 PRD를 Padlet에 공유한다.",
         difficulty: "intermediate",
         estimatedMinutes: 25,
@@ -1946,6 +2004,16 @@ const COURSE = {
         id: "deploy-check",
         group: "배포·점검",
         title: "배포 URL 점검하기",
+        visual: {
+          type: "cards",
+          caption: "사용자 관점 점검 4가지",
+          items: [
+            { label: "첫 화면", text: "링크 열면 바로 뜨나" },
+            { label: "주요 버튼", text: "핵심 기능이 동작하나" },
+            { label: "모바일", text: "폰에서 안 깨지나" },
+            { label: "새로고침", text: "다시 열어도 유지되나" }
+          ]
+        },
         goal: "사용자 관점에서 배포 URL을 확인한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -1981,6 +2049,16 @@ const COURSE = {
         id: "logs",
         group: "배포·점검",
         title: "로그와 에러 보고",
+        visual: {
+          type: "cards",
+          caption: "좋은 에러 보고 4요소",
+          items: [
+            { label: "언제", text: "어느 시점에 생겼나" },
+            { label: "어디서", text: "어떤 화면·기능에서" },
+            { label: "무엇을", text: "어떤 버튼을 눌렀나" },
+            { label: "어떤 메시지", text: "화면에 뜬 문구" }
+          ]
+        },
         goal: "문제가 생겼을 때 AI에게 줄 정보를 정리한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2060,6 +2138,14 @@ const COURSE = {
         id: "exe",
         group: "패키징·릴리즈",
         title: "exe 패키징 준비",
+        visual: {
+          type: "compare",
+          caption: "내 앱 기술에 맞는 패키징 도구",
+          columns: [
+            { label: "Python 앱", items: ["PyInstaller로 묶기", "스크립트 → 실행 파일", "데이터·자동화 앱"] },
+            { label: "웹 기술 앱", items: ["Electron·Tauri로 묶기", "HTML·JS → 데스크톱", "보통 웹앱은 exe 불필요"] }
+          ]
+        },
         goal: "exe 배포 전 필요한 정보를 정리한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2100,6 +2186,14 @@ const COURSE = {
         id: "releases",
         group: "패키징·릴리즈",
         title: "GitHub Releases 안내문",
+        visual: {
+          type: "compare",
+          caption: "릴리즈 노트, 무엇을 적나",
+          columns: [
+            { label: "담을 것(사용자용)", items: ["이번에 바뀐 점", "다운로드·실행 방법", "주의사항"] },
+            { label: "빼는 것(내부용)", items: ["커밋 해시", "검증 명령·로그", "개발 메모"] }
+          ]
+        },
         goal: "사용자에게 보여 줄 릴리즈 안내문을 작성한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2187,6 +2281,16 @@ const COURSE = {
         id: "ops",
         group: "운영",
         title: "운영 체크리스트 만들기",
+        visual: {
+          type: "cards",
+          caption: "릴리즈 후 운영 점검",
+          items: [
+            { label: "사용자 문의", text: "무엇을 불편해하나" },
+            { label: "오류 보고", text: "새로 생긴 문제 확인" },
+            { label: "업데이트", text: "고치거나 더할 것" },
+            { label: "보안 재점검", text: "비밀 값·권한 확인" }
+          ]
+        },
         goal: "릴리즈 이후에도 확인할 운영 항목을 만든다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2221,6 +2325,15 @@ const COURSE = {
         id: "share",
         group: "운영",
         title: "마스터 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "마스터 공유글에 담을 것",
+          items: [
+            { label: "v1.0 링크", text: "배포 또는 Releases 주소" },
+            { label: "운영형 PRD", text: "운영까지 고려한 요약" },
+            { label: "릴리즈 회고", text: "가장 어려웠던 점" }
+          ]
+        },
         goal: "v1.0으로 공식 릴리즈된 앱 링크와 운영형 PRD를 Padlet에 공유한다.",
         difficulty: "advanced",
         estimatedMinutes: 20,
