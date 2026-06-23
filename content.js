@@ -513,6 +513,16 @@ const COURSE = {
         id: "share",
         group: "공유",
         title: "루키 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "공유글에 담을 것",
+          items: [
+            { label: "앱 링크", text: "인터넷에서 열리는 배포 주소" },
+            { label: "만든 것", text: "어떤 앱을 만들었는지 한 줄" },
+            { label: "배운 점", text: "이번에 새로 알게 된 것" },
+            { label: "도움받고 싶은 점", text: "더 나아지고 싶은 부분" }
+          ]
+        },
         goal: "내가 만든 앱의 배포 링크와 소감을 Padlet에 공유한다.",
         difficulty: "beginner",
         estimatedMinutes: 20,
@@ -551,6 +561,16 @@ const COURSE = {
         id: "gemini",
         group: "AI 도구 연습",
         title: "Gemini Gems 만들기",
+        visual: {
+          type: "flow",
+          caption: "Gems로 AI 코치 재사용하기",
+          steps: [
+            { label: "역할·지침 작성", sub: "쉬운 말·먼저 질문 등" },
+            { label: "Gem으로 저장", sub: "한 번만 만들면 끝" },
+            { label: "매번 호출", sub: "다시 타이핑 불필요" },
+            { label: "일관된 도움", sub: "같은 규칙으로 응답" }
+          ]
+        },
         goal: "반복해서 쓸 나만의 AI 역할(Gems)을 만들 수 있다.",
         difficulty: "beginner",
         estimatedMinutes: 15,
@@ -849,6 +869,17 @@ const COURSE = {
         id: "screens",
         group: "설계",
         title: "화면 목록 만들기",
+        visual: {
+          type: "cards",
+          caption: "자주 쓰는 화면",
+          items: [
+            { label: "홈", text: "앱을 여는 첫 화면" },
+            { label: "목록", text: "내용을 모아 보는 화면" },
+            { label: "상세", text: "하나를 자세히 보는 화면" },
+            { label: "작성", text: "새로 추가하는 화면" },
+            { label: "설정", text: "환경을 바꾸는 화면" }
+          ]
+        },
         goal: "필요한 화면을 목록으로 나눈다.",
         difficulty: "intermediate",
         estimatedMinutes: 15,
@@ -883,6 +914,14 @@ const COURSE = {
         id: "features",
         group: "설계",
         title: "기능 목록 만들기",
+        visual: {
+          type: "compare",
+          caption: "기능 우선순위 나누기",
+          columns: [
+            { label: "꼭 필요한 것(먼저)", items: ["핵심 동작 한두 개", "없으면 앱이 안 됨", "예: 추가·완료 체크"] },
+            { label: "나중에 할 것(미루기)", items: ["있으면 좋은 부가 기능", "없어도 핵심은 동작", "예: 검색·정렬·테마"] }
+          ]
+        },
         goal: "화면마다 필요한 기능을 정리한다.",
         difficulty: "intermediate",
         estimatedMinutes: 15,
@@ -1329,6 +1368,16 @@ const COURSE = {
         id: "deploy",
         group: "배포",
         title: "웹 배포 준비하기",
+        visual: {
+          type: "flow",
+          caption: "배포하고 확인하기",
+          steps: [
+            { label: "플랫폼 선택", sub: "Vercel·Netlify 등" },
+            { label: "배포", sub: "파일 올리기" },
+            { label: "링크 열기", sub: "직접 접속" },
+            { label: "기능·모바일 확인", sub: "실제로 동작?" }
+          ]
+        },
         goal: "웹 배포 플랫폼과 확인 기준을 정한다.",
         difficulty: "intermediate",
         estimatedMinutes: 20,
@@ -1371,6 +1420,15 @@ const COURSE = {
         id: "share",
         group: "공유",
         title: "프로 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "프로 공유글에 담을 것",
+          items: [
+            { label: "배포 링크", text: "남이 직접 써 볼 주소" },
+            { label: "PRD 요약", text: "무엇을 왜 만들었는지" },
+            { label: "구현 소감", text: "어렵던 점·배운 점" }
+          ]
+        },
         goal: "완성된 앱의 배포 링크와 PRD를 Padlet에 공유한다.",
         difficulty: "intermediate",
         estimatedMinutes: 25,
@@ -1946,6 +2004,16 @@ const COURSE = {
         id: "deploy-check",
         group: "배포·점검",
         title: "배포 URL 점검하기",
+        visual: {
+          type: "cards",
+          caption: "사용자 관점 점검 4가지",
+          items: [
+            { label: "첫 화면", text: "링크 열면 바로 뜨나" },
+            { label: "주요 버튼", text: "핵심 기능이 동작하나" },
+            { label: "모바일", text: "폰에서 안 깨지나" },
+            { label: "새로고침", text: "다시 열어도 유지되나" }
+          ]
+        },
         goal: "사용자 관점에서 배포 URL을 확인한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -1981,6 +2049,16 @@ const COURSE = {
         id: "logs",
         group: "배포·점검",
         title: "로그와 에러 보고",
+        visual: {
+          type: "cards",
+          caption: "좋은 에러 보고 4요소",
+          items: [
+            { label: "언제", text: "어느 시점에 생겼나" },
+            { label: "어디서", text: "어떤 화면·기능에서" },
+            { label: "무엇을", text: "어떤 버튼을 눌렀나" },
+            { label: "어떤 메시지", text: "화면에 뜬 문구" }
+          ]
+        },
         goal: "문제가 생겼을 때 AI에게 줄 정보를 정리한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2060,6 +2138,14 @@ const COURSE = {
         id: "exe",
         group: "패키징·릴리즈",
         title: "exe 패키징 준비",
+        visual: {
+          type: "compare",
+          caption: "내 앱 기술에 맞는 패키징 도구",
+          columns: [
+            { label: "Python 앱", items: ["PyInstaller로 묶기", "스크립트 → 실행 파일", "데이터·자동화 앱"] },
+            { label: "웹 기술 앱", items: ["Electron·Tauri로 묶기", "HTML·JS → 데스크톱", "보통 웹앱은 exe 불필요"] }
+          ]
+        },
         goal: "exe 배포 전 필요한 정보를 정리한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2100,6 +2186,14 @@ const COURSE = {
         id: "releases",
         group: "패키징·릴리즈",
         title: "GitHub Releases 안내문",
+        visual: {
+          type: "compare",
+          caption: "릴리즈 노트, 무엇을 적나",
+          columns: [
+            { label: "담을 것(사용자용)", items: ["이번에 바뀐 점", "다운로드·실행 방법", "주의사항"] },
+            { label: "빼는 것(내부용)", items: ["커밋 해시", "검증 명령·로그", "개발 메모"] }
+          ]
+        },
         goal: "사용자에게 보여 줄 릴리즈 안내문을 작성한다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2187,6 +2281,16 @@ const COURSE = {
         id: "ops",
         group: "운영",
         title: "운영 체크리스트 만들기",
+        visual: {
+          type: "cards",
+          caption: "릴리즈 후 운영 점검",
+          items: [
+            { label: "사용자 문의", text: "무엇을 불편해하나" },
+            { label: "오류 보고", text: "새로 생긴 문제 확인" },
+            { label: "업데이트", text: "고치거나 더할 것" },
+            { label: "보안 재점검", text: "비밀 값·권한 확인" }
+          ]
+        },
         goal: "릴리즈 이후에도 확인할 운영 항목을 만든다.",
         difficulty: "advanced",
         estimatedMinutes: 15,
@@ -2221,6 +2325,15 @@ const COURSE = {
         id: "share",
         group: "운영",
         title: "마스터 결과물 공유하기",
+        visual: {
+          type: "cards",
+          caption: "마스터 공유글에 담을 것",
+          items: [
+            { label: "v1.0 링크", text: "배포 또는 Releases 주소" },
+            { label: "운영형 PRD", text: "운영까지 고려한 요약" },
+            { label: "릴리즈 회고", text: "가장 어려웠던 점" }
+          ]
+        },
         goal: "v1.0으로 공식 릴리즈된 앱 링크와 운영형 PRD를 Padlet에 공유한다.",
         difficulty: "advanced",
         estimatedMinutes: 20,
@@ -2258,3 +2371,60 @@ const COURSE = {
     ]
   }
 };
+
+/*
+ * 현장·일상 프로젝트 트랙 (Phase 5)
+ * --------------------------------------------------------------
+ * 세 리그(rookie/pro/master)를 "무엇을 만들지" 관점에서 묶은 아이디어 메뉴.
+ * 학생은 일상 앱을, 교사(연수 참가자)는 교실에서 바로 쓰는 도구를 하나 골라
+ * 같은 리그 흐름으로 만들 수 있도록 안내한다. 강의 진행과 독립적인 참고 자료이며,
+ * app.js의 renderProjectTracks가 읽어 '현장 프로젝트 아이디어' 패널로 보여 준다.
+ * 각 아이디어: { title, summary, league, useFor }  (league는 COURSE 키와 일치)
+ */
+const PROJECT_TRACKS = [
+  {
+    name: "수업 도구",
+    intro: "수업 중 바로 띄워 쓰는 작은 도구. 루키리그 한 흐름으로도 완성할 수 있습니다.",
+    ideas: [
+      { title: "랜덤 발표자 뽑기", summary: "이름 목록에서 무작위로 한 명을 뽑아 보여 주는 한 화면 앱.", league: "rookie", useFor: "발표·질문 순서를 공정하게 정할 때 칠판 대신 띄워 사용합니다." },
+      { title: "수업 타이머·스톱워치", summary: "남은 시간을 크게 표시하고 끝나면 알려 주는 타이머.", league: "rookie", useFor: "모둠 활동·시험 시간을 학생들이 함께 보도록 화면에 띄웁니다." },
+      { title: "모둠 편성기", summary: "전체 인원을 입력하면 원하는 인원수로 모둠을 자동으로 나눠 주는 앱.", league: "pro", useFor: "매번 손으로 짜던 모둠을 한 번에 편성하고 결과를 그대로 공유합니다." }
+    ]
+  },
+  {
+    name: "학급 운영",
+    intro: "한 학기 동안 반복해서 쓰는 학급 관리용 화면.",
+    ideas: [
+      { title: "1인 1역 당번표", summary: "역할과 담당 학생을 정리해 보여 주고 주마다 돌리는 당번표.", league: "rookie", useFor: "교실 뒤에 붙이던 종이 당번표를 링크 하나로 대체합니다." },
+      { title: "자리 배치도", summary: "자리 위치에 학생 이름을 배치해 한눈에 보는 좌석표.", league: "pro", useFor: "자리를 바꿀 때마다 새로 그리지 않고 화면에서 바로 수정합니다." },
+      { title: "학급 투표기", summary: "안건과 보기를 올리고 학생들이 고른 결과를 집계하는 앱.", league: "master", useFor: "현장학습 장소·반 규칙을 학생들이 직접 투표해 정하도록 운영합니다." }
+    ]
+  },
+  {
+    name: "학생 기록",
+    intro: "학생별 활동을 차곡차곡 모으는 기록용 앱. 데이터를 다루는 흐름과 잘 맞습니다.",
+    ideas: [
+      { title: "독서 기록장", summary: "읽은 책·날짜·한 줄 감상을 모아 목록으로 보여 주는 앱.", league: "rookie", useFor: "학생이 스스로 독서 이력을 쌓고, 학기 말에 그대로 출력해 모읍니다." },
+      { title: "칭찬 스티커 누적판", summary: "학생별로 받은 칭찬 수를 더해 순위·합계로 보여 주는 보드.", league: "pro", useFor: "교실 칭찬판을 디지털로 옮겨 어디서든 확인하고 갱신합니다." },
+      { title: "상담 메모(내 기기 저장)", summary: "학생별 상담 내용을 이 브라우저에만 저장해 다시 찾아보는 메모.", league: "master", useFor: "민감한 기록은 서버 없이 교사 기기에만 남겨 안전하게 관리합니다." }
+    ]
+  },
+  {
+    name: "교무 업무",
+    intro: "행사·문서·예산처럼 매번 손이 가던 업무를 자동화하는 도구.",
+    ideas: [
+      { title: "행사 준비물 체크리스트", summary: "준비물과 담당·완료 여부를 표시하는 점검 앱(루키 캡스톤과 같은 구조).", league: "rookie", useFor: "현장학습·학예회 준비를 한 화면에서 빠짐없이 챙깁니다." },
+      { title: "가정통신문 생성기", summary: "제목·날짜·내용을 넣으면 정해진 양식으로 글을 만들어 주는 앱.", league: "pro", useFor: "반복되는 통신문을 매번 새로 쓰지 않고 양식에 맞춰 빠르게 작성합니다." },
+      { title: "일정 카운트다운", summary: "시험·행사까지 남은 날짜를 자동으로 세어 보여 주는 화면.", league: "rookie", useFor: "교실 앞에 띄워 학생·학부모와 중요한 일정을 함께 공유합니다." }
+    ]
+  },
+  {
+    name: "데이터 활용",
+    intro: "설문·성적·출결처럼 모인 숫자를 보기 좋게 정리·요약하는 앱. 마스터리그 흐름과 잘 맞습니다.",
+    ideas: [
+      { title: "설문 결과 요약 보드", summary: "보기별 응답 수를 입력하면 비율과 막대로 정리해 주는 앱.", league: "pro", useFor: "반 설문·만족도 조사 결과를 회의·통신문에 바로 쓸 형태로 만듭니다." },
+      { title: "급식·활동 만족도 집계", summary: "항목별 점수를 모아 평균과 순위로 보여 주는 집계 앱.", league: "pro", useFor: "주간 만족도를 누적해 변화 추이를 한눈에 확인합니다." },
+      { title: "출결·참여 통계", summary: "로그인한 사용자별로 데이터를 따로 저장·집계하는 다중 사용자 앱.", league: "master", useFor: "여러 교사가 각자 학급 데이터를 입력하고 자기 반 통계만 보도록 운영합니다." }
+    ]
+  }
+];

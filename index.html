@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=25">
+  <link rel="stylesheet" href="styles.css?v=33">
 </head>
 <body>
   <header class="topbar">
@@ -35,9 +35,6 @@
     <div class="top-actions">
       <button id="presentBtn" type="button">▶ 발표 모드</button>
       <button id="teacherModeToggle" type="button" title="교사용 진행 가이드(차시 운영 팁)를 강의마다 펼쳐 보여줍니다">교사 모드</button>
-      <button id="printHandout" type="button" title="현재 리그의 지도안(운영 개요·강의별 진행 가이드)을 인쇄용으로 엽니다">지도안 인쇄</button>
-      <button id="exportProgress" type="button" title="진행 상황을 코드로 복사해 다른 기기로 옮깁니다">진행 내보내기</button>
-      <button id="importProgress" type="button" title="다른 기기에서 복사한 진행 코드를 붙여넣어 이어서 합니다">진행 불러오기</button>
       <button id="copyAll" type="button">결과물 복사</button>
       <button id="resetAll" class="ghost danger" type="button">초기화</button>
     </div>
@@ -88,22 +85,22 @@
           <p id="summary"></p>
         </section>
 
-        <section class="reading-card">
-          <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M8 10h8M8 14h6"/></svg> 읽고 이해하기</h3>
+        <details class="reading-card lesson-collapse" id="readingSection" data-collapse-key="reading">
+          <summary><h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M8 10h8M8 14h6"/></svg> 읽고 이해하기</h3></summary>
           <p id="reading"></p>
-        </section>
+        </details>
 
-        <section class="terms-card">
-          <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1" fill="currentColor"/></svg> 용어 사전</h3>
+        <details class="terms-card lesson-collapse" id="termsSection" data-collapse-key="terms">
+          <summary><h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1" fill="currentColor"/></svg> 용어 사전</h3></summary>
           <dl id="terms"></dl>
-        </section>
+        </details>
 
         <div id="visual" class="visual"></div>
 
-        <section class="talk-card">
-          <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg> 생각해보기</h3>
+        <details class="talk-card lesson-collapse" id="discussionSection" data-collapse-key="discussion">
+          <summary><h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg> 생각해보기</h3></summary>
           <ul id="discussion"></ul>
-        </section>
+        </details>
 
         <section class="steps-card">
           <h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg> 따라하기</h3>
@@ -175,10 +172,55 @@
           <pre id="helpPrompt"></pre>
         </div>
       </details>
+
+      <details class="resource" id="submitResource">
+        <summary>완료율 코드 만들기(교사 제출용)</summary>
+        <div class="resource-body">
+          <p class="resource-hint">이름을 적고 코드를 만들면, 교사가 ‘?mode=collect’ 화면에 붙여넣어 반 전체 완료율을 모을 수 있습니다. 작성한 실습 내용은 담기지 않으며 서버로 전송되지 않습니다.</p>
+          <label>이름 또는 학번
+            <input id="studentNameInput" type="text" placeholder="예: 3반 12번 홍길동">
+          </label>
+          <div class="section-head">
+            <span>내 완료율 코드</span>
+            <button id="submitCodeRefresh" type="button">코드 새로 만들기</button>
+          </div>
+          <pre id="submitCodeText"></pre>
+          <div class="resource-tools">
+            <button id="submitCodeCopy" type="button">코드 복사</button>
+          </div>
+          <img id="submitCodeQr" class="submit-qr" alt="완료율 코드 QR" hidden>
+        </div>
+      </details>
+
+      <details class="resource" id="tracksResource">
+        <summary>현장·일상 프로젝트 아이디어</summary>
+        <div class="resource-body">
+          <p class="resource-hint">리그를 끝까지 따라 하면 하나가 완성됩니다. 학생은 일상 앱을, 교사는 교실에서 바로 쓰는 도구를 하나 골라 같은 흐름으로 만들어 보세요.</p>
+          <div id="projectTracks" class="project-tracks"></div>
+        </div>
+      </details>
     </section>
   </main>
 
   <div id="toast" role="status" aria-live="polite"></div>
+
+  <!-- 진행 수합 모드(?mode=collect) — 교사가 학생들의 완료율 코드를 모아 표로 본다 -->
+  <div id="collectView" class="collect-view" hidden>
+    <header class="collect-header">
+      <h1>진행 코드 수합</h1>
+      <p>학생들이 보낸 완료율 코드를 한 줄에 하나씩 붙여넣으세요. 이 브라우저에만 저장되며 서버로 전송되지 않습니다.</p>
+    </header>
+    <div class="collect-input-row">
+      <textarea id="collectPasteArea" placeholder="완료율 코드를 한 줄에 하나씩 붙여넣으세요"></textarea>
+      <button id="collectAddBtn" type="button" class="primary">추가</button>
+    </div>
+    <div class="collect-table-actions">
+      <button id="collectCopyTable" type="button">표 복사</button>
+      <button id="collectClearAll" type="button" class="ghost danger">전체 삭제</button>
+    </div>
+    <table id="collectTable" class="collect-table"></table>
+    <p id="collectEmpty" class="collect-empty">아직 추가된 학생이 없습니다.</p>
+  </div>
 
   <!-- 첫 방문 안내 -->
   <div id="onboardingOverlay" class="onboarding-overlay" hidden>
@@ -188,7 +230,7 @@
       <ul class="onboarding-steps">
         <li><strong>읽고 이해하기 → 실습하기 → 확인하기</strong> 순서로 한 강의를 진행합니다.</li>
         <li>막히면 <strong>‘막혔을 때 도움받기’</strong> 패널에서 AI에게 보낼 질문을 만들어 사용합니다.</li>
-        <li>기기를 바꿀 때는 <strong>‘진행 내보내기’</strong>로 코드를 복사해 두면 이어서 진행할 수 있습니다.</li>
+        <li>기기를 바꿀 때는 <strong>‘내 결과물 저장소 → 파일로 저장’</strong>으로 학습 기록을 백업해 두면 이어서 진행할 수 있습니다.</li>
         <li>수업·발표 때는 <strong>‘발표 모드’</strong>로 강의를 슬라이드처럼 띄울 수 있습니다.</li>
       </ul>
       <button id="onboardingStart" type="button" class="primary">시작하기</button>
@@ -219,7 +261,7 @@
     </footer>
   </div>
 
-  <script src="content.js?v=25"></script>
-  <script src="app.js?v=25"></script>
+  <script src="content.js?v=33"></script>
+  <script src="app.js?v=33"></script>
 </body>
 </html>

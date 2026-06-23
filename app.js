@@ -27,22 +27,29 @@ function clampPage(levelId, value) {
   const n = Number(value);
   return (Number.isInteger(n) && n >= 0 && n <= max) ? n : 0;
 }
-
-/* 진행 상황을 짧은 코드로 내보내고 되돌린다(로그인·서버 없이 기기 이동). */
-function exportProgressCode() {
-  try { return btoa(encodeURIComponent(JSON.stringify(state))); } catch { return ""; }
+/* 완료율만 담은 짧은 코드(교사 수합용) — 입력 내용(개인정보 포함 가능)은 담지 않는다. */
+function computeCompletionSnapshot() {
+  // at(생성 시각)는 넣지 않는다 — 코드가 매 렌더마다 바뀌어 QR을 재요청하는 것을 막고,
+  // 수합 쪽(addCollectCodes)에서 붙여넣은 시점을 받은 시각으로 기록한다.
+  const snap = { name: state.studentName || "", levels: {} };
+  for (const id of Object.keys(COURSE)) {
+    const saved = state.levels?.[id]?.pages || {};
+    const total = COURSE[id].pages.length;
+    const done = COURSE[id].pages.filter((p) => saved[p.id]?.complete).length;
+    snap.levels[id] = { total, done };
+  }
+  return snap;
 }
-function importProgressCode(code) {
+function exportCompletionCode() {
+  try { return btoa(encodeURIComponent(JSON.stringify(computeCompletionSnapshot()))); } catch { return ""; }
+}
+function decodeCompletionCode(code) {
   const trimmed = String(code || "").trim();
-  if (!trimmed) return false;
+  if (!trimmed) return null;
   let parsed;
-  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return false; }
-  if (!parsed || typeof parsed !== "object") return false;
-  state = parsed;
-  activeLevel = COURSE[state.activeLevel] ? state.activeLevel : "rookie";
-  activePage = clampPage(activeLevel, state.activePage);
-  saveState();
-  return true;
+  try { parsed = JSON.parse(decodeURIComponent(atob(trimmed))); } catch { return null; }
+  if (!parsed || typeof parsed !== "object" || !parsed.levels) return null;
+  return parsed;
 }
 function level() { return COURSE[activeLevel]; }
 function courseState() {
@@ -82,6 +89,13 @@ function splitReading(text) {
 function renderReading(text) {
   const paragraphs = splitReading(text);
   return paragraphs.map((p) => `<p>${renderText(p)}</p>`).join("");
+}
+/* 보조 섹션 접기/펼치기: 내용 없으면 숨기고, 저장된 펼침 선호를 반영한다. */
+function applyCollapse(sel, key, hasContent) {
+  const el = $(sel);
+  if (!el) return;
+  el.hidden = !hasContent;
+  el.open = !!(state.expandedSections && state.expandedSections[key]);
 }
 function bindCodeCopy() {
   document.querySelectorAll(".inline-code").forEach((el) => {
@@ -280,6 +294,7 @@ function render() {
   renderChecks();
   renderNotebook();
   renderHelp();
+  renderCompletionSubmit();
   saveState();
 }
 
@@ -374,6 +389,10 @@ function renderLesson() {
   $("#discussion").innerHTML = (p.discussion || []).map((q) =>
     `<li><span class="q-dot"></span><span>${renderText(q)}</span></li>`
   ).join("");
+  // 집중 모드: 보조 섹션은 내용이 있을 때만 두고, 기본은 접되 펼친 적이 있으면 펼친 상태 유지
+  applyCollapse("#readingSection", "reading", !!(p.reading || "").trim());
+  applyCollapse("#termsSection", "terms", (p.terms || []).length > 0);
+  applyCollapse("#discussionSection", "discussion", (p.discussion || []).length > 0);
   $("#steps").innerHTML = (p.steps || []).map((s, i) =>
     `<li><span class="step-num">${i + 1}</span><span class="step-body">${renderText(s)}</span></li>`
   ).join("");
@@ -592,7 +611,8 @@ function practiceHtml(p) {
     return wrapFields(inner +
       `<div id="previewWarn" class="preview-warn" hidden></div>` +
       `<div class="preview-bar"><button id="stopPreview" type="button" class="ghost">■ 미리보기 중지</button><span class="preview-note">미리보기는 부모 앱과 분리된 격리 화면에서 실행됩니다.</span></div>` +
-      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>`);
+      `<iframe id="miniPreview" class="mini-preview build-preview" title="앱 미리보기" sandbox="allow-scripts" allow="" referrerpolicy="no-referrer"></iframe>` +
+      `<div id="autoCheck" class="audit-card" hidden></div>`);
   }
   if (pr.kind === "share") {
     return wrapFields(inner + shareExtraHtml());
@@ -693,6 +713,73 @@ function detectSensitiveStrings(code) {
   return SENSITIVE_PATTERNS.filter((p) => p.re.test(code)).map((p) => p.label);
 }
 
+/* ----------------------------- 자동 점검 루브릭 -----------------------------
+ * 학생이 붙여넣은 HTML을 정적으로 훑어 구조·접근성·보안을 통과/주의/위험으로 평가한다.
+ * 브라우저에서 코드를 실행하지 않고 문자열 패턴만 본다(미리보기 격리와 별개).
+ */
+const AUDIT_BADGE = { pass: "통과", caution: "주의", danger: "위험" };
+const AUDIT_GRADE_LABEL = { pass: "이상 없음", caution: "보완 권장", danger: "수정 필요" };
+
+function auditHtml(code) {
+  const html = String(code || "");
+  const trimmed = html.trim();
+  if (!trimmed) {
+    return [{ label: "코드 입력", status: "caution", detail: "아직 코드가 비어 있습니다. AI에게 받은 HTML을 붙여넣으면 자동으로 점검합니다." }];
+  }
+  const results = [];
+  const has = (re) => re.test(html);
+
+  results.push(has(/<html[\s>]/i) || has(/<body[\s>]/i)
+    ? { label: "문서 구조", status: "pass", detail: "HTML 문서 골격(<html>/<body>)이 있습니다." }
+    : { label: "문서 구조", status: "caution", detail: "<html>·<body> 골격이 보이지 않습니다. 일부만 붙여넣지 않았는지 확인하세요." });
+
+  results.push(has(/<title[\s>]/i) || has(/<h1[\s>]/i)
+    ? { label: "제목", status: "pass", detail: "페이지 제목(<title> 또는 <h1>)이 있습니다." }
+    : { label: "제목", status: "caution", detail: "제목이 없습니다. 탭·화면에 보일 <title>이나 <h1>을 넣으면 좋습니다." });
+
+  results.push(has(/<html[^>]*\blang\s*=/i)
+    ? { label: "언어 설정", status: "pass", detail: "<html lang=…>로 언어가 지정돼 있습니다." }
+    : { label: "언어 설정", status: "caution", detail: '<html lang="ko">처럼 언어를 지정하면 접근성·번역에 도움이 됩니다.' });
+
+  const imgs = html.match(/<img\b[^>]*>/gi) || [];
+  const imgNoAlt = imgs.filter((t) => !/\balt\s*=/i.test(t));
+  if (imgs.length) {
+    results.push(imgNoAlt.length === 0
+      ? { label: "이미지 대체 텍스트", status: "pass", detail: `이미지 ${imgs.length}개 모두 alt 설명이 있습니다.` }
+      : { label: "이미지 대체 텍스트", status: "caution", detail: `이미지 ${imgNoAlt.length}개에 alt 설명이 없습니다. 화면을 못 보는 사람을 위해 alt를 넣어 주세요.` });
+  }
+
+  const inputs = html.match(/<input\b[^>]*>/gi) || [];
+  const inputNoHint = inputs.filter((t) => !/\b(aria-label|placeholder|id)\s*=/i.test(t) && !/\btype\s*=\s*["']?(hidden|submit|button|checkbox|radio)/i.test(t));
+  if (inputs.length) {
+    results.push(inputNoHint.length === 0
+      ? { label: "입력칸 안내", status: "pass", detail: "입력칸에 안내(라벨·placeholder)가 있습니다." }
+      : { label: "입력칸 안내", status: "caution", detail: `입력칸 ${inputNoHint.length}개에 안내가 없습니다. 무엇을 적는지 알려 주세요.` });
+  }
+
+  const hits = detectSensitiveStrings(html);
+  results.push(hits.length
+    ? { label: "비밀 값 노출", status: "danger", detail: `비밀 값으로 의심되는 문자열이 있습니다: ${hits.join(", ")}. 배포·공유 전 반드시 제거하세요.` }
+    : { label: "비밀 값 노출", status: "pass", detail: "API 키 등 비밀 값으로 의심되는 문자열이 없습니다." });
+
+  return results;
+}
+function auditGrade(results) {
+  if (results.some((r) => r.status === "danger")) return "danger";
+  if (results.some((r) => r.status === "caution")) return "caution";
+  return "pass";
+}
+/* 저장된 학습 기록에서 학생이 붙여넣은 HTML(htmlCode)을 찾는다(포트폴리오 요약용). */
+function findBuiltHtml() {
+  for (const lv of Object.values(state.levels || {})) {
+    for (const ps of Object.values(lv.pages || {})) {
+      const code = ps.fields?.htmlCode;
+      if (code && String(code).trim()) return String(code);
+    }
+  }
+  return "";
+}
+
 function updatePreview() {
   const frame = $("#miniPreview");
   if (!frame) return;
@@ -711,10 +798,27 @@ function updatePreview() {
     }
     frame.srcdoc = code ||
       `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
+    renderAutoCheck(code);
     return;
   }
   const color = /^#[0-9a-fA-F]{6}$/.test(field("color", "#0056d2")) ? field("color", "#0056d2") : "#0056d2";
   frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f8faf6;font-family:sans-serif;color:#1f292c}main{width:min(88%,520px);border:1px solid #d8ded4;border-radius:8px;background:white;padding:24px}h1{color:${color};margin-top:0}button{border:0;border-radius:8px;background:${color};color:white;padding:10px 14px}</style></head><body><main><h1>${escapeHtml(field("appName", "오늘 할 일"))}</h1><p>${escapeHtml(field("screenText", "오늘 해야 할 일을 적고 하나씩 체크해 보세요."))}</p><button>할 일 추가</button></main></body></html>`;
+}
+
+/* 자동 점검 패널 렌더링(build 실습에서만). 입력이 바뀔 때마다 updatePreview에서 호출. */
+function renderAutoCheck(code) {
+  const host = $("#autoCheck");
+  if (!host) return;
+  const results = auditHtml(code);
+  const grade = auditGrade(results);
+  const items = results.map((r) =>
+    `<li class="audit-item audit-${r.status}"><span class="audit-badge">${AUDIT_BADGE[r.status]}</span><span class="audit-text"><strong>${escapeHtml(r.label)}</strong> — ${escapeHtml(r.detail)}</span></li>`
+  ).join("");
+  host.innerHTML =
+    `<div class="audit-head"><span class="audit-h">자동 점검</span><span class="audit-grade audit-${grade}">${AUDIT_GRADE_LABEL[grade]}</span></div>` +
+    `<ul class="audit-list">${items}</ul>` +
+    `<p class="audit-foot">자동 점검은 코드를 실행하지 않고 형태만 살펴보는 참고용입니다. ‘주의’는 더 좋게 만들 거리이고, ‘위험’은 공유 전에 꼭 고쳐야 합니다.</p>`;
+  host.hidden = false;
 }
 
 function updateResult() {
@@ -861,10 +965,14 @@ function collectPortfolioData() {
   });
   const allFields = {};
   Object.values(state.levels || {}).forEach((lv) => Object.values(lv.pages || {}).forEach((ps) => Object.assign(allFields, ps.fields || {})));
+  const builtHtml = findBuiltHtml();
+  const auditResults = builtHtml ? auditHtml(builtHtml) : null;
+  const audit = auditResults ? { grade: auditGrade(auditResults), results: auditResults } : null;
   return {
     nickname: allFields.nickname || "",
     title: allFields.title || allFields.appName || allFields.appIdea || "",
     generatedAt: new Date().toLocaleString("ko-KR"),
+    audit,
     leagues
   };
 }
@@ -873,6 +981,11 @@ function buildPortfolioMarkdown(d) {
   if (d.title) out.push(`**프로젝트**: ${d.title}`);
   if (d.nickname) out.push(`**작성자**: ${d.nickname}`);
   out.push(`**생성일**: ${d.generatedAt}`, "");
+  if (d.audit) {
+    out.push(`## 내 앱 자동 점검 — ${AUDIT_GRADE_LABEL[d.audit.grade]}`);
+    d.audit.results.forEach((r) => out.push(`- [${AUDIT_BADGE[r.status]}] **${r.label}**: ${r.detail}`));
+    out.push("");
+  }
   d.leagues.forEach((lg) => {
     out.push(`## ${lg.name} — ${lg.pct}% (${lg.done}/${lg.total})`);
     if (lg.padletUrl) out.push(`Padlet: ${lg.padletUrl}`);
@@ -887,6 +1000,11 @@ function buildPortfolioMarkdown(d) {
 }
 function buildPortfolioHtml(d) {
   const esc = escapeHtml;
+  const auditBlock = d.audit ? `
+    <section class="audit">
+      <h2>내 앱 자동 점검 <span class="audit-pill audit-${d.audit.grade}">${AUDIT_GRADE_LABEL[d.audit.grade]}</span></h2>
+      <ul>${d.audit.results.map((r) => `<li><b>[${AUDIT_BADGE[r.status]}]</b> ${esc(r.label)} — ${esc(r.detail)}</li>`).join("")}</ul>
+    </section>` : "";
   const leagues = d.leagues.map((lg) => `
     <section class="lg">
       <h2>${esc(lg.name)} <span class="pct">${lg.pct}% (${lg.done}/${lg.total})</span></h2>
@@ -908,9 +1026,14 @@ function buildPortfolioHtml(d) {
     h3 { font-size: 16px; margin: 10px 0 6px; }
     dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 8px; } dd { margin: 2px 0 0; font-size: 14px; white-space: pre-wrap; }
     .empty { color: #9aa5b1; font-style: italic; }
+    .audit { margin-top: 24px; padding: 14px 16px; border: 1px solid #e4e7eb; border-radius: 8px; background: #fafafa; break-inside: avoid; }
+    .audit ul { margin: 8px 0 0; padding-left: 18px; font-size: 14px; line-height: 1.7; }
+    .audit-pill { font-size: 13px; padding: 2px 10px; border-radius: 999px; vertical-align: middle; }
+    .audit-pass { background: #dcfce7; color: #166534; } .audit-caution { background: #fef9c3; color: #854d0e; } .audit-danger { background: #fee2e2; color: #991b1b; }
   </style></head><body>
   <h1>VibeCoder Lab 포트폴리오</h1>
   <p class="meta">${d.title ? `<strong>${esc(d.title)}</strong> · ` : ""}${d.nickname ? esc(d.nickname) + " · " : ""}${esc(d.generatedAt)}</p>
+  ${auditBlock}
   ${leagues}
   </body></html>`;
 }
@@ -928,50 +1051,6 @@ function printPortfolio() {
   frame.srcdoc = buildPortfolioHtml(collectPortfolioData());
   frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
 }
-
-/* ------------------------- 교사용 지도안 인쇄(유인물) ------------------------- */
-function buildHandoutHtml(item) {
-  const esc = escapeHtml;
-  const pagesHtml = item.pages.map((p) => {
-    const f = p.facilitator;
-    if (!f) return "";
-    return `<div class="hpage">
-      <h3>${esc(p.title)}</h3>
-      ${f.time ? `<p class="htime">⏱ 권장 진행 시간: ${esc(f.time)}</p>` : ""}
-      ${f.talkingPoints && f.talkingPoints.length ? `<p class="hlabel">설명 포인트</p><ul>${f.talkingPoints.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-      ${f.pitfalls && f.pitfalls.length ? `<p class="hlabel">자주 막히는 지점</p><ul>${f.pitfalls.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-      ${f.faq && f.faq.length ? `<p class="hlabel">예상 질문(Q&A)</p><dl>${f.faq.map((qa) => `<dt>${esc(qa.q)}</dt><dd>${esc(qa.a)}</dd>`).join("")}</dl>` : ""}
-    </div>`;
-  }).filter(Boolean).join("");
-  const grad = (item.graduationRequirements || []).map((r) => `<li>${esc(r)}</li>`).join("");
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(item.name)} 지도안</title>
-  <style>
-    @page { size: A4; margin: 18mm; }
-    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
-    h1 { font-size: 24px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
-    .meta { color: #52606d; font-size: 14px; margin-bottom: 20px; }
-    .hpage { margin: 16px 0; padding: 12px 16px; border: 1px solid #e4e7eb; border-radius: 6px; break-inside: avoid; }
-    h3 { font-size: 16px; margin: 0 0 6px; }
-    .htime { font-weight: 600; margin: 4px 0; }
-    .hlabel { font-weight: 700; font-size: 13px; color: #1d4ed8; margin: 8px 0 2px; }
-    ul { margin: 0; padding-left: 20px; font-size: 14px; }
-    dl { margin: 0; } dt { font-weight: 700; font-size: 14px; margin-top: 6px; } dd { margin: 2px 0 0; font-size: 14px; }
-    .grad { margin-top: 20px; padding-top: 14px; border-top: 2px solid #e4e7eb; }
-    .empty { color: #9aa5b1; font-style: italic; }
-  </style></head><body>
-  <h1>${esc(item.name)} 지도안</h1>
-  <p class="meta">${item.facilitatorIntro ? esc(item.facilitatorIntro) : ""}</p>
-  ${pagesHtml || `<p class="empty">강의별 진행 가이드가 아직 없습니다.</p>`}
-  ${grad ? `<div class="grad"><p class="hlabel">수료 기준</p><ul>${grad}</ul></div>` : ""}
-  </body></html>`;
-}
-function printHandout() {
-  const frame = $("#printFrame");
-  if (!frame) { toast("인쇄 화면을 찾을 수 없습니다."); return; }
-  frame.srcdoc = buildHandoutHtml(level());
-  frame.onload = () => { try { frame.contentWindow.focus(); frame.contentWindow.print(); } catch { toast("인쇄를 시작할 수 없습니다."); } };
-}
-
 /* ----------------------------- 막혔을 때 ----------------------------- */
 function renderHelp() {
   const type = $("#helpType").value;
@@ -992,6 +1071,25 @@ function renderHelp() {
     "",
     "쉬운 한국어로 답하고, 민감정보가 있으면 먼저 제거하라고 알려 줘."
   ].join("\n");
+}
+
+/* 완료율 코드 패널: 이름 입력 + 코드/QR 생성(서버 전송 없음, 교사가 ?mode=collect에서 붙여넣어 수합) */
+function renderCompletionSubmit() {
+  const nameInput = $("#studentNameInput");
+  const textHost = $("#submitCodeText");
+  const qrHost = $("#submitCodeQr");
+  if (!nameInput || !textHost) return;
+  if (nameInput.value !== (state.studentName || "")) nameInput.value = state.studentName || "";
+  const code = exportCompletionCode();
+  textHost.textContent = code;
+  if (qrHost) {
+    if (code) {
+      qrHost.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(code)}`;
+      qrHost.hidden = false;
+    } else {
+      qrHost.hidden = true;
+    }
+  }
 }
 
 /* ========================== 발표 모드 ========================== */
@@ -1206,19 +1304,25 @@ function bindGlobal() {
   });
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
-  $("#exportProgress")?.addEventListener("click", () => {
-    const code = exportProgressCode();
-    if (!code) { toast("내보낼 진행 내용이 없습니다."); return; }
-    copyText(code, "진행 코드를 복사했습니다. 다른 기기의 ‘진행 불러오기’에 붙여넣으세요.");
-  });
-  $("#importProgress")?.addEventListener("click", () => {
-    const code = prompt("다른 기기에서 복사한 ‘진행 코드’를 붙여넣으세요.");
-    if (code === null) return;
-    if (!confirm("지금 기기에 저장된 진행 내용을 덮어쓰고 불러옵니다. 계속할까요?")) return;
-    if (importProgressCode(code)) { render(); toast("진행 내용을 불러왔습니다."); }
-    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
-  });
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
+  // 집중 모드: 보조 섹션을 펼치면 그 선호를 기억해 다른 강의에서도 펼친 채로 보여 준다
+  document.querySelectorAll("[data-collapse-key]").forEach((el) => {
+    el.addEventListener("toggle", () => {
+      state.expandedSections = state.expandedSections || {};
+      const key = el.dataset.collapseKey;
+      if (state.expandedSections[key] === el.open) return; // 렌더 중 프로그램적 변경은 저장하지 않음
+      state.expandedSections[key] = el.open;
+      saveState();
+    });
+  });
+  // 완료율 코드 제출(증분 4)
+  $("#studentNameInput")?.addEventListener("input", (e) => {
+    state.studentName = e.target.value;
+    saveState();
+    renderCompletionSubmit();
+  });
+  $("#submitCodeRefresh")?.addEventListener("click", renderCompletionSubmit);
+  $("#submitCodeCopy")?.addEventListener("click", () => copyText($("#submitCodeText").textContent, "완료율 코드를 복사했습니다."));
   // 학습 기록 파일 백업·복원 (Phase 1)
   $("#backupSave")?.addEventListener("click", exportProgressFile);
   $("#backupLoad")?.addEventListener("click", () => $("#importFileInput")?.click());
@@ -1231,7 +1335,6 @@ function bindGlobal() {
   $("#portfolioMd")?.addEventListener("click", exportPortfolioMarkdown);
   $("#portfolioHtml")?.addEventListener("click", exportPortfolioHtml);
   $("#portfolioPrint")?.addEventListener("click", printPortfolio);
-  $("#printHandout")?.addEventListener("click", printHandout);
   $("#onboardingStart")?.addEventListener("click", () => {
     state.onboarded = true; saveState();
     const ov = $("#onboardingOverlay"); if (ov) ov.hidden = true;
@@ -1266,6 +1369,137 @@ function maybeShowOnboarding() {
   overlay.hidden = !!state.onboarded;
 }
 
-bindGlobal();
-render();
-maybeShowOnboarding();
+/* 현장·일상 프로젝트 아이디어 패널(Phase 5) — PROJECT_TRACKS를 읽어 한 번만 그린다. */
+function renderProjectTracks() {
+  const host = $("#projectTracks");
+  if (!host || typeof PROJECT_TRACKS === "undefined") return;
+  host.innerHTML = PROJECT_TRACKS.map((track) => {
+    const ideas = track.ideas.map((idea) => {
+      const lg = COURSE[idea.league];
+      const badge = lg ? `<span class="track-league track-${idea.league}">${escapeHtml(lg.name)}</span>` : "";
+      return `<li class="track-idea">
+        <div class="track-idea-head"><strong>${escapeHtml(idea.title)}</strong>${badge}</div>
+        <p class="track-idea-sum">${escapeHtml(idea.summary)}</p>
+        <p class="track-idea-use">이렇게 씁니다 — ${escapeHtml(idea.useFor)}</p>
+      </li>`;
+    }).join("");
+    return `<div class="track">
+      <h4 class="track-name">${escapeHtml(track.name)}</h4>
+      <p class="track-intro">${escapeHtml(track.intro)}</p>
+      <ul class="track-ideas">${ideas}</ul>
+    </div>`;
+  }).join("");
+}
+
+/* ===================== 진행 수합 모드(?mode=collect, 증분 4) =====================
+ * 서버 없이 학생들이 보낸 "완료율 코드"를 교사가 이 브라우저에 붙여넣어 모은다.
+ * 별도 localStorage 키를 쓰며 학습 기록(storeKey)과는 섞이지 않는다.
+ */
+const collectKey = "vibecoder-lab-collect-v1";
+function isCollectMode() {
+  try { return new URLSearchParams(window.location.search).get("mode") === "collect"; } catch { return false; }
+}
+function loadCollectList() {
+  try { return JSON.parse(localStorage.getItem(collectKey)) || []; } catch { return []; }
+}
+function saveCollectList(list) { localStorage.setItem(collectKey, JSON.stringify(list)); }
+function addCollectCodes(text) {
+  const lines = String(text || "").split("\n").map((l) => l.trim()).filter(Boolean);
+  if (!lines.length) return 0;
+  const list = loadCollectList();
+  let added = 0;
+  for (const line of lines) {
+    const snap = decodeCompletionCode(line);
+    if (!snap) continue;
+    const name = (snap.name || "이름 없음").trim() || "이름 없음";
+    const idx = list.findIndex((row) => row.name === name);
+    const entry = { name, at: snap.at || Date.now(), levels: snap.levels };
+    if (idx >= 0) list[idx] = entry; else list.push(entry);
+    added++;
+  }
+  saveCollectList(list);
+  return added;
+}
+function collectRowPct(row) {
+  let total = 0, done = 0;
+  for (const id of Object.keys(row.levels || {})) {
+    total += row.levels[id].total || 0;
+    done += row.levels[id].done || 0;
+  }
+  return total ? Math.round((done / total) * 100) : 0;
+}
+function renderCollectTable() {
+  const table = $("#collectTable");
+  const empty = $("#collectEmpty");
+  if (!table) return;
+  const list = loadCollectList();
+  if (!list.length) {
+    table.innerHTML = "";
+    if (empty) empty.hidden = false;
+    return;
+  }
+  if (empty) empty.hidden = true;
+  const head = `<tr><th>이름</th><th>루키</th><th>프로</th><th>마스터</th><th>전체</th><th></th></tr>`;
+  const rows = list.map((row, i) => {
+    const cell = (id) => {
+      const lv = row.levels?.[id];
+      return lv ? `${lv.done}/${lv.total}` : "-";
+    };
+    return `<tr>
+      <td>${escapeHtml(row.name)}</td>
+      <td>${cell("rookie")}</td>
+      <td>${cell("pro")}</td>
+      <td>${cell("master")}</td>
+      <td>${collectRowPct(row)}%</td>
+      <td><button type="button" class="ghost danger" data-collect-remove="${i}">삭제</button></td>
+    </tr>`;
+  }).join("");
+  table.innerHTML = head + rows;
+}
+function buildCollectTsv() {
+  const list = loadCollectList();
+  const head = ["이름", "루키", "프로", "마스터", "전체(%)"].join("\t");
+  const rows = list.map((row) => {
+    const cell = (id) => { const lv = row.levels?.[id]; return lv ? `${lv.done}/${lv.total}` : "-"; };
+    return [row.name, cell("rookie"), cell("pro"), cell("master"), collectRowPct(row)].join("\t");
+  });
+  return [head, ...rows].join("\n");
+}
+function initCollectMode() {
+  document.querySelector(".topbar")?.setAttribute("hidden", "");
+  document.querySelector(".layout")?.setAttribute("hidden", "");
+  const view = $("#collectView");
+  if (!view) return;
+  view.hidden = false;
+  renderCollectTable();
+  $("#collectAddBtn")?.addEventListener("click", () => {
+    const area = $("#collectPasteArea");
+    const added = addCollectCodes(area.value);
+    renderCollectTable();
+    if (added > 0) { area.value = ""; toast(`${added}명을 추가했습니다.`); }
+    else toast("코드를 확인해주세요. 형식이 올바르지 않습니다.");
+  });
+  $("#collectCopyTable")?.addEventListener("click", () => copyText(buildCollectTsv(), "표를 복사했습니다. 스프레드시트에 붙여넣을 수 있습니다."));
+  $("#collectClearAll")?.addEventListener("click", () => {
+    if (!confirm("수합한 목록을 모두 지울까요?")) return;
+    saveCollectList([]);
+    renderCollectTable();
+  });
+  $("#collectTable")?.addEventListener("click", (e) => {
+    const btn = e.target.closest("[data-collect-remove]");
+    if (!btn) return;
+    const list = loadCollectList();
+    list.splice(Number(btn.dataset.collectRemove), 1);
+    saveCollectList(list);
+    renderCollectTable();
+  });
+}
+
+if (isCollectMode()) {
+  initCollectMode();
+} else {
+  bindGlobal();
+  render();
+  renderProjectTracks();
+  maybeShowOnboarding();
+}
