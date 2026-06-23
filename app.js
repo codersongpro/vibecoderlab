@@ -1309,7 +1309,9 @@ function bindGlobal() {
   document.querySelectorAll("[data-collapse-key]").forEach((el) => {
     el.addEventListener("toggle", () => {
       state.expandedSections = state.expandedSections || {};
-      state.expandedSections[el.dataset.collapseKey] = el.open;
+      const key = el.dataset.collapseKey;
+      if (state.expandedSections[key] === el.open) return; // 렌더 중 프로그램적 변경은 저장하지 않음
+      state.expandedSections[key] = el.open;
       saveState();
     });
   });
