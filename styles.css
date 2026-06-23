@@ -1227,3 +1227,18 @@ ol.pres-list li { padding-left: 0; }
 .audit-caution .audit-badge, .audit-grade.audit-caution { background: #fef9c3; color: #854d0e; }
 .audit-danger .audit-badge, .audit-grade.audit-danger { background: #fee2e2; color: #991b1b; }
 .audit-foot { margin: 10px 0 0; font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+/* 현장·일상 프로젝트 아이디어(Phase 5) */
+.project-tracks { display: grid; gap: 16px; }
+.track-name { margin: 0 0 2px; font-size: 15px; color: var(--accent-strong); }
+.track-intro { margin: 0 0 8px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.track-ideas { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.track-idea { border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-soft); padding: 10px 12px; }
+.track-idea-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.track-idea-head strong { font-size: 14px; }
+.track-idea-sum { margin: 4px 0 0; font-size: 13px; color: var(--body); line-height: 1.5; }
+.track-idea-use { margin: 4px 0 0; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+.track-league { flex: none; font-size: 11px; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
+.track-rookie { background: #dcfce7; color: #166534; }
+.track-pro { background: #dbeafe; color: #1d4ed8; }
+.track-master { background: #f3e8ff; color: #6b21a8; }

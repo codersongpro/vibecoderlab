@@ -1420,6 +1420,28 @@ function maybeShowOnboarding() {
   overlay.hidden = !!state.onboarded;
 }
 
+/* 현장·일상 프로젝트 아이디어 패널(Phase 5) — PROJECT_TRACKS를 읽어 한 번만 그린다. */
+function renderProjectTracks() {
+  const host = $("#projectTracks");
+  if (!host || typeof PROJECT_TRACKS === "undefined") return;
+  host.innerHTML = PROJECT_TRACKS.map((track) => {
+    const ideas = track.ideas.map((idea) => {
+      const lg = COURSE[idea.league];
+      const badge = lg ? `<span class="track-league track-${idea.league}">${escapeHtml(lg.name)}</span>` : "";
+      return `<li class="track-idea">
+        <div class="track-idea-head"><strong>${escapeHtml(idea.title)}</strong>${badge}</div>
+        <p class="track-idea-sum">${escapeHtml(idea.summary)}</p>
+        <p class="track-idea-use">이렇게 씁니다 — ${escapeHtml(idea.useFor)}</p>
+      </li>`;
+    }).join("");
+    return `<div class="track">
+      <h4 class="track-name">${escapeHtml(track.name)}</h4>
+      <p class="track-intro">${escapeHtml(track.intro)}</p>
+      <ul class="track-ideas">${ideas}</ul>
+    </div>`;
+  }).join("");
+}
+
 /* ===================== 진행 수합 모드(?mode=collect, 증분 4) =====================
  * 서버 없이 학생들이 보낸 "완료율 코드"를 교사가 이 브라우저에 붙여넣어 모은다.
  * 별도 localStorage 키를 쓰며 학습 기록(storeKey)과는 섞이지 않는다.
@@ -1529,5 +1551,6 @@ if (isCollectMode()) {
 } else {
   bindGlobal();
   render();
+  renderProjectTracks();
   maybeShowOnboarding();
 }
