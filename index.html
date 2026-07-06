@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=33">
+  <link rel="stylesheet" href="styles.css?v=34">
 </head>
 <body>
   <header class="topbar">
@@ -21,7 +21,7 @@
     </div>
     <div class="course-progress" title="전체 진행률">
       <span class="progress-label">전체</span>
-      <div class="progress-track"><div id="courseProgressBar" class="progress-fill"></div></div>
+      <div class="progress-track" role="progressbar" aria-label="전체 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="courseProgressTrack"><div id="courseProgressBar" class="progress-fill"></div></div>
       <span id="courseProgressText" class="progress-pct">0%</span>
     </div>
     <div class="developer-meta" aria-label="개발자 정보">
@@ -68,7 +68,7 @@
 
         <div class="lesson-meta">
           <span id="pageBadge" class="lesson-counter"></span>
-          <div class="lesson-progress"><div id="levelProgressBar" class="progress-fill"></div></div>
+          <div class="lesson-progress" role="progressbar" aria-label="리그 진행률" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="levelProgressTrack"><div id="levelProgressBar" class="progress-fill"></div></div>
           <span id="levelProgressText" class="lesson-progress-text"></span>
           <div class="lesson-top-nav" aria-label="상단 강의 이동">
             <button id="topPrevPage" class="icon-nav" type="button" aria-label="이전 강의" title="이전 강의">←</button>
@@ -100,6 +100,7 @@
         <details class="talk-card lesson-collapse" id="discussionSection" data-collapse-key="discussion">
           <summary><h3><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><line x1="9" y1="10" x2="15" y2="10"/><line x1="12" y1="7" x2="12" y2="13"/></svg> 생각해보기</h3></summary>
           <ul id="discussion"></ul>
+          <button id="discussAiPrompt" type="button" class="ghost">💬 이 질문으로 AI와 토론하기(프롬프트 복사)</button>
         </details>
 
         <section class="steps-card">
@@ -188,7 +189,7 @@
           <div class="resource-tools">
             <button id="submitCodeCopy" type="button">코드 복사</button>
           </div>
-          <img id="submitCodeQr" class="submit-qr" alt="완료율 코드 QR" hidden>
+          <canvas id="submitCodeQr" class="submit-qr" role="img" aria-label="완료율 코드 QR" hidden></canvas>
         </div>
       </details>
 
@@ -261,7 +262,8 @@
     </footer>
   </div>
 
-  <script src="content.js?v=33"></script>
-  <script src="app.js?v=33"></script>
+  <script src="content.js?v=34"></script>
+  <script src="qr.js?v=34"></script>
+  <script src="app.js?v=34"></script>
 </body>
 </html>

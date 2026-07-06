@@ -10,6 +10,7 @@
 | `styles.css` | 디자인 토큰(CSS 변수), 카드·진행률·발표 모드·고도화 컴포넌트 스타일, 반응형 |
 | `content.js` | 단일 콘텐츠 출처. `const COURSE = { rookie, pro, master }`(강의 데이터)와 `const PROJECT_TRACKS`(현장·일상 프로젝트 아이디어 메뉴) |
 | `app.js` | 렌더링 엔진 + 상태 저장. `COURSE`만 읽어 화면을 그린다 |
+| `qr.js` | 외부 서버 의존 없는 로컬 QR 코드 인코더(전역 `drawQr(canvas, text)`). 완료율 코드 QR을 브라우저 안에서만 그린다 |
 | `docs/` | 점검·테스트·보안 문서 |
 
 빌드 단계·번들러·npm 의존성 없음. 정적 파일을 그대로 브라우저에서 실행하며 Vercel로 배포한다(`vercel.json`).
@@ -55,9 +56,10 @@
 - 현장 프로젝트 트랙(Phase 5): `renderProjectTracks`(content.js의 `PROJECT_TRACKS`를 읽어 ‘현장·일상 프로젝트 아이디어’ 패널에 카테고리·아이디어·추천 리그 배지로 1회 렌더, 진행 상태와 독립)
 - 자동 점검 루브릭(Phase 6): `auditHtml`(구조·제목·언어·이미지 alt·입력칸 안내·비밀 값을 통과/주의/위험으로 평가, 코드 미실행) · `auditGrade` · `renderAutoCheck`(build 실습 미리보기 아래 표시) · `findBuiltHtml`(저장된 `htmlCode` 탐색) → `collectPortfolioData.audit`로 포트폴리오에 요약
 - 학습 기록 이동: `exportProgressFile`/`importProgressFile`(JSON 파일 백업·복원으로 기기 이동 — 코드 복사 방식은 제거됨)
-- 완료율 코드(교사 수합용, 증분 4): `computeCompletionSnapshot`/`exportCompletionCode`/`decodeCompletionCode`(입력 텍스트는 담지 않고 리그별 완료 개수만 인코딩) · `renderCompletionSubmit`(학생 화면 코드·QR 표시) · `isCollectMode`/`initCollectMode`/`addCollectCodes`/`renderCollectTable`/`buildCollectTsv`(교사용 `?mode=collect` 화면, 별도 localStorage 키 `vibecoder-lab-collect-v1`)
-- 발표 모드: `buildSlides` · `renderPresSlide` · `renderPresNotes` · `enterPresentation`/`exitPresentation` · `handlePresKey`
+- 완료율 코드(교사 수합용, 증분 4): `computeCompletionSnapshot`/`exportCompletionCode`/`decodeCompletionCode`(입력 텍스트는 담지 않고 리그별 완료 개수만 인코딩) · `renderCompletionSubmit`(학생 화면 코드·QR 표시, QR은 `qr.js`의 `drawQr`로 브라우저 안에서만 렌더 — 외부 서버 요청 없음) · `isCollectMode`/`initCollectMode`/`addCollectCodes`/`renderCollectTable`/`buildCollectTsv`(교사용 `?mode=collect` 화면, 별도 localStorage 키 `vibecoder-lab-collect-v1`)
+- 발표 모드: `buildSlides` · `renderPresSlide` · `renderPresNotes` · `enterPresentation`/`exitPresentation`(포커스를 닫기 버튼으로 이동하고 종료 시 이전 포커스로 복귀) · `handlePresKey`
 - 도움: `renderHelp`(상황별 AI 프롬프트 생성)
+- 혼자 학습 보완: `buildSelfCheckPrompt`(실습 카드 하단, 강의 목표·수료 조건·확인하기 항목을 기준으로 AI에게 채점을 요청하는 프롬프트 생성) · `buildDiscussionPrompt`(생각해보기 섹션, 동료 토론용 질문을 AI 토론 상대용 프롬프트로 변환) · `confirmIncompleteChecks`(완료 처리 전 확인하기 미완료 항목이 있으면 한 번 확인, 강제 아님)
 
 ## 5. 사용자 입력 처리
 
@@ -78,3 +80,7 @@
 3. `app.js` 줄바꿈: 원본이 혼재(CRLF/LF). 편집 후 줄바꿈 보존에 유의(불필요한 대량 diff 방지).
 4. 발표 모드 슬라이드 증가: practice/checks 추가로 슬라이드 수↑.
 5. 미리보기 sandbox 완화 금지(`allow-same-origin` 재도입 시 취약).
+
+## 8. 2026-07 코드 리뷰 반영
+
+`practice.kind === "mini"` 분기(사용하는 강의 0개)를 제거했고, `updatePreview()`는 build 실습 전용으로 단순화했다. 완료율 QR을 외부 서버(api.qrserver.com) 대신 `qr.js`의 자체 인코더로 전환했다. 자세한 발견 사항·수정 내역은 `docs/code-review-2026-07.md` 참고.
