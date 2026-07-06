@@ -97,11 +97,12 @@ function applyCollapse(sel, key, hasContent) {
   el.hidden = !hasContent;
   el.open = !!(state.expandedSections && state.expandedSections[key]);
 }
-function bindCodeCopy() {
-  document.querySelectorAll(".inline-code").forEach((el) => {
-    el.addEventListener("click", () => {
-      navigator.clipboard?.writeText(el.textContent).then(() => toast("복사됐습니다."));
-    });
+/* 위임 클릭 리스너 1개로 처리 — 강의 전환·발표 모드 슬라이드마다 재바인딩하지 않는다. */
+function bindCodeCopyDelegate() {
+  document.body.addEventListener("click", (event) => {
+    const el = event.target.closest(".inline-code");
+    if (!el) return;
+    navigator.clipboard?.writeText(el.textContent).then(() => toast("복사됐습니다."));
   });
 }
 /* 페이지 객체의 practice.fields에서 key→label을 끌어온다(거대한 라벨 맵 대체). */
@@ -364,6 +365,7 @@ function renderHeader() {
   const coursePct = total ? Math.round(done / total * 100) : 0;
   $("#courseProgressBar").style.width = `${coursePct}%`;
   $("#courseProgressText").textContent = `${coursePct}%`;
+  $("#courseProgressTrack")?.setAttribute("aria-valuenow", String(coursePct));
 }
 
 function renderLesson() {
@@ -378,6 +380,7 @@ function renderLesson() {
   const levelPct = Math.round(levelDone / pages.length * 100);
   $("#levelProgressBar").style.width = `${levelPct}%`;
   $("#levelProgressText").textContent = `${levelPct}% 완료`;
+  $("#levelProgressTrack")?.setAttribute("aria-valuenow", String(levelPct));
 
   $("#pageTitle").textContent = p.title;
   $("#pageGoal").textContent = p.goal;
@@ -411,8 +414,6 @@ function renderLesson() {
     $("#externalGuide").innerHTML = "";
   }
   renderFacilitator(p);
-
-  bindCodeCopy();
 
   // 강의 이동 버튼 상태
   const order = Object.keys(COURSE);
@@ -604,9 +605,6 @@ function renderPractice() {
 function practiceHtml(p) {
   const pr = p.practice || { kind: "form", fields: [] };
   const inner = (pr.fields || []).map(fieldHtml).join("");
-  if (pr.kind === "mini") {
-    return wrapFields(inner + `<iframe id="miniPreview" class="mini-preview" title="미니 페이지 미리보기" sandbox=""></iframe>`);
-  }
   if (pr.kind === "build") {
     return wrapFields(inner +
       `<div id="previewWarn" class="preview-warn" hidden></div>` +
@@ -621,7 +619,8 @@ function practiceHtml(p) {
 }
 
 function wrapFields(inner) {
-  return `<div class="fields">${inner}<div id="result" class="result"></div></div>`;
+  return `<div class="fields">${inner}<div id="result" class="result"></div>
+    <button id="selfCheckPrompt" type="button" class="ghost">🔍 AI 점검 프롬프트 복사</button></div>`;
 }
 
 function fieldHtml(f) {
@@ -697,6 +696,45 @@ function bindPractice() {
     if (frame) frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:grid;place-items:center;background:#f3f4f6;font-family:sans-serif;color:#6b7280;font-size:14px}</style></head><body>미리보기를 멈췄습니다. 입력칸을 수정하면 다시 실행됩니다.</body></html>`;
     toast("미리보기를 멈췄습니다.");
   });
+  $("#selfCheckPrompt")?.addEventListener("click", () => copyText(buildSelfCheckPrompt(), "AI 점검 프롬프트를 복사했습니다."));
+}
+
+/* 혼자 학습자가 교사·동료 없이도 스스로 채점받을 수 있게 수료 조건·확인하기 항목을 AI 점검 기준으로 제시한다. */
+function buildSelfCheckPrompt() {
+  const p = currentPage();
+  const entries = Object.entries(pageState().fields).filter(([, v]) => String(v || "").trim());
+  const myInput = entries.length ? entries.map(([k, v]) => `- ${fieldLabel(p, k)}: ${v}`).join("\n") : "(아직 작성한 내용 없음)";
+  const criteria = [
+    ...(p.completionRequirements || []),
+    ...(p.checks || [])
+  ];
+  const criteriaText = criteria.length ? criteria.map((c) => `- ${c}`).join("\n") : "(제시된 기준 없음, 강의 목표를 기준으로 평가해줘)";
+  return [
+    "다음 학습 결과물을 아래 기준에 맞춰 항목별로 통과/보완 여부를 평가하고, 보완할 점을 구체적으로 알려줘.",
+    "",
+    `강의: ${p.title}`,
+    `목표: ${p.goal}`,
+    "",
+    "평가 기준:",
+    criteriaText,
+    "",
+    "내가 작성한 내용:",
+    myInput
+  ].join("\n");
+}
+
+/* 혼자 학습자를 위해 '생각해보기'(원래 동료 토론용) 질문을 AI 토론 상대로 대체한다. */
+function buildDiscussionPrompt() {
+  const p = currentPage();
+  const items = p.discussion || [];
+  const questions = items.length ? items.map((q) => `- ${q}`).join("\n") : "(제시된 질문 없음)";
+  return [
+    "아래 질문에 대해 내 생각을 먼저 물어보고, 내가 답하면 반례나 다른 관점을 들어 토론 상대가 되어줘. 바로 정답을 알려주지 말고 대화로 이끌어줘.",
+    "",
+    `강의: ${p.title}`,
+    "질문:",
+    questions
+  ].join("\n");
 }
 
 /* 코드 미리보기에서 API 키·비밀 의심 문자열을 정적 검사한다(확정 아님, 경고용). */
@@ -780,29 +818,24 @@ function findBuiltHtml() {
   return "";
 }
 
+/* #miniPreview는 build 실습에만 존재한다(다른 kind는 미리보기 프레임이 없다). */
 function updatePreview() {
   const frame = $("#miniPreview");
   if (!frame) return;
-  const p = currentPage();
-  if (p.practice?.kind === "build") {
-    const code = field("htmlCode", "").trim();
-    const warn = $("#previewWarn");
-    if (warn) {
-      const hits = detectSensitiveStrings(code);
-      if (hits.length) {
-        warn.innerHTML = `⚠️ 민감정보로 의심되는 문자열이 있습니다: <strong>${hits.map(escapeHtml).join(", ")}</strong>. 키는 브라우저 코드에 두지 말고, 배포·공유 전 반드시 제거하세요.`;
-        warn.hidden = false;
-      } else {
-        warn.hidden = true;
-      }
+  const code = field("htmlCode", "").trim();
+  const warn = $("#previewWarn");
+  if (warn) {
+    const hits = detectSensitiveStrings(code);
+    if (hits.length) {
+      warn.innerHTML = `⚠️ 민감정보로 의심되는 문자열이 있습니다: <strong>${hits.map(escapeHtml).join(", ")}</strong>. 키는 브라우저 코드에 두지 말고, 배포·공유 전 반드시 제거하세요.`;
+      warn.hidden = false;
+    } else {
+      warn.hidden = true;
     }
-    frame.srcdoc = code ||
-      `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
-    renderAutoCheck(code);
-    return;
   }
-  const color = /^#[0-9a-fA-F]{6}$/.test(field("color", "#0056d2")) ? field("color", "#0056d2") : "#0056d2";
-  frame.srcdoc = `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#f8faf6;font-family:sans-serif;color:#1f292c}main{width:min(88%,520px);border:1px solid #d8ded4;border-radius:8px;background:white;padding:24px}h1{color:${color};margin-top:0}button{border:0;border-radius:8px;background:${color};color:white;padding:10px 14px}</style></head><body><main><h1>${escapeHtml(field("appName", "오늘 할 일"))}</h1><p>${escapeHtml(field("screenText", "오늘 해야 할 일을 적고 하나씩 체크해 보세요."))}</p><button>할 일 추가</button></main></body></html>`;
+  frame.srcdoc = code ||
+      `<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>body{margin:0;min-height:100%;display:flex;align-items:center;justify-content:center;background:#f3f4f6;font-family:sans-serif;padding:40px;box-sizing:border-box}.card{background:#fff;border-radius:12px;padding:36px 28px;max-width:380px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.08)}.icon{font-size:44px;margin-bottom:14px}.msg{font-size:15px;line-height:1.75;color:#6b7280}</style></head><body><div class="card"><div class="icon">🖥️</div><p class="msg">AI에게 받은 HTML 코드를<br><b>위 입력칸에 붙여넣으면</b><br>여기서 바로 실행됩니다.</p></div></body></html>`;
+  renderAutoCheck(code);
 }
 
 /* 자동 점검 패널 렌더링(build 실습에서만). 입력이 바뀔 때마다 updatePreview에서 호출. */
@@ -1073,7 +1106,8 @@ function renderHelp() {
   ].join("\n");
 }
 
-/* 완료율 코드 패널: 이름 입력 + 코드/QR 생성(서버 전송 없음, 교사가 ?mode=collect에서 붙여넣어 수합) */
+/* 완료율 코드 패널: 이름 입력 + 코드/QR 생성(외부 서버 요청 없음, 브라우저 안에서 QR을 직접 그린다) */
+let lastRenderedQrCode = null;
 function renderCompletionSubmit() {
   const nameInput = $("#studentNameInput");
   const textHost = $("#submitCodeText");
@@ -1084,10 +1118,13 @@ function renderCompletionSubmit() {
   textHost.textContent = code;
   if (qrHost) {
     if (code) {
-      qrHost.src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(code)}`;
+      if (code !== lastRenderedQrCode) {
+        try { drawQr(qrHost, code); lastRenderedQrCode = code; } catch { qrHost.hidden = true; return; }
+      }
       qrHost.hidden = false;
     } else {
       qrHost.hidden = true;
+      lastRenderedQrCode = null;
     }
   }
 }
@@ -1192,7 +1229,6 @@ function renderPresSlide() {
   }
   $("#presSlide").innerHTML = html;
   renderPresNotes();
-  bindCodeCopy();
   $("#presCounter").textContent = `${presIdx + 1} / ${presSlides.length}`;
   $("#presPrev").disabled = presIdx === 0;
   $("#presNext").disabled = presIdx === presSlides.length - 1;
@@ -1202,6 +1238,7 @@ function renderPresSlide() {
   $("#presSlide").closest(".pres-stage").scrollTop = 0;
 }
 
+let presReturnFocus = null;
 function enterPresentation() {
   const page = currentPage();
   presSlides = buildSlides(page);
@@ -1213,6 +1250,8 @@ function enterPresentation() {
   overlay.setAttribute("aria-hidden", "false");
   renderPresSlide();
   document.addEventListener("keydown", handlePresKey);
+  presReturnFocus = document.activeElement;
+  $("#presClose")?.focus();
 }
 
 function exitPresentation() {
@@ -1220,6 +1259,8 @@ function exitPresentation() {
   overlay.classList.remove("active");
   overlay.setAttribute("aria-hidden", "true");
   document.removeEventListener("keydown", handlePresKey);
+  presReturnFocus?.focus();
+  presReturnFocus = null;
 }
 
 function handlePresKey(e) {
@@ -1252,7 +1293,18 @@ function goPrevLesson() {
   render();
 }
 
+/* 완료 처리 전 '확인하기' 미완료 항목이 있으면 한 번만 확인받는다(강제 아님, 혼자 학습 보완). */
+function confirmIncompleteChecks() {
+  const items = currentPage().checks || [];
+  if (!items.length) return true;
+  const ps = pageState();
+  const uncheckedCount = items.filter((_, idx) => !ps.checks[idx]).length;
+  if (!uncheckedCount) return true;
+  return confirm(`'확인하기' ${uncheckedCount}개가 아직 남아 있어요. 그래도 완료할까요?`);
+}
+
 function goNextLesson({ complete = false } = {}) {
+  if (complete && !confirmIncompleteChecks()) return;
   if (complete) pageState().complete = true;
   saveState();
   const order = Object.keys(COURSE);
@@ -1263,6 +1315,7 @@ function goNextLesson({ complete = false } = {}) {
     const i = order.indexOf(activeLevel);
     if (i >= order.length - 1) {
       if (complete) toast("모든 강의를 완료했습니다!");
+      render();
       return;
     }
     const finished = level().name;
@@ -1282,6 +1335,7 @@ function bindGlobal() {
     const pageBtn = event.target.closest("[data-page]");
     if (pageBtn) { activePage = Number(pageBtn.dataset.page); render(); }
   });
+  bindCodeCopyDelegate();
   $("#savePage").addEventListener("click", () => { saveState(); renderNotebook(); toast("저장했습니다."); });
   $("#prevPage").addEventListener("click", goPrevLesson);
   $("#topPrevPage").addEventListener("click", goPrevLesson);
@@ -1304,6 +1358,7 @@ function bindGlobal() {
   });
   $("#copyAll").addEventListener("click", () => copyText($("#notebook").value, "결과물을 복사했습니다."));
   $("#copyHelp").addEventListener("click", () => copyText($("#helpPrompt").textContent, "도움 요청을 복사했습니다."));
+  $("#discussAiPrompt")?.addEventListener("click", () => copyText(buildDiscussionPrompt(), "토론 프롬프트를 복사했습니다."));
   $("#presNotesToggle")?.addEventListener("click", () => { presNotesVisible = !presNotesVisible; renderPresNotes(); });
   // 집중 모드: 보조 섹션을 펼치면 그 선호를 기억해 다른 강의에서도 펼친 채로 보여 준다
   document.querySelectorAll("[data-collapse-key]").forEach((el) => {
@@ -1355,11 +1410,13 @@ function bindGlobal() {
 async function copyText(text, message) {
   try { await navigator.clipboard.writeText(text); toast(message); } catch { toast("복사 권한을 확인해주세요."); }
 }
+let toastTimer = null;
 function toast(message) {
   const node = $("#toast");
   node.textContent = message;
   node.classList.add("show");
-  setTimeout(() => node.classList.remove("show"), 1700);
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => node.classList.remove("show"), 1700);
 }
 
 /* 첫 방문(state.onboarded 없음)일 때만 1회용 안내를 띄운다. */
@@ -1367,6 +1424,7 @@ function maybeShowOnboarding() {
   const overlay = $("#onboardingOverlay");
   if (!overlay) return;
   overlay.hidden = !!state.onboarded;
+  if (!overlay.hidden) $("#onboardingStart")?.focus();
 }
 
 /* 현장·일상 프로젝트 아이디어 패널(Phase 5) — PROJECT_TRACKS를 읽어 한 번만 그린다. */
