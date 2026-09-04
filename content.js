@@ -409,9 +409,9 @@ const COURSE = {
         difficulty: "beginner",
         estimatedMinutes: 20,
         updatedAt: "2026-06-22",
-        completionRequirements: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
-        summary: "6번 루키 PRD를 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
-        reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 6번에서 만든 루키 PRD 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
+        completionRequirements: ["'루키 PRD 만들기'의 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
+        summary: "'루키 PRD 만들기'에서 완성한 요청문을 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
+        reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 앞 강의 '루키 PRD 만들기'에서 완성한 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
         terms: [
           { term: "HTML", def: "화면의 구조를 정의하는 코드. 제목·버튼·입력칸 등의 요소를 담습니다." },
           { term: "CSS", def: "HTML 요소의 색·크기·간격 등 시각적 스타일을 지정하는 코드." },
@@ -433,15 +433,15 @@ const COURSE = {
           "같은 요청을 ChatGPT와 Claude에 각각 보내면 결과가 다를까요? 어떻게 비교할 수 있을까요?"
         ],
         steps: [
-          "6번에서 만든 루키 PRD 요청문을 복사합니다.",
+          "'루키 PRD 만들기'에서 완성한 요청문을 복사합니다.",
           "ChatGPT(chat.openai.com)·Claude(claude.ai)·Gemini(gemini.google.com) 중 하나를 선택해 접속합니다.",
-          "입력창에 6번 요청문을 붙여넣고 HTML 전체 파일을 요청합니다.",
+          "입력창에 그 요청문을 붙여넣고 HTML 전체 파일을 요청합니다.",
           "받은 코드 전체를 아래 '코드 붙여넣기' 칸에 붙여넣어 미리보기로 확인합니다.",
           "성공 기준과 비교하며 동작하지 않는 부분을 찾습니다.",
           "문제를 구체적으로 적어 AI에게 수정 요청을 보내고 다시 붙여넣습니다.",
           "완성된 코드를 index.html 파일로 저장합니다."
         ],
-        externalGuide: "① 6번 루키 PRD 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 문제를 구체적으로 적어 수정 요청 → 반복",
+        externalGuide: "① '루키 PRD 만들기'의 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 문제를 구체적으로 적어 수정 요청 → 반복",
         links: [
           { label: "ChatGPT 열기", url: "https://chat.openai.com" },
           { label: "Claude 열기", url: "https://claude.ai" },
@@ -450,12 +450,12 @@ const COURSE = {
         practice: {
           kind: "build",
           fields: [
-            { key: "aiRequest", label: "6번 PRD 기반 AI 요청문", placeholder: "6번에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["6번 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
+            { key: "aiRequest", label: "루키 PRD 기반 AI 요청문", placeholder: "앞 강의에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["루키 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
             { key: "htmlCode", label: "AI가 준 HTML 코드 붙여넣기", placeholder: "AI에게 받은 HTML 코드를 여기 전체 붙여넣으세요. 아래에서 바로 실행됩니다." },
             { key: "debugLog", label: "수정·디버그 기록", placeholder: "예: 예산 합계가 NaN으로 나와서 '숫자만 계산되게 수정해 줘'라고 요청했고 정상 확인했다. / 모바일에서 버튼이 밀려서 간격을 줄여 달라고 요청했다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음", "모바일에서 화면이 밀림", "항목명이 내 주제와 맞지 않음", "색상 대비가 약함", "수정 후 다시 붙여넣어 확인함"] }
           ]
         },
-        checks: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"]
+        checks: ["'루키 PRD 만들기'의 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"]
       },
       {
         id: "deploy-rookie",
@@ -718,19 +718,21 @@ const COURSE = {
         id: "setup-pro",
         group: "환경 준비",
         title: "프로 환경 준비하기",
-        goal: "Git과 GitHub를 설정하고 AI 에이전트(Claude Code·Codex·Antigravity) 중 하나를 골라 Windows GUI 프로그램으로 실행할 수 있다.",
+        goal: "내 PC의 설치 가능 여부를 판단해 작업 환경을 정하고, AI 코딩 에이전트 하나를 프로젝트 폴더에 연결할 수 있다.",
         difficulty: "intermediate",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["Git이 준비됐다", "AI 에이전트를 선택했다", "프로젝트 폴더를 열었다", "GitHub 계정을 만들었다", "GitHub 연결 정보를 확인했다"],
-        summary: "프로의 핵심 스택은 AI 에이전트 + Git + GitHub입니다. 에이전트가 코드를 만들고, Git이 기록하고, GitHub가 보관·배포합니다.",
-        reading: "프로리그에서는 Windows GUI 프로그램 형태의 AI 에이전트가 코드를 직접 만들고 수정합니다. Claude Code, Codex, Antigravity를 각각 실행한 뒤 내 프로젝트 폴더를 열고, 작업 지시서를 붙여넣어 파일 수정과 기능 구현을 맡깁니다. 세 도구 모두 화면에서 프로젝트를 열고 요청을 넣고 결과를 확인하는 흐름으로 사용합니다. 공통으로 필요한 건 Git(변경 기록)과 GitHub(클라우드 저장·배포)입니다. 코드를 직접 열어 확인하고 싶다면 편집기를 추가로 써도 되지만, 핵심은 GUI 에이전트에서 프로젝트 폴더를 안전하게 열고 작업 범위와 보안 금지사항을 분명히 주는 것입니다.",
+        estimatedMinutes: 30,
+        updatedAt: "2026-09-04",
+        completionRequirements: ["설치 가능·불가 중 내 작업 환경을 정했다", "에이전트를 하나만 골라 프로젝트 폴더를 열었다", "GitHub 계정을 만들고 Git 사용자 정보를 설정했다"],
+        summary: "프로의 핵심 스택은 AI 에이전트 + Git + GitHub입니다. 에이전트가 코드를 만들고, Git이 기록하고, GitHub가 보관·배포합니다. 세 에이전트를 다 설치할 필요는 없고 하나만 고르면 됩니다.",
+        reading: "프로리그부터는 AI 에이전트가 파일 하나가 아니라 프로젝트 폴더 전체를 읽고 고칩니다.\n\n먼저 내 PC가 어느 쪽인지 정하세요. 프로그램을 설치할 수 있는 개인 PC라면 Claude Code·Codex·Antigravity 중 하나를 설치해 로컬에서 작업합니다. 학교·교무실 PC처럼 관리자 권한이 없어 설치가 막힌다면 브라우저만으로 진행할 수 있습니다. GitHub 저장소 화면에서 마침표(.) 키를 누르면 github.dev 웹 편집기가 열려 파일을 만들고 고칠 수 있고, 코드는 루키리그처럼 AI 웹 채팅에서 받아 붙여넣으면 됩니다. 설치 여부와 상관없이 이 리그의 학습 목표는 모두 달성할 수 있으니, 설치가 막혔다고 여기서 멈추지 마세요.\n\n세 에이전트는 제공 형태가 다릅니다. Claude Code는 터미널에서 쓰는 명령줄 도구이면서 VS Code·JetBrains 확장과 데스크톱 앱, 웹(claude.ai/code)으로도 씁니다. Codex는 명령줄 도구와 IDE 확장, 웹으로 제공됩니다. Antigravity는 에디터형 앱을 설치해 씁니다. 셋 다 설치할 필요는 없고 하나만 골라 끝까지 쓰면 됩니다.\n\n마지막으로 Node.js가 필요한지 판단합니다. HTML·CSS·JS 파일만 쓰는 앱이라면 필요 없습니다. 에이전트가 React나 Vite 같은 구조로 프로젝트를 만들어 package.json 파일이 생겼다면 그때 Node.js를 설치하면 됩니다. 미리 설치할 필요는 없습니다.",
         terms: [
-          { term: "Claude Code", def: "프로젝트 폴더를 열고 파일 수정·테스트·Git 작업을 도와주는 Windows GUI AI 개발 프로그램." },
-          { term: "Codex", def: "프로젝트 폴더를 열어 코드 분석, 수정 제안, 구현 보조를 할 수 있는 Windows GUI AI 개발 프로그램." },
-          { term: "Antigravity", def: "화면 흐름과 멀티스텝 작업을 맡기기 좋은 Windows GUI AI 개발 프로그램." },
+          { term: "Claude Code", def: "Anthropic의 AI 코딩 에이전트. 터미널 명령줄 도구가 기본이고 VS Code·JetBrains 확장, 데스크톱 앱, 웹으로도 쓴다." },
+          { term: "Codex", def: "OpenAI의 AI 코딩 에이전트. 명령줄 도구와 IDE 확장, 웹으로 제공된다." },
+          { term: "Antigravity", def: "에디터형으로 설치해 쓰는 AI 개발 도구. 화면 흐름과 여러 단계 작업을 이어서 맡기기 좋다." },
           { term: "Git", def: "파일 변경을 저장하고 GitHub에 올리는 버전 관리 도구." },
-          { term: "프로젝트 폴더", def: "에이전트가 읽고 수정할 HTML·CSS·JS 파일이 들어 있는 작업 폴더." }
+          { term: "프로젝트 폴더", def: "에이전트가 읽고 수정할 HTML·CSS·JS 파일이 들어 있는 작업 폴더." },
+          { term: "설치 제한 환경", def: "관리자 권한이 없어 프로그램을 설치할 수 없는 PC. 학교·교무실 PC가 대개 여기 해당하며, 브라우저 경로로 우회한다." },
+          { term: "Node.js", def: "JavaScript를 브라우저 밖에서 실행하는 도구. package.json이 있는 프로젝트에서만 필요하다." }
         ],
         visual: {
           type: "layers",
@@ -743,18 +745,21 @@ const COURSE = {
           ]
         },
         discussion: [
-          "Claude Code·Codex·Antigravity 중 내 작업 방식에 가장 잘 맞는 GUI 에이전트는 무엇이고, 그 이유는?",
+          "내 PC는 설치가 가능한가요, 브라우저 경로로 가야 하나요? 그 판단 근거는 무엇인가요?",
           "에이전트가 Git 커밋까지 자율로 처리하게 하려면 어떤 조건을 먼저 설정해야 할까요?"
         ],
         steps: [
-          "git-scm.com/downloads 에서 Git을 다운로드해 설치합니다. 설치 마법사는 기본값 그대로 Next를 눌러도 됩니다.",
-          "Git이 설치됐는지 확인합니다. Git Bash나 PowerShell에서 `git --version` 을 입력해도 되고, GUI 에이전트 안에서 Git 연결 상태를 확인해도 됩니다.",
-          "Claude Code, Codex, Antigravity 중 사용할 Windows GUI 프로그램을 설치하거나 실행합니다.",
-          "에이전트에서 내 프로젝트 폴더를 엽니다.",
-          "github.com 에서 계정을 만듭니다(Sign up). 이메일·비밀번호·사용자 이름을 입력합니다.",
-          "에이전트 또는 Git 설정 화면에서 GitHub 계정과 사용자 이름·이메일을 연결합니다."
+          "먼저 내 PC에 프로그램을 설치할 수 있는지 확인합니다. 아무 설치 파일이나 실행했을 때 관리자 비밀번호를 요구하며 막히면 '설치 불가'입니다.",
+          "[설치 가능] git-scm.com/downloads 에서 Git을 내려받아 설치합니다. 설치 마법사는 기본값 그대로 Next를 눌러도 됩니다.",
+          "[설치 가능] PowerShell이나 Git Bash를 열고 `git --version` 을 입력해 버전이 나오는지 확인합니다.",
+          "[설치 가능] 커밋에 기록될 내 정보를 설정합니다. `git config --global user.name \"내이름\"` 과 `git config --global user.email \"내메일@example.com\"` 을 차례로 입력합니다.",
+          "[설치 가능] Claude Code·Codex·Antigravity 중 하나만 골라 각 공식 페이지의 안내대로 설치하고 실행한 뒤, 내 프로젝트 폴더를 엽니다.",
+          "[설치 불가] 설치를 건너뛰고 브라우저로 진행합니다. GitHub 저장소 화면에서 마침표(.) 키를 누르면 github.dev 웹 편집기가 열립니다. 코드는 AI 웹 채팅에서 받아 이 편집기에 붙여넣습니다.",
+          "[공통] github.com 에서 계정을 만듭니다(Sign up). 이메일·비밀번호·사용자 이름을 입력합니다.",
+          "[공통] 프로젝트 폴더가 아직 없다면 바탕화면에 폴더를 하나 만들고 그 안에 빈 index.html 파일을 둡니다. 이 폴더가 앞으로의 작업 공간입니다.",
+          "package.json 파일이 생기기 전까지는 Node.js를 설치하지 않습니다. 생기면 그때 nodejs.org에서 LTS 버전을 받아 설치하고 `node -v` 로 확인합니다."
         ],
-        externalGuide: "① git-scm.com → Git 설치 ② Claude Code·Codex·Antigravity 중 하나 실행 ③ GUI에서 프로젝트 폴더 열기 ④ github.com → Sign up ⑤ 에이전트 또는 Git 설정 화면에서 GitHub 계정 연결.",
+        externalGuide: "설치 가능한 PC: ① git-scm.com → Git 설치 ② `git --version` 확인 ③ `git config --global user.name`·`user.email` 설정 ④ 에이전트 하나 설치·실행 ⑤ 프로젝트 폴더 열기 ⑥ github.com → Sign up.  설치 불가한 PC: ① github.com → Sign up ② 저장소 만들기 ③ 저장소 화면에서 마침표(.) 키 → github.dev 웹 편집기 ④ AI 웹 채팅에서 코드를 받아 붙여넣기.",
         links: [
           { label: "Git 다운로드", url: "https://git-scm.com/downloads" },
           { label: "Claude Code", url: "https://claude.ai/code" },
@@ -765,13 +770,18 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "gitVersion", label: "git --version 결과", input: "text", placeholder: "예: git version 2.44.0", chips: ["git version 2.44.0", "git version 2.43.0"] },
-            { key: "agentChoice", label: "주로 사용할 에이전트", input: "select", options: ["Claude Code", "Codex", "Antigravity"], value: "Claude Code" },
+            { key: "workEnv", label: "내 작업 환경", input: "choice", value: "설치 가능(로컬 에이전트)", choices: [
+              { value: "설치 가능(로컬 에이전트)", desc: "개인 PC — Git과 에이전트를 설치해 프로젝트 폴더에서 작업" },
+              { value: "설치 불가(브라우저)", desc: "학교·교무실 PC — github.dev 웹 편집기 + AI 웹 채팅으로 진행" }
+            ] },
+            { key: "gitVersion", label: "git --version 결과(설치한 경우)", input: "text", placeholder: "예: git version 2.44.0", chips: ["git version 2.44.0", "설치 불가라 건너뜀"] },
+            { key: "agentChoice", label: "끝까지 쓸 에이전트 하나", input: "select", options: ["Claude Code", "Codex", "Antigravity", "AI 웹 채팅(설치 불가)"], value: "Claude Code" },
             { key: "githubUsername", label: "GitHub 사용자 이름", input: "text", placeholder: "예: myusername" },
-            { key: "setupNote", label: "막힌 부분 메모", input: "text", placeholder: "예: 에이전트에서 프로젝트 폴더를 열 수 없음", chips: ["설치 완료, 이상 없음", "프로젝트 폴더 열기 어려움", "GitHub 연결 오류", "Git 설정 확인 필요"] }
+            { key: "projectFolder", label: "프로젝트 폴더 위치(또는 저장소 이름)", input: "text", placeholder: "예: C:\\Users\\내이름\\Desktop\\travel-prep-app 또는 github.com/myusername/travel-prep-app" },
+            { key: "setupNote", label: "막힌 부분 메모", input: "text", placeholder: "예: 설치가 관리자 권한으로 막혀 브라우저 경로로 전환함", chips: ["설치 완료, 이상 없음", "관리자 권한으로 설치 막힘 → 브라우저 경로", "프로젝트 폴더 열기 어려움", "GitHub 연결 오류"] }
           ]
         },
-        checks: ["Git이 준비됐다", "AI 에이전트를 선택했다", "프로젝트 폴더를 열었다", "GitHub 계정을 만들었다", "GitHub 연결 정보를 확인했다"]
+        checks: ["설치 가능·불가 중 내 경로를 정했다", "에이전트(또는 웹 편집기)에서 내 프로젝트 폴더·저장소가 화면에 보인다", "github.com에 로그인하면 내 사용자 이름이 보인다"]
       },
       {
         id: "package-choice",
@@ -1197,31 +1207,31 @@ const COURSE = {
         estimatedMinutes: 20,
         updatedAt: "2026-06-22",
         completionRequirements: ["작업 지시서를 만들었다", "보안 금지사항을 넣었다", "먼저 질문하라는 문구를 넣었다"],
-        summary: "Claude Code·Codex·Antigravity, 세 GUI 에이전트는 각각 강점이 다릅니다. 어느 것을 쓰든 '이번에 이만큼, 이 범위 안에서'라는 명확한 지시서가 핵심입니다.",
-        reading: "프로리그에서 사용하는 AI 에이전트는 세 가지입니다. Claude Code는 프로젝트 폴더를 열어 여러 파일을 함께 수정하고 테스트 흐름을 점검하는 데 강합니다. Codex는 기존 코드를 읽고 문제를 찾거나 수정 방향을 빠르게 제안받을 때 좋습니다. Antigravity는 화면 흐름을 보며 여러 단계의 작업을 이어서 맡기기 좋습니다. 세 도구 모두 Windows GUI 프로그램으로 실행해 프로젝트 폴더를 열고, 작업 지시서를 입력해 사용합니다. 어느 도구를 선택하든 작업 지시서는 같습니다 — PRD 요약, 이번 작업 범위, 손대지 말 것, 먼저 물어볼 조건.",
+        summary: "Claude Code·Codex·Antigravity는 제공 형태와 강점이 다릅니다. 어느 것을 쓰든 '이번에 이만큼, 이 범위 안에서'라는 명확한 지시서가 핵심입니다.",
+        reading: "프로리그에서 소개하는 AI 에이전트는 세 가지입니다. Claude Code는 프로젝트 폴더 전체를 읽어 여러 파일을 함께 수정하고 테스트 흐름을 점검하는 데 강하며, 터미널 명령줄 도구가 기본이고 IDE 확장·데스크톱 앱·웹으로도 씁니다. Codex는 기존 코드를 읽고 문제를 찾거나 수정 방향을 빠르게 제안받을 때 좋으며, 명령줄 도구·IDE 확장·웹으로 제공됩니다. Antigravity는 에디터형 앱으로, 화면 흐름을 보며 여러 단계의 작업을 이어서 맡기기 좋습니다. 앞 강의에서 설치가 막혀 브라우저 경로를 택했다면 AI 웹 채팅을 에이전트 자리에 놓고 그대로 진행하면 됩니다.\n\n중요한 것은 도구 선택이 아니라 지시서입니다. 어느 도구를 쓰든 작업 지시서의 뼈대는 같습니다 — PRD 요약, 이번 작업 범위, 손대지 말 것, 먼저 물어볼 조건. 범위를 좁게 자를수록 결과를 검증하기 쉬워집니다.",
         terms: [
           { term: "AI 에이전트", def: "단순 답변이 아닌 코드 작성·파일 수정·실행까지 직접 처리하는 AI 도구." },
-          { term: "Claude Code", def: "프로젝트 폴더를 열어 여러 파일 수정과 테스트 점검을 도와주는 GUI 에이전트." },
-          { term: "Codex", def: "코드 분석, 수정 제안, 구현 보조를 도와주는 GUI 에이전트." },
-          { term: "Antigravity", def: "화면 흐름과 멀티스텝 작업을 이어서 맡기기 좋은 GUI 에이전트." },
+          { term: "Claude Code", def: "여러 파일 수정과 테스트 점검에 강한 AI 코딩 에이전트. 터미널 명령줄 도구가 기본이며 IDE 확장·데스크톱 앱·웹으로도 쓴다." },
+          { term: "Codex", def: "코드 분석, 수정 제안, 구현 보조에 쓰는 AI 코딩 에이전트. 명령줄 도구·IDE 확장·웹으로 제공된다." },
+          { term: "Antigravity", def: "화면 흐름과 여러 단계 작업을 이어서 맡기기 좋은 에디터형 AI 개발 도구." },
           { term: "작업 지시서", def: "PRD에서 이번 작업 범위를 잘라낸 실행 요청 문서." }
         ],
         visual: {
           type: "compare",
           caption: "AI 에이전트 비교",
           columns: [
-            { label: "Claude Code", items: ["Windows GUI 프로그램", "프로젝트 폴더 열기", "파일·Git·테스트 흐름 점검", "복잡한 리팩터링에 강함"] },
-            { label: "Codex", items: ["Windows GUI 프로그램", "자연어 → 코드 수정", "기존 코드 분석·수정", "빠른 문제 해결"] },
-            { label: "Antigravity", items: ["Windows GUI 프로그램", "화면 흐름 기반 작업", "멀티스텝 작업 위임", "빠른 프로토타이핑"] }
+            { label: "Claude Code", items: ["터미널·IDE 확장·웹", "프로젝트 폴더 전체 읽기", "파일·Git·테스트 흐름 점검", "복잡한 리팩터링에 강함"] },
+            { label: "Codex", items: ["터미널·IDE 확장·웹", "자연어 → 코드 수정", "기존 코드 분석·수정", "빠른 문제 해결"] },
+            { label: "Antigravity", items: ["에디터형 앱 설치", "화면 흐름 기반 작업", "멀티스텝 작업 위임", "빠른 프로토타이핑"] }
           ]
         },
         discussion: [
-          "Claude Code·Codex·Antigravity 중 현재 프로젝트에 어떤 GUI 도구가 가장 적합할까요?",
+          "Claude Code·Codex·Antigravity 중 현재 프로젝트에 어떤 도구가 가장 적합할까요?",
           "작업 범위를 좁혀서 지시하면 어떤 이점이 생기나요?"
         ],
         steps: [
           "사용할 AI 에이전트를 선택합니다 (Claude Code·Codex·Antigravity).",
-          "선택한 GUI 프로그램에서 프로젝트 폴더를 엽니다.",
+          "선택한 도구에서 프로젝트 폴더를 엽니다. 브라우저 경로라면 github.dev 편집기와 AI 웹 채팅 탭을 함께 엽니다.",
           "아래 실습칸에 PRD 요약을 붙여넣습니다.",
           "이번 작업에서 구현할 범위를 구체적으로 적습니다.",
           "손대지 말아야 할 부분을 명시합니다.",
@@ -1254,18 +1264,19 @@ const COURSE = {
         updatedAt: "2026-06-22",
         completionRequirements: ["변경된 파일을 기록했다", "실행 위치를 기록했다", "PRD의 기능이 모두 동작한다", "Secret·개인정보 노출을 점검했다"],
         summary: "프로리그 앱은 단일 HTML 붙여넣기가 아니라 프로젝트 폴더에서 구현합니다. 변경 파일, 실행 주소, 기능 점검, 보안 점검을 기록합니다.",
-        reading: "이 단계에서는 앞에서 만든 작업 지시서를 실제로 AI 에이전트에 넣어 프로젝트를 수정합니다. Claude Code, Codex, Antigravity 중 선택한 Windows GUI 프로그램에서 프로젝트 폴더를 열고 지시서를 붙여넣습니다. 프로리그 앱은 Open-Meteo 호출, 샘플 쇼핑 응답, 예산 계산, 보안 점검이 함께 들어가므로 단일 HTML 파일로 붙여넣어 확인하는 방식이 맞지 않습니다. 대신 에이전트가 어떤 파일을 만들거나 수정했는지, 어떤 주소나 파일로 실행 확인했는지, 어떤 기능이 통과했는지를 기록합니다. 동시에 코드에 Secret, API_KEY, password, token 같은 값이 들어가지 않았는지 확인합니다. '기능 A는 동작하지만 B가 안 된다'처럼 구체적으로 재요청하는 것이 포인트입니다.",
+        reading: "이 단계에서는 앞에서 만든 작업 지시서를 실제로 AI 에이전트에 넣어 프로젝트를 수정합니다. 프로리그 앱은 Open-Meteo 호출, 샘플 쇼핑 응답, 예산 계산, 보안 점검이 함께 들어가므로 파일이 여러 개로 늘어납니다.\n\n루키리그와 가장 크게 달라지는 점은 '내가 직접 실행해 봐야 한다'는 것입니다. 실행 방법은 프로젝트 모양에 따라 셋 중 하나입니다. 파일이 index.html 하나뿐이면 그 파일을 더블클릭해 브라우저로 엽니다. HTML·CSS·JS 파일이 여러 개면 VS Code의 Live Server 확장으로 열어 http://127.0.0.1:5500 같은 주소에서 확인합니다. 폴더에 package.json이 생겼다면 그 폴더에서 `npm install` 을 한 번 실행한 뒤 `npm run dev` 로 띄우고, 터미널에 뜬 주소(예: http://localhost:5173)를 브라우저에 엽니다.\n\n화면이 하얗게 뜨거나 버튼이 안 먹으면 F12를 눌러 Console 탭의 빨간 글자를 확인하세요. 그 문구가 원인을 좁히는 가장 빠른 단서입니다. 에이전트가 어떤 파일을 만들거나 고쳤는지, 어떤 주소에서 확인했는지, 어떤 기능이 통과했는지를 기록하고, 코드에 Secret·API_KEY·password·token 같은 값이 들어가지 않았는지 함께 확인합니다. '기능 A는 동작하지만 B가 안 된다'처럼 구체적으로 재요청하는 것이 포인트입니다.",
         terms: [
           { term: "AI 에이전트", def: "코드 생성뿐 아니라 파일 수정·실행·테스트까지 처리하는 AI 도구." },
           { term: "구현(Implementation)", def: "설계한 기능을 실제로 동작하게 코드로 만드는 과정." },
           { term: "이터레이션", def: "'지시 → 결과 확인 → 수정 요청'을 한 번 순환하는 사이클." },
-          { term: "Claude Code", def: "프로젝트 폴더를 열어 파일·Git·테스트 흐름을 점검하도록 도와주는 GUI 에이전트." }
+          { term: "로컬 서버", def: "내 컴퓨터에서만 열리는 임시 주소(http://localhost:...). 여러 파일로 나뉜 앱을 제대로 실행할 때 쓴다." },
+          { term: "개발자 도구(F12)", def: "브라우저에 내장된 점검 창. Console 탭의 빨간 글자가 오류 원인을 알려 준다." }
         ],
         visual: {
           type: "flow",
           caption: "프로 구현 점검 흐름",
           steps: [
-            { label: "프로젝트 열기", sub: "GUI 에이전트" },
+            { label: "프로젝트 열기", sub: "에이전트·편집기" },
             { label: "지시서 입력", sub: "범위·금지사항" },
             { label: "파일 변경 확인", sub: "무엇이 바뀌었나" },
             { label: "기능 검증", sub: "PRD 기준" },
@@ -1278,7 +1289,7 @@ const COURSE = {
         ],
         steps: [
           "앞에서 선택한 AI 에이전트를 엽니다.",
-          "GUI 프로그램에서 프로젝트 폴더를 열고 작업 지시서를 붙여넣습니다.",
+          "선택한 도구에서 프로젝트 폴더를 열고 작업 지시서를 붙여넣습니다.",
           "에이전트가 수정한 파일 목록을 확인합니다.",
           "로컬 실행 주소나 열어 본 파일 경로를 기록합니다.",
           "코드에서 SECRET, API_KEY, CLIENT_SECRET, password, token 같은 단어를 검색합니다.",
@@ -1286,7 +1297,7 @@ const COURSE = {
           "동작하지 않는 기능은 'OO 기능이 작동하지 않습니다. 원인을 찾아 수정해 줘'처럼 구체적으로 재요청합니다.",
           "모든 기능과 보안 기준을 확인한 결과를 아래 실습 칸에 기록합니다."
         ],
-        externalGuide: "① GUI 에이전트 실행 ② 프로젝트 폴더 열기 ③ 지시서 붙여넣기 ④ 변경 파일 확인 ⑤ 브라우저에서 실행 확인 ⑥ 보안 검색 ⑦ 미동작 기능 구체적 재요청 ⑧ 작업 기록 정리",
+        externalGuide: "① 에이전트 실행 ② 프로젝트 폴더 열기 ③ 지시서 붙여넣기 ④ 변경 파일 확인 ⑤ 브라우저에서 실행 확인 ⑥ 보안 검색 ⑦ 미동작 기능 구체적 재요청 ⑧ 작업 기록 정리",
         links: [
           { label: "Claude Code", url: "https://claude.ai/code" },
           { label: "Antigravity", url: "https://antigravity.dev" },
