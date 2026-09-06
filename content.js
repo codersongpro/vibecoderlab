@@ -117,6 +117,8 @@ const COURSE = {
           "gemini.google.com → Google 계정으로 로그인합니다. Google 계정이 없다면 accounts.google.com/signup에서 먼저 만드세요.",
           "canva.com → 'Sign up for free'. 이메일 또는 Google 계정으로 가입합니다.",
           "app.netlify.com → 'Sign up'. GitHub 또는 이메일로 가입합니다.",
+          "가입 메일이 오지 않으면 먼저 스팸함을 확인합니다. 학교·회사 계정은 관리자 정책으로 외부 가입이 막히는 경우가 있으니, 막히면 개인 Gmail 같은 개인 메일로 다시 가입합니다.",
+          "다섯 개를 다 만들지 못해도 됩니다. AI 도구 1개 + Netlify만 있으면 다음 강의로 진행할 수 있습니다.",
           "각 탭을 열어 로그인 상태를 확인하고, 아래 실습 칸에 체크합니다."
         ],
         externalGuide: "가입 순서: ① chat.openai.com ② claude.ai ③ gemini.google.com ④ canva.com ⑤ app.netlify.com. 모두 무료 플랜으로 충분합니다.",
@@ -405,17 +407,19 @@ const COURSE = {
         id: "build-rookie",
         group: "내 앱 만들기",
         title: "AI에게 코드 받아 실행하기",
-        goal: "ChatGPT·Claude·Gemini 중 하나로 HTML 코드를 받아 직접 실행해 본다.",
+        goal: "AI에게 HTML 코드를 받아 실행하고, 오류가 나면 원인을 찾아 고칠 수 있다.",
         difficulty: "beginner",
-        estimatedMinutes: 20,
-        updatedAt: "2026-06-22",
+        estimatedMinutes: 30,
+        updatedAt: "2026-09-06",
         completionRequirements: ["'루키 PRD 만들기'의 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
         summary: "'루키 PRD 만들기'에서 완성한 요청문을 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
         reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 앞 강의 '루키 PRD 만들기'에서 완성한 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
         terms: [
           { term: "HTML", def: "화면의 구조를 정의하는 코드. 제목·버튼·입력칸 등의 요소를 담습니다." },
           { term: "CSS", def: "HTML 요소의 색·크기·간격 등 시각적 스타일을 지정하는 코드." },
-          { term: "JS(JavaScript)", def: "버튼 클릭·입력 처리 같은 동적 동작을 구현하는 코드." }
+          { term: "JS(JavaScript)", def: "버튼 클릭·입력 처리 같은 동적 동작을 구현하는 코드." },
+          { term: "개발자 도구(F12)", def: "브라우저에 내장된 점검 창. 키보드 F12를 누르면 열린다." },
+          { term: "콘솔(Console)", def: "개발자 도구의 한 탭. 코드가 멈춘 이유가 빨간 글자로 표시된다." }
         ],
         visual: {
           type: "flow",
@@ -438,10 +442,14 @@ const COURSE = {
           "입력창에 그 요청문을 붙여넣고 HTML 전체 파일을 요청합니다.",
           "받은 코드 전체를 아래 '코드 붙여넣기' 칸에 붙여넣어 미리보기로 확인합니다.",
           "성공 기준과 비교하며 동작하지 않는 부분을 찾습니다.",
-          "문제를 구체적으로 적어 AI에게 수정 요청을 보내고 다시 붙여넣습니다.",
+          "오류를 고칠 때는 네 단계를 따릅니다. ① 기대한 것과 실제로 무엇이 다른지 한 문장으로 적습니다. 예: '합계 버튼을 눌렀는데 숫자 대신 NaN이 뜬다.'",
+          "② 키보드 F12를 눌러 개발자 도구를 열고 Console 탭의 빨간 글자를 전체 복사합니다. 빨간 글자가 없으면 이 단계는 건너뜁니다.",
+          "③ AI에게 이렇게 재요청합니다. '이 코드에서 (①의 증상)이 나고 콘솔에 (②의 에러)가 뜬다. 원인을 찾아 최소한만 고쳐 줘. 다른 기능은 그대로 둬.'",
+          "④ 받은 코드를 다시 붙여넣어 그 증상이 사라졌는지 확인합니다. 남아 있으면 ①로 돌아갑니다.",
+          "화면 모양을 먼저 잡고 싶다면 'Canva AI로 화면 초안 만들기' 강의를 앞당겨 보고, 만든 그림을 AI에게 첨부해 요청해도 됩니다.",
           "완성된 코드를 index.html 파일로 저장합니다."
         ],
-        externalGuide: "① '루키 PRD 만들기'의 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 문제를 구체적으로 적어 수정 요청 → 반복",
+        externalGuide: "① '루키 PRD 만들기'의 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 안 되면 F12 → Console의 빨간 글자를 복사해 '이 증상, 이 에러. 최소한만 고쳐 줘'로 재요청 ⑦ 다시 붙여넣어 확인 → 반복",
         links: [
           { label: "ChatGPT 열기", url: "https://chat.openai.com" },
           { label: "Claude 열기", url: "https://claude.ai" },
@@ -452,7 +460,7 @@ const COURSE = {
           fields: [
             { key: "aiRequest", label: "루키 PRD 기반 AI 요청문", placeholder: "앞 강의에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["루키 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
             { key: "htmlCode", label: "AI가 준 HTML 코드 붙여넣기", placeholder: "AI에게 받은 HTML 코드를 여기 전체 붙여넣으세요. 아래에서 바로 실행됩니다." },
-            { key: "debugLog", label: "수정·디버그 기록", placeholder: "예: 예산 합계가 NaN으로 나와서 '숫자만 계산되게 수정해 줘'라고 요청했고 정상 확인했다. / 모바일에서 버튼이 밀려서 간격을 줄여 달라고 요청했다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음", "모바일에서 화면이 밀림", "항목명이 내 주제와 맞지 않음", "색상 대비가 약함", "수정 후 다시 붙여넣어 확인함"] }
+            { key: "debugLog", label: "수정·디버그 기록(증상 → 에러 → 요청 → 결과)", placeholder: "예: 합계 버튼을 눌렀더니 NaN이 떴다. 콘솔에 'Cannot read properties of null'이 있었다. '이 증상과 에러, 원인만 최소로 고쳐 줘'로 재요청했고 다시 붙여넣으니 합계가 정상 표시됐다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음(NaN)", "모바일에서 화면이 밀림", "콘솔 빨간 글자를 복사해 첨부함", "빨간 글자는 없고 동작만 다름", "수정 후 다시 붙여넣어 확인함"] }
           ]
         },
         checks: ["'루키 PRD 만들기'의 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"]
@@ -483,9 +491,10 @@ const COURSE = {
           "'Sites' 탭에서 점선 영역에 index.html 파일을 드래그&드롭합니다.",
           "몇 초 후 자동으로 URL이 생성됩니다.",
           "생성된 배포 링크를 열어 앱이 잘 열리는지 확인합니다.",
-          "배포 링크를 아래에 기록합니다."
+          "Netlify 가입이나 업로드가 막히면 순서대로 대안을 시도합니다. ① vercel.com에 가입해 같은 방식으로 폴더를 끌어다 놓습니다. ② 그것도 막히면 GitHub 저장소를 만들고 Settings → Pages에서 브랜치를 선택해 공개합니다. ③ 인터넷 배포가 모두 막힌 환경이라면 index.html 파일 자체를 메신저나 메일로 전달하고, 받는 사람이 파일을 더블클릭해 열도록 안내합니다.",
+          "배포 링크를 아래에 기록합니다. 파일로 전달했다면 그 방법을 적습니다."
         ],
-        externalGuide: "① Netlify에 접속해 로그인합니다. ② 'Sites' 탭의 점선 영역에 index.html 파일을 드래그&드롭합니다. ③ 몇 초 후 자동 생성된 URL을 복사해 아래에 기록합니다. ④ 브라우저에서 URL을 열어 앱이 정상 동작하는지 확인합니다.",
+        externalGuide: "① Netlify에 접속해 로그인합니다. ② 'Sites' 탭의 점선 영역에 index.html 파일을 드래그&드롭합니다. ③ 몇 초 후 자동 생성된 URL을 복사해 아래에 기록합니다. ④ 브라우저에서 URL을 열어 앱이 정상 동작하는지 확인합니다.  막혔을 때: Netlify → Vercel(같은 드래그&드롭) → GitHub Pages(Settings → Pages) → 파일 직접 전달 순으로 내려갑니다.",
         links: [
           { label: "Netlify 열기", url: "https://app.netlify.com" },
           { label: "Vercel 열기", url: "https://vercel.com" }
@@ -502,9 +511,9 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "platform", label: "사용한 배포 서비스", input: "select", options: ["Netlify", "Vercel"], value: "Netlify" },
+            { key: "platform", label: "사용한 배포 서비스", input: "select", options: ["Netlify", "Vercel", "GitHub Pages", "파일로 직접 전달"], value: "Netlify" },
             { key: "deployUrl", label: "배포된 링크(URL)", input: "text", placeholder: "예: https://my-first-app.netlify.app" },
-            { key: "deployNote", label: "배포하며 어려웠던 점 / 해결 방법", placeholder: "예: 파일 이름을 index.html로 바꾸니 바로 열렸다." }
+            { key: "deployNote", label: "배포하며 어려웠던 점 / 해결 방법", placeholder: "예: 파일 이름을 index.html로 바꾸니 바로 열렸다. / 학교망에서 Netlify 가입이 막혀 Vercel로 대신 배포했다.", chips: ["파일명을 index.html로 바꾸니 해결", "Netlify가 막혀 Vercel로 전환", "GitHub Pages로 전환", "이상 없이 한 번에 배포됨"] }
           ]
         },
         checks: ["Netlify 또는 Vercel에 파일을 올렸다", "배포 링크가 실제로 열린다", "배포 URL을 기록했다"]
@@ -613,13 +622,13 @@ const COURSE = {
         id: "canva",
         group: "AI 도구 연습",
         title: "Canva AI로 화면 초안 만들기",
-        goal: "Canva Magic Design에 붙여넣을 화면 요청문을 만들고, 생성된 초안을 저장할 수 있다.",
+        goal: "Canva Magic Design으로 다음 버전 화면 초안을 만들어 AI 수정 요청에 활용할 수 있다.",
         difficulty: "beginner",
         estimatedMinutes: 20,
         updatedAt: "2026-06-22",
         completionRequirements: ["화면에 들어갈 요소를 정했다", "Canva Magic Design 요청문을 만들었다", "초안을 생성하거나 스크린샷을 저장했다"],
-        summary: "Canva의 Magic Design에 한 문장을 붙여넣으면 앱 화면처럼 생긴 디자인 초안이 나옵니다. 코드는 없지만, 이 그림을 AI에게 보여 주면 훨씬 정확한 코드를 받을 수 있습니다.",
-        reading: "Canva의 Magic Design은 텍스트로 원하는 화면을 설명하면 여러 디자인 초안을 자동으로 만들어 주는 AI 기능입니다. 여기서 만들어지는 건 실제로 동작하는 앱이 아니라, '이런 모양이면 좋겠다'는 화면 그림입니다. 하지만 이 그림이 있으면 ChatGPT나 Claude에 '이 화면처럼 만들어 줘'라고 보여 줄 수 있어, 코드 요청이 훨씬 정확해집니다. 사용 흐름은 이렇습니다: ① 아래에 요청문을 작성 → ② canva.com에서 Magic Design에 붙여넣기 → ③ 마음에 드는 초안 선택 → ④ 스크린샷 저장 → ⑤ AI 코드 요청 시 참고로 첨부.",
+        summary: "이미 만든 앱의 다음 버전을 구상하는 단계입니다. Magic Design으로 원하는 화면 그림을 만들어 AI에게 보여 주면 말로 설명할 때보다 훨씬 정확하게 고쳐 줍니다.",
+        reading: "여러분은 이미 앱을 만들어 배포했습니다. 이 강의는 그 앱의 다음 버전을 위한 것입니다.\n\n화면을 고치고 싶을 때 말로만 설명하면 AI가 엉뚱하게 바꾸기 쉽습니다. '버튼을 좀 더 잘 보이게'는 사람마다 다르게 이해합니다. 그림 한 장을 보여 주면 이 문제가 대부분 사라집니다.\n\nCanva의 Magic Design은 텍스트로 원하는 화면을 설명하면 디자인 초안을 자동으로 만들어 주는 AI 기능입니다. 여기서 나오는 건 동작하는 앱이 아니라 '이런 모양이면 좋겠다'는 그림입니다. 이 그림을 ChatGPT나 Claude에 첨부하고 '지금 내 앱을 이 화면처럼 바꿔 줘'라고 요청하면 수정 결과가 훨씬 정확해집니다.\n\n흐름은 이렇습니다. ① 아래에 요청문 작성 → ② canva.com의 Magic Design에 붙여넣기 → ③ 마음에 드는 초안 선택 → ④ 스크린샷 저장 → ⑤ AI에게 첨부해 수정 요청 → ⑥ 받은 코드를 다시 붙여넣어 확인. 아직 앱을 만들지 않았다면 이 강의를 먼저 봐도 됩니다. 그때는 초안을 첫 코드 요청에 첨부하면 됩니다.",
         terms: [
           { term: "Magic Design", def: "텍스트 설명을 입력하면 Canva가 디자인 초안을 자동 생성하는 AI 기능." },
           { term: "화면 초안(목업)", def: "실제로 동작하진 않지만 생김새를 미리 보여 주는 화면 그림." },
@@ -633,12 +642,12 @@ const COURSE = {
             { label: "요청문 작성", sub: "설명문으로 정리" },
             { label: "Magic Design에 붙여넣기", sub: "canva.com" },
             { label: "초안 선택 & 저장", sub: "스크린샷 보관" },
-            { label: "AI 코드 요청 시 첨부", sub: "더 정확한 결과" }
+            { label: "AI에 첨부해 수정 요청", sub: "다음 버전 반영" }
           ]
         },
         discussion: [
-          "Canva로 만든 화면 그림을 AI에게 보여 주면 코드 요청이 왜 더 정확해질까요?",
-          "내 앱 첫 화면에 꼭 보여야 할 요소 세 가지는 무엇인가요?"
+          "Canva로 만든 화면 그림을 AI에게 보여 주면 수정 요청이 왜 더 정확해질까요?",
+          "지금 만든 앱에서 다음 버전에 가장 먼저 바꾸고 싶은 화면 요소는 무엇인가요?"
         ],
         steps: [
           "화면에 꼭 들어갈 요소를 적습니다.",
@@ -648,7 +657,8 @@ const COURSE = {
           "편집 화면 왼쪽 패널에서 'Magic Design'을 찾아 클릭합니다. (보이지 않으면 왼쪽 검색창에 'Magic Design' 입력)",
           "작성한 요청문을 Magic Design 입력창에 붙여넣고 생성합니다.",
           "마음에 드는 초안을 선택 후 스크린샷으로 저장하거나 공유 링크를 복사합니다.",
-          "저장한 화면을 ChatGPT나 Claude에 업로드하며 '이런 모양으로 HTML을 만들어 줘'라고 요청합니다."
+          "저장한 화면을 ChatGPT나 Claude에 업로드하고, 지금 쓰고 있는 HTML 코드와 함께 '이 그림처럼 화면만 바꿔 줘. 기능은 그대로 둬'라고 요청합니다.",
+          "받은 코드를 'AI에게 코드 받아 실행하기' 강의의 미리보기 칸에 다시 붙여넣어 확인하고, 좋으면 배포를 갱신합니다."
         ],
         externalGuide: "canva.com → 디자인 만들기 → 앱 스크린샷/휴대폰 목업 선택 → 왼쪽 패널 Magic Design → 요청문 붙여넣기 → 초안 선택 → 스크린샷 저장.",
         links: [
@@ -657,7 +667,7 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "canvaParts", label: "화면에 꼭 들어갈 요소", input: "text", placeholder: "예: 여행 제목, 준비물 체크, 코스 뽑기 버튼, 예산 입력칸, 총액 표시" },
+            { key: "canvaParts", label: "다음 버전 화면에 넣을 요소", input: "text", placeholder: "예: 여행 제목, 준비물 체크, 코스 뽑기 버튼, 예산 입력칸, 총액 표시", chips: ["제목과 날짜", "체크리스트", "큰 실행 버튼", "합계 표시 영역", "결과 카드"] },
             { key: "canvaPrompt", label: "Canva Magic Design 요청문", placeholder: "예: 여행 준비 미니앱의 모바일 첫 화면. 준비물 체크리스트, 오늘 갈 코스 랜덤 뽑기, 교통비·식비·숙소비 예산 합계가 보이는 깔끔한 한국어 UI." }
           ]
         },
