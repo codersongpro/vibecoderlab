@@ -941,8 +941,35 @@ function summarizePrd() {
   return lines.length ? lines.join("\n") : "PRD 입력값이 비어 있습니다.";
 }
 
+/* ---------------------- 버전·이력 ---------------------- */
+/* 헤더에 표시하는 버전 이력. 패치할 때마다 이 객체만 고친다.
+ *   version      배포 버전(백업 파일에도 기록된다)
+ *   firstRelease 최초 배포일 — 바뀌지 않는다
+ *   lastPatch    이번 패치 날짜
+ *   patchCount   최초 배포 이후 패치 라운드 수(커밋 수가 아니라 배포 묶음 단위)
+ */
+const APP_META = {
+  version: "1.2.0",
+  firstRelease: "2026.06.06",
+  lastPatch: "2026.09.06",
+  patchCount: 3
+};
+
+/* 상단 개발자 정보 아래에 버전 이력 한 줄을 그린다(값이 고정이라 최초 1회만 호출). */
+function renderAppMeta() {
+  const host = $("#appMeta");
+  if (!host) return;
+  const parts = [
+    `v${APP_META.version}`,
+    `최초 개발 ${APP_META.firstRelease}`,
+    `최신 패치 ${APP_META.lastPatch}`,
+    `패치 ${APP_META.patchCount}회`
+  ];
+  host.innerHTML = parts.map((t) => `<span>${escapeHtml(t)}</span>`).join("");
+}
+
 /* ---------------------- 학습 기록 백업·복원 (파일) ---------------------- */
-const APP_VERSION = "1.1.0";
+const APP_VERSION = APP_META.version;
 function downloadTextFile(filename, content, mimeType) {
   const blob = new Blob([content], { type: (mimeType || "text/plain") + ";charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -1559,6 +1586,7 @@ if (isCollectMode()) {
 } else {
   bindGlobal();
   render();
+  renderAppMeta();
   renderProjectTracks();
   maybeShowOnboarding();
 }

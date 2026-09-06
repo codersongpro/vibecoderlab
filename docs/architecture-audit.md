@@ -92,6 +92,7 @@
 - **`summary`에 백틱 금지** — `summary`는 `textContent`로 들어가 백틱이 그대로 노출된다. 백틱은 `steps`·`externalGuide`·`terms[].def`·`discussion`·`reading`에서만 쓴다.
 - **CSS 줄바꿈 보정(styles.css)** — 좁은 화면에서 컨테이너를 밀어내던 6지점을 고쳤다: `code.inline-code`·`.guide-chip`(`inline-flex` + `nowrap`), `.choice`(button 기본 `nowrap` 상속), `input/textarea/select`(폼 컨트롤 고유 폭), `.result`·`.check-item span`(긴 토큰 미분리). 375px 가로 넘침 10강 → 0강. **새 UI 요소를 추가할 때 `inline-flex`나 `nowrap`을 쓰면 같은 문제가 재발하므로 `max-width:100%`·`min-width:0`·`overflow-wrap`을 함께 준다.**
 - **반응형 규약** — 320~1920px 어느 폭에서도 가로 스크롤이 생기지 않아야 한다. 헤더는 한 줄에 약 1100px이 필요해 `@media (max-width: 1279px)`에서 줄바꿈한다. `body`는 `overflow-wrap: anywhere`(`break-word`는 최소 폭 계산을 줄이지 않아 긴 토큰이 컨테이너를 밀어낸다). 도식 `.visual`은 `contain: inline-size` + `overflow-x: auto`로 자체 스크롤한다.
+- **버전 이력** — 헤더의 `About the Developer` 아래 줄은 `app.js`의 `APP_META`(version · firstRelease · lastPatch · patchCount)가 `renderAppMeta()`로 그린다. `index.html`의 `#appMeta`는 빈 껍데기이므로 **날짜를 HTML에 직접 적지 않는다.** 패치할 때 `APP_META`의 `version`·`lastPatch`를 고치고 `patchCount`를 1 올린다. `patchCount`는 커밋 수가 아니라 배포 묶음(릴리즈 라운드) 수다. `APP_VERSION`은 `APP_META.version`을 그대로 쓰며 백업 파일에 기록된다.
 - **폰트** — Pretendard는 `index.html`의 `<link>`로 받는 선택적 웹폰트다. 차단되면 `--font-sans`의 OS 기본 한글 폰트(맑은 고딕 · Apple SD Gothic Neo · Noto Sans KR)로 대체된다. 폰트를 새로 지정할 때는 `var(--font-sans)` / `var(--font-mono)`를 쓰고 직접 스택을 적지 않는다. `buildPortfolioHtml`이 만드는 내려받기 파일은 웹폰트를 못 쓰므로 스택을 직접 갖고 있다.
 
 ## 8. 2026-07 코드 리뷰 반영
