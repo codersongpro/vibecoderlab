@@ -773,14 +773,14 @@ const COURSE = {
           "먼저 내 PC에 프로그램을 설치할 수 있는지 확인합니다. 아무 설치 파일이나 실행했을 때 관리자 비밀번호를 요구하며 막히면 '설치 불가'입니다.",
           "[설치 가능] git-scm.com/downloads 에서 Git을 내려받아 설치합니다. 설치 마법사는 기본값 그대로 Next를 눌러도 됩니다.",
           "[설치 가능] PowerShell이나 Git Bash를 열고 `git --version` 을 입력해 버전이 나오는지 확인합니다.",
-          "[설치 가능] 커밋에 기록될 내 정보를 설정합니다. `git config --global user.name \"내이름\"` 과 `git config --global user.email \"내메일@example.com\"` 을 차례로 입력합니다.",
+          "[설치 가능] 커밋에 기록될 내 정보를 설정합니다. `git config --global user.name` 뒤에 큰따옴표로 감싼 내 이름을 붙여 실행하고, 같은 방식으로 `user.email` 도 설정합니다.",
           "[설치 가능] Claude Code·Codex·Antigravity 중 하나만 골라 각 공식 페이지의 안내대로 설치하고 실행한 뒤, 내 프로젝트 폴더를 엽니다.",
           "[설치 불가] 설치를 건너뛰고 브라우저로 진행합니다. GitHub 저장소 화면에서 마침표(.) 키를 누르면 github.dev 웹 편집기가 열립니다. 코드는 AI 웹 채팅에서 받아 이 편집기에 붙여넣습니다.",
           "[공통] github.com 에서 계정을 만듭니다(Sign up). 이메일·비밀번호·사용자 이름을 입력합니다.",
           "[공통] 프로젝트 폴더가 아직 없다면 바탕화면에 폴더를 하나 만들고 그 안에 빈 index.html 파일을 둡니다. 이 폴더가 앞으로의 작업 공간입니다.",
           "package.json 파일이 생기기 전까지는 Node.js를 설치하지 않습니다. 생기면 그때 nodejs.org에서 LTS 버전을 받아 설치하고 `node -v` 로 확인합니다."
         ],
-        externalGuide: "설치 가능한 PC: ① git-scm.com → Git 설치 ② `git --version` 확인 ③ `git config --global user.name`·`user.email` 설정 ④ 에이전트 하나 설치·실행 ⑤ 프로젝트 폴더 열기 ⑥ github.com → Sign up.  설치 불가한 PC: ① github.com → Sign up ② 저장소 만들기 ③ 저장소 화면에서 마침표(.) 키 → github.dev 웹 편집기 ④ AI 웹 채팅에서 코드를 받아 붙여넣기.",
+        externalGuide: "설치 가능한 PC: ① git-scm.com → Git 설치 ② `git --version` 확인 ③ `git config` 로 이름·메일 설정 ④ 에이전트 하나 설치·실행 ⑤ 프로젝트 폴더 열기 ⑥ github.com → Sign up.  설치 불가한 PC: ① github.com → Sign up ② 저장소 만들기 ③ 저장소 화면에서 마침표(.) 키 → github.dev 웹 편집기 ④ AI 웹 채팅에서 코드를 받아 붙여넣기.",
         links: [
           { label: "Git 다운로드", url: "https://git-scm.com/downloads" },
           { label: "Claude Code", url: "https://claude.ai/code" },
@@ -1363,9 +1363,9 @@ const COURSE = {
           "github.com 오른쪽 위 '+' → 'New repository' → 이름 입력 → 'Create repository'를 눌러 빈 저장소를 만듭니다. 다음 화면에 나오는 저장소 주소(https://github.com/…)를 복사해 둡니다.",
           "프로젝트 폴더에 .gitignore 파일을 만들고 올리지 않을 것을 한 줄에 하나씩 적습니다. 보통 이 세 줄이면 시작으로 충분합니다 — .env / .env.local / node_modules/",
           "프로젝트 폴더에서 터미널을 엽니다. VS Code라면 상단 메뉴 Terminal → New Terminal, 탐색기라면 폴더 주소창에 cmd를 입력하고 Enter를 누릅니다.",
-          "저장소를 처음 연결할 때만 다음을 순서대로 실행합니다. `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin 복사한주소` → `git push -u origin main`",
-          "새 기능을 시작할 때는 기능 브랜치를 만듭니다. `git switch -c feature/weather-panel`",
-          "작업이 끝날 때마다 세 개만 반복합니다. `git add .` → `git commit -m \"예산 합계 기능 추가\"` → `git push`",
+          "저장소를 처음 연결할 때만 다음을 순서대로 실행합니다. `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin` 뒤에 복사한 주소 붙이기 → `git push -u origin main`",
+          "새 기능을 시작할 때는 기능 브랜치를 만듭니다. `git switch -c` 뒤에 브랜치 이름(예: feature/weather)을 붙여 실행합니다.",
+          "작업이 끝날 때마다 세 개만 반복합니다. `git add .` → `git commit -m` 뒤에 바꾼 내용 적기 → `git push`",
           "지금 무엇이 올라갈 상태인지 헷갈리면 `git status` 를 실행해 확인합니다.",
           "Push 전에 코드에서 SECRET, API_KEY, CLIENT_SECRET, password, token 을 검색해 실제 값이 없는지 확인합니다.",
           "GitHub 저장소 페이지를 새로고침해 내 파일이 올라갔는지 눈으로 확인합니다.",
@@ -1387,7 +1387,7 @@ const COURSE = {
             ]}
           ]
         },
-        externalGuide: "처음 한 번: `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin 저장소주소` → `git push -u origin main`.  그다음부터 매번: `git add .` → `git commit -m \"바꾼 내용\"` → `git push`.  상태 확인은 `git status`.  명령이 부담스러우면 에이전트에게 커밋·푸시를 맡기거나 GitHub Desktop·github.dev의 소스 제어 버튼을 씁니다.",
+        externalGuide: "처음 한 번: `git init` → `git add .` → `git commit -m` → `git branch -M main` → `git remote add origin` → `git push -u origin main`.  그다음부터 매번: `git add .` → `git commit -m` → `git push`.  상태 확인은 `git status`.  명령이 부담스러우면 에이전트에게 커밋·푸시를 맡기거나 GitHub Desktop·github.dev의 소스 제어 버튼을 씁니다.",
         links: [
           { label: "GitHub 열기", url: "https://github.com" }
         ],
