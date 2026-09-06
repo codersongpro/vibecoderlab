@@ -1050,7 +1050,8 @@ function buildPortfolioHtml(d) {
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>VibeCoder Lab 포트폴리오</title>
   <style>
     @page { size: A4; margin: 18mm; }
-    body { font-family: 'Pretendard', -apple-system, 'Apple SD Gothic Neo', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
+    /* 내려받은 파일은 웹폰트를 불러오지 않으므로 OS 기본 한글 폰트까지 적어 둔다. */
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, 'Apple SD Gothic Neo', 'Malgun Gothic', '맑은 고딕', 'Noto Sans KR', sans-serif; color: #1f2933; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 24px; }
     h1 { font-size: 26px; border-bottom: 3px solid #2563eb; padding-bottom: 10px; }
     .meta { color: #52606d; font-size: 14px; margin-bottom: 24px; }
     h2 { font-size: 20px; margin-top: 28px; color: #1d4ed8; }
