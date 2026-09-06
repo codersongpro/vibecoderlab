@@ -1777,38 +1777,46 @@ const COURSE = {
         id: "env",
         group: "보안",
         title: "환경변수 이해하기",
-        goal: "API 키를 코드 밖에서 관리하는 이유를 이해한다.",
+        goal: "브라우저에 노출돼도 되는 키와 서버에만 둬야 하는 키를 구분하고, 비밀 값을 환경변수로 분리할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 15,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["환경변수 항목을 정했다", "공개 금지 값을 구분했다"],
-        summary: "환경변수는 네이버 Secret, Gemini API 키, DB 연결 정보를 코드에 직접 쓰지 않고 따로 보관하는 방법입니다.",
-        reading: "환경변수는 비밀 값을 코드 밖에서 관리하는 방법입니다. 마스터리그의 여행 플래너에서는 NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY, DB 연결 정보처럼 공개하면 안 되는 값을 환경변수로 둡니다. Open-Meteo는 키 없이 시작할 수 있지만, 네이버 쇼핑 API와 Gemini API는 브라우저 코드에 직접 넣으면 노출됩니다. 배포 서비스마다 환경변수를 넣는 화면이 따로 있으니, 어떤 값이 필요한지와 어디에 등록할지를 문서로 남겨 둡니다. 앱에 외부 서비스를 붙여 키가 생기면, 그 키를 코드가 아니라 서버와 환경변수로 옮깁니다.",
+        estimatedMinutes: 20,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["공개 가능 키와 비밀 키를 구분했다", "환경변수 이름을 정했다", ".env.local과 .gitignore를 설정했다"],
+        summary: "모든 키를 숨겨야 하는 것은 아닙니다. 브라우저에 나가도 되는 공개 키와, 서버에만 둬야 하는 비밀 키를 구분하는 것이 이 강의의 핵심입니다.",
+        reading: "지금까지는 '키는 무조건 숨긴다'로 배웠습니다. 여기서 한 단계 정확해집니다. 키에는 두 종류가 있습니다.\n\n공개 키는 브라우저에 나가도 되는 값입니다. Supabase의 anon key가 대표적입니다. 이 키는 '우리 서비스의 어느 프로젝트인지'만 알려 줄 뿐, 무엇을 읽고 쓸 수 있는지는 뒤에서 배울 RLS 규칙이 따로 통제합니다. 그래서 화면 코드에 들어가는 것이 정상 설계입니다. 반대로 비밀 키는 그 값을 가진 사람이 무엇이든 할 수 있게 되는 값입니다. 네이버 Client Secret, Gemini API 키, Supabase service_role 키, DB 연결 문자열이 여기 해당합니다. 이런 값은 브라우저에 절대 내려보내지 않고 서버에서만 읽습니다.\n\n구분 기준은 간단합니다. 그 값을 남이 알았을 때 남의 데이터를 보거나 내 요금을 쓸 수 있다면 비밀 키입니다. service_role 키가 특히 위험합니다. 이름이 anon key와 비슷해 헷갈리기 쉬운데, 이 키는 RLS 규칙을 통째로 무시하므로 새어 나가면 전체 데이터가 열립니다.\n\n비밀 값은 코드가 아니라 두 곳에 둡니다. 내 컴퓨터에서는 프로젝트 폴더의 .env.local 파일에 두고, 그 파일 이름을 반드시 .gitignore에 넣어 GitHub에 올라가지 않게 합니다. 배포 서비스에서는 Vercel이나 Netlify 설정 화면의 환경변수 항목에 같은 이름으로 등록합니다. 코드에서는 값을 직접 쓰지 않고 이름으로 불러 씁니다.",
         toolGuides: ["naverShopping", "geminiApi"],
         terms: [
-          { term: "환경변수", def: "비밀 값을 코드 밖에 보관해 두고 불러 쓰는 설정." },
+          { term: "환경변수", def: "비밀 값을 코드 밖에 보관해 두고 이름으로 불러 쓰는 설정." },
+          { term: "공개 키(anon key)", def: "브라우저에 나가도 되는 키. 어느 프로젝트인지만 알려 주며, 권한은 RLS 규칙이 따로 통제한다." },
+          { term: "비밀 키(service_role·Secret)", def: "가진 사람이 무엇이든 할 수 있게 되는 키. 권한 규칙을 무시하므로 서버에서만 읽는다." },
+          { term: ".env.local", def: "내 컴퓨터에만 두는 비밀 값 파일. 반드시 .gitignore에 넣어 업로드를 막는다." },
           { term: "공개 저장소", def: "누구나 볼 수 있는 GitHub 저장소. 비밀 값을 올리면 안 됨." }
         ],
         visual: {
           type: "layers",
           caption: "환경변수로 비밀값 분리",
           layers: [
-            { label: "코드 (공개 저장소 OK)", desc: "로직·화면·기능 코드 — GitHub에 올릴 수 있음" },
-            { label: ".env 파일 (로컬 전용)", desc: ".gitignore에 추가 필수 — 절대 업로드 금지" },
-            { label: "배포 서비스 환경변수", desc: "Vercel·Netlify 설정 화면에 등록 (비공개)" },
-            { label: "비밀 값 원본", desc: "API 키·비밀번호·DB 연결 정보 — 절대 코드에 넣지 않기" }
+            { label: "화면 코드 (공개 저장소 OK)", desc: "로직·화면·공개 키(anon key) — GitHub에 올려도 됨" },
+            { label: ".env.local (내 컴퓨터 전용)", desc: ".gitignore에 추가 필수 — 절대 업로드 금지" },
+            { label: "배포 서비스 환경변수", desc: "Vercel·Netlify 설정 화면에 같은 이름으로 등록 (비공개)" },
+            { label: "서버에서만 읽는 비밀 키", desc: "Secret·service_role·DB 연결 정보 — 브라우저로 내려보내지 않음" }
           ]
         },
         discussion: [
-          "키를 코드에 직접 적으면 어떤 경로로 노출될 수 있을까요?",
-          "환경변수로 옮기면 무엇이 안전해지나요?"
+          "Supabase anon key는 브라우저에 나가도 되는데 service_role 키는 왜 안 될까요?",
+          "내 앱의 키 목록에서 공개 가능한 것과 비밀인 것을 어떤 기준으로 갈랐나요?",
+          "키를 코드에 직접 적으면 어떤 경로로 노출될 수 있을까요?"
         ],
         steps: [
-          "환경변수 이름을 정합니다.",
-          "코드에 쓰면 안 되는 값을 구분합니다.",
-          "배포 서비스 입력 위치를 확인합니다."
+          "내 앱이 쓰는 키를 모두 적고, 각각 공개 가능한지 비밀인지 나눕니다. 판단 기준은 '남이 이 값을 알면 남의 데이터를 보거나 내 요금을 쓸 수 있는가'입니다.",
+          "프로젝트 폴더에 .env.local 파일을 만들고 비밀 값을 이름=값 형태로 한 줄에 하나씩 적습니다. 예: GEMINI_API_KEY=발급받은값",
+          ".gitignore를 열어 `.env.local` 이 들어 있는지 확인합니다. 없으면 한 줄 추가합니다. 이 한 줄을 빠뜨리면 다음 커밋에 비밀 값이 그대로 올라갑니다.",
+          "`git status` 를 실행해 .env.local이 목록에 나타나지 않는지 확인합니다. 나타나면 .gitignore가 적용되지 않은 것입니다.",
+          "배포 서비스에 같은 이름으로 등록합니다. Vercel은 프로젝트 → Settings → Environment Variables, Netlify는 Site configuration → Environment variables입니다.",
+          "등록 후 배포를 다시 실행합니다. 환경변수는 기존 배포에 소급 적용되지 않습니다.",
+          "공개 키(anon key 등)는 숨기려 애쓰지 않습니다. 대신 다음 강의의 권한 규칙으로 통제한다는 것을 기억합니다."
         ],
-        externalGuide: "① 아래 배포 서비스 링크를 엽니다. ② Vercel: 프로젝트 선택 → Settings → Environment Variables → 이름·값 입력 → Save. Netlify: Site configuration → Environment variables → Add a variable → 이름·값 입력 → Save. ③ 코드에서는 process.env.변수이름 또는 import.meta.env.변수이름으로 읽습니다. ④ 배포를 다시 실행해 환경변수가 적용됐는지 확인합니다.",
+        externalGuide: "① 로컬: 프로젝트 폴더에 .env.local 생성 → 비밀 값을 이름=값으로 기록 → .gitignore에 `.env.local` 추가 → `git status` 로 목록에 안 뜨는지 확인. ② 배포: Vercel은 프로젝트 → Settings → Environment Variables, Netlify는 Site configuration → Environment variables에서 같은 이름으로 등록 후 Save. ③ 서버 코드에서는 process.env.변수이름으로 읽습니다. 화면 코드에서 이 값을 읽으면 브라우저로 나가므로 넣지 않습니다. ④ 배포를 다시 실행해야 적용됩니다.",
         links: [
           { label: "Vercel 환경변수 설정", url: "https://vercel.com/dashboard" },
           { label: "Netlify 환경변수 설정", url: "https://app.netlify.com" }
@@ -1816,80 +1824,97 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "envName", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_SECRET, GEMINI_API_KEY, DATABASE_URL" },
-            { key: "secretValue", label: "코드에 쓰면 안 되는 값", input: "text", placeholder: "예: 네이버 Client Secret, Gemini API 키, DB 연결 문자열" },
-            { key: "deployLocation", label: "배포 서비스 입력 위치 메모", input: "text", placeholder: "예: Vercel → Settings → Environment Variables" }
+            { key: "publicKeys", label: "브라우저에 나가도 되는 공개 키", input: "text", placeholder: "예: Supabase anon key, Supabase 프로젝트 URL", chips: ["Supabase anon key", "Supabase 프로젝트 URL", "Open-Meteo(키 없음)", "공개 키 없음"] },
+            { key: "envName", label: "서버에만 둘 비밀 키의 환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_SECRET, GEMINI_API_KEY, SUPABASE_SERVICE_ROLE_KEY", chips: ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "GEMINI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL"] },
+            { key: "secretValue", label: "비밀로 분류한 이유", placeholder: "예: service_role 키는 RLS 규칙을 무시하므로 새어 나가면 모든 사용자의 여행 데이터가 열린다. Gemini 키는 남이 쓰면 내 요금이 청구된다." },
+            { key: "gitignoreCheck", label: ".gitignore·git status 확인 결과", input: "text", placeholder: "예: .gitignore에 .env.local 추가함. git status 목록에 .env.local 안 나타남.", chips: [".env.local 추가 완료", "git status에 안 나타남 확인", "이미 올라간 적 없음 확인"] },
+            { key: "deployLocation", label: "배포 서비스 등록 위치·재배포 여부", input: "text", placeholder: "예: Vercel → Settings → Environment Variables에 3개 등록 후 재배포함" }
           ]
         },
-        checks: ["환경변수 항목을 정했다", "공개 금지 값을 구분했다"]
+        checks: ["내 키 목록이 공개 가능 / 비밀 두 칸으로 나뉘어 있다", ".gitignore에 .env.local이 있고 `git status` 목록에 .env.local이 나타나지 않는다", "배포 서비스 환경변수 화면에 등록한 이름이 보이고 재배포를 마쳤다"]
       },
       {
         id: "travel-api-gemini",
         group: "API·AI 연동",
         title: "일반 API와 Gemini API 연동",
-        goal: "여행 플래너에서 일반 API와 Gemini API가 맡는 역할을 나누고 안전한 호출 구조를 설계한다.",
+        goal: "서버 프록시를 실제로 만들어 비밀 키를 브라우저에 노출하지 않고 외부 API와 Gemini API를 호출할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"],
-        summary: "일반 API는 날씨·쇼핑·환율·장소 데이터를 가져오고, Gemini API는 그 데이터를 바탕으로 준비 요약과 추천 문구를 만듭니다.",
-        reading: "마스터리그의 여행 플래너는 프로리그보다 API 구조가 한 단계 깊어집니다. Open-Meteo 같은 날씨 API는 여행 날짜의 기온과 강수 가능성을 가져오고, 네이버 쇼핑 API는 준비물 구매 후보와 가격을 가져옵니다. 필요하면 환율 API나 장소 검색 API를 추가할 수 있습니다. Gemini API는 이 데이터를 그대로 보여 주는 대신, 날씨·예산·준비물·일정을 묶어 '비가 올 가능성이 높으니 우비와 방수팩을 챙기세요'처럼 사용자가 이해하기 쉬운 요약과 추천 문구를 만듭니다. 단, 네이버 Secret과 Gemini API 키는 브라우저 화면이나 입력칸에 넣지 않습니다. 서버 라우트나 프록시가 환경변수에서 키를 읽고, 화면은 서버가 정리해 준 결과만 받도록 설계합니다.",
+        estimatedMinutes: 40,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["api 폴더에 중계 파일을 만들었다", "환경변수를 등록하고 재배포했다", "화면 코드의 호출 대상을 /api로 바꿨다", "배포본에 키가 노출되지 않음을 확인했다", "API 실패 대체 안내를 넣었다"],
+        summary: "프로리그에서 미뤄 둔 숙제를 여기서 끝냅니다. 서버가 대신 호출하는 통로를 만들면, 네이버 쇼핑 API를 키 노출 없이 실제로 부를 수 있습니다.",
+        reading: "프로리그에서 네이버 쇼핑 API는 샘플 응답으로만 다뤘습니다. Client Secret을 브라우저에 넣을 수 없어서였습니다. 그 숙제를 이번 강의에서 끝냅니다.\n\n해법은 통로를 하나 두는 것입니다. 브라우저가 네이버에 직접 묻는 대신 내 서버에 묻고, 내 서버가 키를 붙여 네이버에 물어본 뒤 결과만 돌려줍니다. 이 중계자를 서버 프록시라고 합니다. 키는 서버에만 있으므로 브라우저 어디를 뒤져도 나오지 않습니다.\n\n예전에는 서버를 따로 빌려야 했지만, 지금은 Vercel에 배포하는 프로젝트라면 폴더 하나로 끝납니다. 프로젝트 루트에 api 라는 폴더를 만들고 그 안에 파일을 하나 두면, 그 파일이 곧 서버 주소가 됩니다. api/shopping.js 파일은 /api/shopping 주소로 열립니다. 화면 코드는 네이버 주소 대신 이 주소를 부르면 됩니다.\n\n역할을 정리하면 이렇습니다. 일반 API(Open-Meteo 날씨, 네이버 쇼핑, 환율)는 사실 데이터를 가져오고, Gemini API는 그 데이터를 묶어 '비가 올 가능성이 높으니 우비와 방수팩을 챙기세요'처럼 사람이 읽을 문장을 만듭니다. Open-Meteo는 키가 없으니 화면에서 직접 불러도 됩니다. 네이버와 Gemini는 키가 있으니 반드시 프록시를 거칩니다.\n\n한 가지 더. Gemini에 보낼 때 사용자의 실제 연락처나 숙소 주소를 함께 보내지 않습니다. 여행지, 날짜, 날씨, 예산, 준비물 목록이면 좋은 요약을 만들기에 충분합니다.",
         toolGuides: ["openMeteo", "naverShopping", "geminiApi"],
         terms: [
           { term: "일반 API", def: "날씨·쇼핑·환율·장소처럼 정해진 데이터를 요청하고 응답받는 외부 서비스." },
           { term: "Gemini API", def: "여행 데이터와 사용자 조건을 바탕으로 요약·추천 문구를 생성하는 AI API." },
-          { term: "서버 프록시", def: "브라우저 대신 서버가 외부 API를 호출해 Secret을 숨기는 구조." },
-          { term: "환경변수", def: "API 키와 Secret을 코드 밖에 보관하는 설정." }
+          { term: "서버 프록시", def: "브라우저 대신 서버가 외부 API를 호출해 Secret을 숨기는 중계 구조." },
+          { term: "서버리스 함수", def: "서버를 따로 빌리지 않고 파일 하나로 만드는 서버 코드. Vercel에서는 api 폴더의 파일 하나가 주소 하나가 된다." },
+          { term: "환경변수", def: "API 키와 Secret을 코드 밖에 보관하고 서버에서만 읽는 설정." },
+          { term: "Network 탭", def: "개발자 도구(F12)에서 브라우저가 주고받은 요청을 보는 곳. 키가 새는지 여기서 확인한다." }
         ],
         visual: {
           type: "flow",
           caption: "여행 API 연동 흐름",
           steps: [
-            { label: "여행 정보", sub: "여행지·날짜·예산·준비물" },
-            { label: "일반 API", sub: "날씨·쇼핑·환율·장소" },
-            { label: "서버 프록시", sub: "Secret은 환경변수에서만 읽기" },
-            { label: "Gemini API", sub: "요약·추천 문구 생성" },
-            { label: "화면 표시", sub: "사용자에게 결과만 보여 주기" }
+            { label: "화면", sub: "/api/shopping 호출" },
+            { label: "api 폴더 파일", sub: "환경변수에서 키 읽기" },
+            { label: "외부 API", sub: "네이버·Gemini에 요청" },
+            { label: "결과만 반환", sub: "키는 응답에 넣지 않음" },
+            { label: "확인", sub: "Network 탭에 키 없음" }
           ]
         },
         discussion: [
-          "날씨·쇼핑·환율·장소 중 내 여행 플래너에 가장 먼저 붙일 API는 무엇인가요?",
+          "Open-Meteo는 화면에서 바로 불러도 되는데 네이버 쇼핑은 왜 프록시를 거쳐야 할까요?",
           "Gemini가 만들면 좋은 문구는 단순 요약일까요, 추천 행동일까요?",
-          "브라우저 코드에 API 키를 넣지 않으려면 어떤 구조가 필요할까요?"
+          "프록시를 만들었는데도 키가 샐 수 있는 경우는 어떤 상황일까요?"
         ],
         steps: [
-          "여행 플래너에 붙일 일반 API를 고릅니다.",
-          "Gemini API가 만들 결과를 한 문장으로 정합니다.",
-          "서버 프록시와 환경변수 이름을 적습니다.",
-          "API 실패 시 화면에 보여 줄 대체 안내를 정합니다."
+          "먼저 API를 두 칸으로 나눕니다. 키가 없는 것(Open-Meteo)은 화면에서 직접 호출하고, 키가 있는 것(네이버 쇼핑, Gemini)은 프록시를 거치도록 정합니다.",
+          "프로젝트 루트에 api 라는 폴더를 만듭니다. 루트란 index.html이나 package.json이 있는 최상위 폴더입니다.",
+          "에이전트에게 중계 파일을 만들게 합니다. 지시문에 다음을 그대로 넣으세요. 'api 폴더에 shopping 중계 파일을 만들어 줘. 키는 process.env에서만 읽고, 응답 본문에는 절대 포함하지 마. 화면에서 넘어온 검색어만 외부 API에 전달하고, 실패하면 상태 코드와 짧은 메시지만 돌려줘.'",
+          "앞 강의에서 만든 .env.local에 필요한 키를 넣고, 배포 서비스 환경변수에도 같은 이름으로 등록합니다.",
+          "화면 코드에서 외부 API 주소를 부르던 부분을 내 프록시 주소로 바꿉니다. 예를 들어 네이버 주소 대신 /api/shopping 을 부릅니다.",
+          "배포합니다. 환경변수는 기존 배포에 소급 적용되지 않으므로 반드시 다시 배포해야 합니다.",
+          "배포된 페이지에서 검색을 한 번 해 실제 결과가 뜨는지 확인합니다. 샘플 데이터가 아니라 진짜 응답이어야 합니다.",
+          "키가 새지 않는지 두 가지로 확인합니다. 첫째, 페이지에서 마우스 오른쪽 → '페이지 소스 보기'를 열고 Ctrl+F로 SECRET, API_KEY, CLIENT_SECRET을 검색해 아무것도 안 나오는지 봅니다.",
+          "둘째, F12 → Network 탭을 열고 검색을 다시 실행합니다. /api/shopping 요청을 클릭해 Headers와 Response 어디에도 키 값이 없는지 확인합니다.",
+          "Gemini 연동도 같은 방식으로 파일을 하나 더 만듭니다. 보낼 데이터는 여행지·날짜·날씨·예산·준비물까지만으로 제한하고, 실제 연락처나 숙소 주소는 넣지 않습니다.",
+          "API가 실패했을 때 화면이 비어 버리지 않도록 대체 안내 문구를 넣습니다. 실패는 반드시 일어납니다."
         ],
+        externalGuide: "① 프로젝트 루트에 api 폴더 생성 ② 에이전트에 중계 파일 요청 — '키는 process.env에서만 읽고 응답에 포함하지 마' ③ .env.local과 배포 서비스 환경변수에 같은 이름으로 등록 ④ 화면 코드의 호출 대상을 외부 주소 → /api/… 로 교체 ⑤ 재배포 ⑥ 검증: 페이지 소스 보기에서 SECRET·API_KEY 검색 0건, F12 Network 탭의 /api 요청 Headers·Response에 키 없음.",
         practice: {
           kind: "form",
           fields: [
             { key: "generalApis", label: "사용할 일반 API", placeholder: "예: Open-Meteo 날씨, 네이버 쇼핑, 환율 API", chips: ["Open-Meteo 날씨", "네이버 쇼핑", "환율 API", "장소 검색 API", "내 앱에 필요한 외부 데이터", "처음엔 하나만 선택"] },
             { key: "geminiUse", label: "Gemini API 사용 목적", placeholder: "예: 날씨·예산·준비물을 바탕으로 여행 준비 요약과 추천 문구 생성", chips: ["비 오는 여행 준비 요약", "예산 초과 위험 안내", "날씨 기반 준비물 추천", "동행자에게 보낼 준비 메시지", "여행 전 체크리스트 요약", "내 앱 데이터 기반 추천 문구"] },
             { key: "envKeys", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY", chips: ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "GEMINI_API_KEY", "DATABASE_URL", "AUTH_SECRET"] },
+            { key: "proxyRoutes", label: "만든 프록시 주소와 파일", input: "text", placeholder: "예: api/shopping.js → /api/shopping, api/summary.js → /api/summary", chips: ["api/shopping.js → /api/shopping", "api/summary.js → /api/summary", "api/weather.js는 불필요(키 없음)"] },
+            { key: "leakCheck", label: "키 노출 검증 결과", placeholder: "예: 배포 URL에서 페이지 소스 보기 → SECRET·API_KEY·CLIENT_SECRET 검색 0건. F12 Network 탭에서 /api/shopping 요청의 Headers·Response 확인 — 키 값 없음. 응답에는 상품명·가격만 있음." },
             { key: "safePrompt", label: "Gemini에 보낼 안전한 요청", placeholder: "예: 개인 연락처 없이 여행지·날짜·날씨·예산·준비물만 보내 준비 요약을 만들어 달라고 요청한다.", chips: ["개인정보 없이 요약 요청", "여행지·날짜·날씨·예산만 전달", "실제 전화번호·주소 제외", "추천 문구만 생성", "결정은 사용자가 하도록 안내"] },
             { key: "fallback", label: "API 실패 시 대체 안내", placeholder: "예: 날씨 API가 실패하면 '날씨를 불러오지 못했습니다. 준비물은 직접 확인해 주세요.'라고 보여 준다.", chips: ["날씨를 불러오지 못했습니다", "쇼핑 후보를 불러오지 못했습니다", "AI 요약을 생성하지 못했습니다", "잠시 후 다시 시도해 주세요", "기본 준비물 목록을 먼저 보여 줍니다"] }
           ]
         },
-        checks: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"]
+        checks: ["배포된 앱에서 검색하면 샘플이 아니라 실제 API 결과가 화면에 뜬다", "페이지 소스 보기에서 SECRET·API_KEY·CLIENT_SECRET 검색 결과가 0건이다", "F12 Network 탭의 /api 요청 Headers·Response 어디에도 키 값이 없다", "API를 일부러 실패시켜도 빈 화면 대신 안내 문구가 보인다"]
       },
       {
         id: "db-auth-integration",
         group: "DB·로그인",
         title: "데이터베이스와 로그인 연동",
-        goal: "로그인한 사용자와 데이터베이스 데이터를 안전하게 연결하는 구조를 설계한다.",
+        goal: "Supabase로 로그인과 데이터베이스를 실제로 연결하고, RLS 규칙으로 사용자별 데이터를 분리할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"],
-        summary: "프로리그가 저장할 여행 데이터를 정리하는 단계였다면, 마스터리그는 로그인한 사용자별로 여행 계획이 분리되도록 DB와 인증을 연결합니다.",
-        reading: "데이터베이스와 로그인 시스템을 연결하면 여행 플래너는 '모두가 같은 데이터를 보는 화면'에서 '각 사용자가 자기 여행 계획만 보는 서비스'로 바뀝니다. 여행 플래너라면 trips, itineraryItems, packingItems, budgetItems, collaborators 같은 데이터를 사용자 ID와 연결해야 합니다. 각 여행에는 ownerId가 있고, 동행자 공유가 필요하면 collaborators 테이블이나 공유 권한 필드를 둡니다. 화면에서는 로그인하지 않은 사용자를 막고, 서버나 DB 규칙에서는 초대받지 않은 사람이 다른 사람의 일정·예산·준비물을 읽거나 수정하지 못하게 해야 합니다. Supabase, Firebase, Clerk 같은 서비스를 쓸 수 있지만 핵심은 같습니다. 로그인 확인, 사용자 ID 연결, 사용자별 데이터 분리, 동행자 권한 규칙, 환경변수 관리입니다.",
+        estimatedMinutes: 45,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["Supabase 프로젝트와 테이블을 만들었다", "이메일 로그인을 켰다", "RLS를 켜고 정책을 만들었다", "앱에서 로그인·저장·조회가 동작한다", "A 계정 데이터가 B 계정에 안 보이는 것을 확인했다"],
+        summary: "이 강의에서 앱이 서비스가 됩니다. 로그인을 붙이고 사용자마다 자기 데이터만 보이게 만드는 것이 마스터리그의 분기점입니다.",
+        reading: "데이터베이스와 로그인을 연결하면 여행 플래너는 '모두가 같은 데이터를 보는 화면'에서 '각 사용자가 자기 계획만 보는 서비스'로 바뀝니다.\n\n이 강의는 Supabase 하나로 끝까지 갑니다. 로그인과 데이터베이스를 한 곳에서 다루고 무료로 시작할 수 있어서입니다. Firebase나 Clerk도 같은 일을 하지만, 처음에는 도구를 비교하는 것보다 하나를 끝까지 완성해 보는 편이 훨씬 많이 남습니다. 나중에 옮기더라도 개념은 그대로 통합니다.\n\n핵심 개념은 두 가지입니다. 첫째, 모든 데이터 줄에 주인을 적어 둡니다. trips 테이블에 owner_id 컬럼을 두고, 여행을 만들 때 지금 로그인한 사람의 ID를 함께 저장합니다. 둘째, 주인만 볼 수 있게 데이터베이스가 직접 막습니다. 이것을 RLS(Row Level Security, 행 수준 보안)라고 합니다.\n\nRLS가 왜 중요한지 짚고 가야 합니다. 화면 코드에서 '내 것만 보여 줘'라고 걸러 내는 것만으로는 안전하지 않습니다. 브라우저 코드는 누구나 열어 고칠 수 있어서, 조건을 지우고 전체를 요청하면 남의 데이터가 그대로 나옵니다. RLS는 데이터베이스 쪽에 규칙을 걸어 두는 방식이라, 요청이 어디서 오든 규칙에 맞지 않으면 빈 결과를 돌려줍니다. 그래서 앞 강의에서 배운 anon key가 브라우저에 나가도 괜찮은 것입니다. 열쇠는 공개돼도 문은 RLS가 지킵니다.\n\n동행자 공유가 필요하면 collaborators 테이블을 하나 더 두고, 정책을 '내가 주인이거나 collaborators에 내가 들어 있으면 읽기 허용'으로 넓히면 됩니다. 다만 처음에는 내 것만 보이는 것까지 완성하고, 공유는 그다음에 붙이세요.",
         terms: [
           { term: "데이터베이스", def: "앱의 데이터를 저장하고 다시 불러오는 공간." },
           { term: "사용자 ID", def: "로그인한 사용자를 구분하기 위해 인증 시스템이 부여하는 고유 값." },
-          { term: "소유자 필드", def: "데이터가 어떤 사용자에게 속하는지 나타내는 ownerId 또는 userId 같은 값." },
+          { term: "소유자 필드", def: "데이터가 어떤 사용자에게 속하는지 나타내는 owner_id 또는 user_id 같은 컬럼." },
+          { term: "RLS(행 수준 보안)", def: "데이터베이스가 줄 단위로 접근을 막는 기능. 화면 코드가 아니라 DB가 직접 거르므로 코드를 고쳐도 뚫리지 않는다." },
+          { term: "정책(Policy)", def: "RLS에서 '어떤 조건이면 읽기·쓰기를 허용할지' 적어 둔 규칙 한 줄." },
+          { term: "auth.uid()", def: "Supabase 정책 안에서 '지금 로그인한 사용자의 ID'를 뜻하는 값." },
           { term: "접근 규칙", def: "누가 어떤 데이터를 읽고 수정할 수 있는지 정한 보안 규칙." }
         ],
         visual: {
@@ -1908,13 +1933,19 @@ const COURSE = {
           "다른 사용자의 데이터가 보이지 않게 하려면 코드와 DB 규칙에서 각각 무엇을 확인해야 할까요?"
         ],
         steps: [
-          "로그인이 필요한 화면과 필요 없는 화면을 구분합니다.",
-          "저장할 데이터에 사용자 ID를 연결할 필드를 정합니다.",
-          "데이터를 만들 때 현재 사용자 ID를 함께 저장하도록 설계합니다.",
-          "목록을 불러올 때 현재 사용자 데이터만 조회하도록 정합니다.",
-          "다른 사용자 데이터 접근을 막는 권한 규칙과 테스트를 적습니다."
+          "supabase.com에 가입하고 'New project'로 프로젝트를 만듭니다. 데이터베이스 비밀번호는 따로 안전한 곳에 적어 둡니다.",
+          "왼쪽 메뉴 Table Editor → 'New table'로 trips 테이블을 만듭니다. 컬럼은 id(기본 생성), owner_id(타입 uuid), title(text), start_date(date) 정도로 시작합니다.",
+          "테이블을 만들 때 'Enable Row Level Security' 체크를 켠 상태로 둡니다. 껐다면 나중에 Authentication → Policies에서 켤 수 있습니다.",
+          "왼쪽 메뉴 Authentication → Providers에서 Email을 켭니다. 연습 단계에서는 'Confirm email'을 꺼 두면 테스트 계정을 빠르게 만들 수 있습니다.",
+          "Authentication → Policies에서 trips 테이블에 정책을 추가합니다. 'Enable read access for users based on user_id' 같은 템플릿을 고르고 조건을 `owner_id = auth.uid()` 로 둡니다. 읽기(SELECT)와 쓰기(INSERT·UPDATE·DELETE)를 각각 만듭니다.",
+          "Project Settings → API에서 Project URL과 anon key를 복사합니다. 이 두 값은 화면 코드에 넣어도 되는 공개 값입니다. 같은 화면의 service_role 키는 절대 복사해 쓰지 않습니다.",
+          "에이전트에게 연결을 맡깁니다. 지시문 예: 'Supabase 클라이언트를 붙여 이메일 로그인 화면과 로그아웃을 만들어 줘. 여행을 저장할 때 owner_id에 현재 로그인 사용자 id를 넣고, 목록은 로그인한 사용자 것만 조회해 줘. URL과 anon key는 환경변수로 빼 줘. service_role 키는 쓰지 마.'",
+          "배포하고 계정 A로 가입해 여행을 하나 만듭니다. 새로고침해도 남아 있는지 확인합니다.",
+          "브라우저 시크릿 창을 열고 계정 B로 가입합니다. 계정 A가 만든 여행이 보이지 않아야 합니다. 보인다면 RLS 정책이 꺼져 있거나 조건이 잘못된 것입니다.",
+          "로그아웃한 상태에서 저장 화면 주소로 직접 접속해 봅니다. 로그인 화면으로 막히는지 확인합니다.",
+          "여기까지 되면 동행자 공유를 붙입니다. collaborators 테이블(trip_id, user_id)을 만들고, 읽기 정책을 '내가 주인이거나 collaborators에 내가 있으면 허용'으로 넓힙니다."
         ],
-        externalGuide: "AI에게 요청할 때는 실제 비밀번호나 키를 붙여넣지 마세요. 'Supabase/Firebase/Clerk 중 하나를 기준으로 로그인 후 사용자별 데이터만 보이게 하는 구조를 설계해 줘. 실제 키는 비워 두고 환경변수 이름만 제안해 줘.'처럼 요청합니다.",
+        externalGuide: "① supabase.com → New project ② Table Editor → trips 테이블(owner_id uuid 포함), RLS 켜기 ③ Authentication → Providers → Email 켜기(연습 중엔 Confirm email 끄기) ④ Authentication → Policies → 조건 `owner_id = auth.uid()` 로 읽기·쓰기 정책 추가 ⑤ Project Settings → API에서 Project URL·anon key 복사(service_role은 쓰지 않음) ⑥ 에이전트에 연결 요청 ⑦ 검증: 계정 A로 저장 → 시크릿 창에서 계정 B로 로그인 → A의 데이터가 안 보이면 성공.  AI에게 실제 비밀번호나 service_role 키를 붙여넣지 마세요.",
         links: [
           { label: "Supabase", url: "https://supabase.com" },
           { label: "Firebase", url: "https://firebase.google.com" },
@@ -1923,14 +1954,16 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "authProvider", label: "로그인 서비스 후보", input: "select", options: ["Supabase Auth", "Firebase Auth", "Clerk", "아직 미정"], value: "Supabase Auth" },
-            { key: "dbProvider", label: "데이터베이스 후보", input: "select", options: ["Supabase Database", "Firebase Firestore", "기존 DB", "아직 미정"], value: "Supabase Database" },
+            { key: "authProvider", label: "사용한 로그인 서비스", input: "select", options: ["Supabase Auth", "Firebase Auth", "Clerk"], value: "Supabase Auth" },
+            { key: "dbProvider", label: "사용한 데이터베이스", input: "select", options: ["Supabase Database", "Firebase Firestore", "기존 DB"], value: "Supabase Database" },
+            { key: "tableSchema", label: "만든 테이블과 컬럼", placeholder: "예: trips(id, owner_id uuid, title text, start_date date) / packing_items(id, trip_id, name, checked) / collaborators(trip_id, user_id)", chips: ["trips(id, owner_id, title, start_date)", "packing_items(id, trip_id, name, checked)", "budget_items(id, trip_id, label, amount)", "collaborators(trip_id, user_id)"] },
+            { key: "rlsPolicy", label: "작성한 RLS 정책 조건", input: "text", placeholder: "예: SELECT·INSERT·UPDATE·DELETE 모두 owner_id = auth.uid()", chips: ["owner_id = auth.uid()", "읽기·쓰기 정책 각각 생성", "공유 읽기는 collaborators 포함 조건으로 확장"] },
             { key: "userData", label: "사용자별로 저장할 데이터", placeholder: "예: trips, itineraryItems, packingItems, budgetItems, ownerId, collaborators", chips: ["trips", "itineraryItems", "packingItems", "budgetItems", "collaborators", "ownerId", "sharedWith", "내 앱의 사용자별 데이터"] },
             { key: "accessRule", label: "접근 규칙", placeholder: "예: 로그인한 사용자는 ownerId가 자기 ID이거나 collaborators에 포함된 여행만 읽고 수정할 수 있다.", chips: ["ownerId가 현재 사용자일 때만 읽기", "초대된 동행자만 보기", "소유자만 삭제 가능", "관리자는 운영 데이터만 확인", "공개 여행과 비공개 여행 구분"] },
             { key: "authTest", label: "연동 테스트", placeholder: "예: A 계정으로 만든 여행이 B 계정에서 보이지 않고, 초대된 동행자에게만 공유되는지 확인한다.", chips: ["A 계정 여행이 B 계정에 보이지 않음", "동행자 초대 후에만 보임", "로그아웃하면 저장 화면 접근 불가", "권한 없는 수정 요청 차단", "새로고침 후에도 내 데이터 유지"] }
           ]
         },
-        checks: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"]
+        checks: ["Supabase Table Editor에 내 테이블과 owner_id 컬럼이 보인다", "Authentication → Policies에 정책이 등록되어 있고 RLS가 켜져 있다", "배포된 앱에서 로그인 후 저장한 데이터가 새로고침해도 남아 있다", "시크릿 창의 다른 계정으로 로그인하면 앞 계정의 데이터가 보이지 않는다", "로그아웃 상태에서 저장 화면에 직접 접속하면 로그인 화면으로 막힌다"]
       },
       {
         id: "auth",
@@ -2015,12 +2048,12 @@ const COURSE = {
             { key: "scope", label: "목표와 범위", placeholder: "예: 여행 플래너를 로그인·DB·API·Gemini 연동까지 포함해 안전하게 배포·운영한다.", chips: ["로그인·DB·AI 연동 여행 플래너", "사용자별 데이터 저장 앱", "동행자 공유가 있는 준비 앱", "API 키를 서버에서 보호하는 앱", "내 아이디어의 운영형 앱"] },
             { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "내 앱 사용자"] },
             { key: "flow", label: "핵심 플로우", placeholder: "예: 로그인 → 여행 생성 → 날씨·쇼핑 확인 → 준비물·예산 저장 → Gemini 요약 생성 → 동행자 공유", chips: ["로그인 → 여행 생성 → 준비물 저장 → Gemini 요약", "로그인 → 내 데이터 조회 → 수정 → 저장", "여행 생성 → 동행자 초대 → 권한 확인", "API 호출 → 서버 프록시 → 화면 표시"] },
-            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packingItems, budgetItems, itineraryItems, collaborators 테이블에 ownerId와 tripId를 저장한다.", chips: ["trips + ownerId", "packingItems + tripId", "budgetItems + amount", "collaborators + role", "itineraryItems + date", "내 앱 테이블명"] },
-            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 로그인한 사용자 ID를 ownerId로 저장하고, 자기 여행 또는 초대받은 여행만 조회한다.", chips: ["로그인한 사용자 ID를 ownerId로 저장", "내 데이터만 조회", "초대받은 데이터만 조회", "로그아웃 시 보호 화면 차단", "권한 없는 수정 차단"] },
+            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packing_items, budget_items, collaborators 테이블에 owner_id와 trip_id를 두고, 모든 테이블에 RLS를 켠다.", chips: ["trips + owner_id", "packing_items + trip_id", "budget_items + amount", "collaborators + user_id", "전 테이블 RLS 켜기", "내 앱 테이블명"] },
+            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 저장할 때 owner_id에 auth.uid()를 넣고, 조회는 RLS 정책이 자동으로 거르게 한다. 화면 필터에 의존하지 않는다.", chips: ["owner_id에 auth.uid() 저장", "화면 필터가 아닌 RLS로 차단", "초대받은 데이터만 조회", "로그아웃 시 보호 화면 차단", "권한 없는 수정 차단"] },
             { key: "priority", label: "기능 우선순위", placeholder: "예: 필수 - 로그인·여행 저장·예산 합계·Secret 보호 / 다음 - 동행자 공유·Gemini 추천", chips: ["필수 - 로그인·DB 저장·Secret 보호", "필수 - 사용자별 데이터 분리", "다음 - 동행자 공유", "다음 - Gemini 추천", "제외 - 결제·예약·항공권 구매"] },
             { key: "exceptions", label: "예외 상황", placeholder: "예: API 실패, 로그인 만료, 여행지 없음, 초대 권한 없음", chips: ["API 실패", "로그인 만료", "여행지 없음", "초대 권한 없음", "DB 저장 실패", "Gemini 응답 실패"] },
-            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini API 키는 환경변수로 관리하고, 사용자별 여행 데이터와 공유 권한을 분리한다.", chips: ["API 키는 환경변수로 관리", "브라우저에 Secret 금지", "사용자별 데이터 분리", "동행자 권한 확인", "개인정보 최소 수집", "공개 전 키 검색"] },
-            { key: "tests", label: "테스트 기준", placeholder: "예: 로그인별 데이터 분리, 날씨·쇼핑 API 실패 처리, Gemini 요약 생성, 권한 없는 접근 차단 통과", chips: ["A/B 계정 데이터 분리", "권한 없는 접근 차단", "API 실패 안내 표시", "Gemini 요약 생성", "새로고침 후 데이터 유지", "모바일 화면 확인"] },
+            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini 키는 api 폴더의 서버 프록시에서만 읽고, 사용자별 데이터는 RLS 정책(owner_id = auth.uid())으로 분리한다. anon key는 화면에 두되 권한은 RLS가 통제한다.", chips: ["비밀 키는 서버 프록시에서만 읽기", "anon key는 공개, 권한은 RLS로 통제", "service_role 키는 브라우저에 금지", "RLS 정책으로 사용자별 데이터 분리", "동행자 권한 확인", "공개 전 키 검색"] },
+            { key: "tests", label: "테스트 기준", placeholder: "예: 시크릿 창 B 계정에서 A 데이터 안 보임, 페이지 소스·Network 탭에 키 없음, API 실패 시 안내 표시, 새로고침 후 데이터 유지", chips: ["시크릿 창 A/B 계정 데이터 분리", "페이지 소스·Network에 키 없음", "권한 없는 접근 차단", "API 실패 안내 표시", "새로고침 후 데이터 유지", "모바일 화면 확인"] },
             { key: "deploy", label: "배포·패키징 기준", input: "text", placeholder: "예: 웹 배포, 링크 접속·모바일 확인", chips: ["웹 배포", "Vercel", "Netlify", "환경변수 등록 후 배포", "배포 URL 직접 확인", "exe는 필요할 때만 검토"] },
             { key: "release", label: "릴리즈 기준", placeholder: "예: 테스트·보안 통과 후 릴리즈 노트와 함께 공개", chips: ["테스트 통과 후 공개", "보안 점검 통과 후 공개", "사용자용 변경점만 작성", "다운로드·보안 경고 안내 포함", "v1.0 기준 정리"] },
             { key: "ops", label: "운영 체크리스트", placeholder: "예: 오류 보고 확인, 업데이트 주기, 보안 재점검", chips: ["오류 보고 확인", "API 실패 로그 확인", "사용자 피드백 수집", "보안 재점검", "업데이트 주기 정하기", "다음 버전 개선 목록"] }
@@ -2251,7 +2284,7 @@ const COURSE = {
           fields: [
             { key: "changeNotes", label: "사용자용 변경 내용", placeholder: "예: 이번 버전부터 '상세 보기'가 추가되고 속도가 빨라졌습니다." },
             { key: "downloadGuide", label: "다운로드 안내", placeholder: "예: 아래 파일을 내려받아 실행하세요. 첫 실행 시 보안 경고가 뜰 수 있습니다." },
-            { key: "removeInternal", label: "내부 정보 제거 확인", input: "text", placeholder: "예: 커밋 해시·내부 URL 없음 확인" }
+            { key: "removeInternal", label: "내부 정보 제거 확인", input: "text", placeholder: "예: 커밋 해시·내부 URL·환경변수 이름·DB 테이블명 없음 확인", chips: ["커밋 해시 없음", "내부 URL 없음", "환경변수 이름 없음", "키·토큰 없음"] }
           ]
         },
         checks: ["릴리즈 노트를 작성했다", "다운로드 안내를 넣었다"]
@@ -2342,7 +2375,7 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "opsChecklist", label: "운영 체크 항목", placeholder: "예: 주 1회 오류 보고 확인, 월 1회 보안 재점검, 사용자 피드백 모으기" },
+            { key: "opsChecklist", label: "운영 체크 항목", placeholder: "예: 주 1회 오류 보고 확인, 월 1회 보안 재점검(RLS 정책·환경변수·키 노출), 사용자 피드백 모으기", chips: ["주 1회 오류 보고 확인", "월 1회 RLS 정책 재확인", "환경변수·키 노출 재점검", "API 실패 로그 확인", "사용자 피드백 수집"] },
             { key: "updateCriteria", label: "업데이트 기준", input: "text", placeholder: "예: 같은 오류가 반복되거나 요청이 쌓이면 업데이트" },
             { key: "inquiryResponse", label: "사용자 문의 대응", placeholder: "예: 문의 창구를 정하고, 받은 문의를 에러 보고 형식으로 정리한다." }
           ]
