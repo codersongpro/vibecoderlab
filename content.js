@@ -22,6 +22,12 @@
  *   difficulty/estimatedMinutes/updatedAt/completionRequirements  Phase 4 메타데이터(선택, 없으면 숨김)
  *   presenterNotes  발표 모드 발표자 노트(선택) {title, steps, checks}
  *
+ * runPlan 저작 규칙
+ *   - 세션 title 끝에 "(NN분)"으로 분량을 표기한다.
+ *   - 그 NN은 세션 pages의 estimatedMinutes 합계와 정확히 일치해야 한다.
+ *   - 강의 시간을 바꾸면 그 강의가 속한 모든 runPlan 세션의 표기를 함께 고친다.
+ *   - 리그의 모든 강의는 최소 하나의 runPlan 세션에 등장해야 한다.
+ *
  * 기본 예시는 "여행 준비 앱"이 리그마다 성장하는 흐름이다.
  * 사용자는 예시를 그대로 따라 해도 되고, 캠핑·출장·이사·운동 준비처럼 자기 앱으로 바꿔도 된다.
  *
@@ -63,18 +69,21 @@ const COURSE = {
     facilitatorIntro: "1차시(45~50분) 또는 단기 연수 한 모듈로 운영할 수 있습니다. 코딩 경험이 없는 참가자도 'AI에게 요청 → 받은 코드 실행 → 배포'까지 같은 시간에 끝낼 수 있도록 설계되어 있습니다. 진행 중 막히는 지점은 대부분 계정 가입·이메일 인증이므로, 시작 전 네트워크·메일 정책을 먼저 확인하면 흐름이 끊기지 않습니다.",
     runPlan: [
       {
-        name: "1차시 압축형(45~50분)",
-        note: "gemini·canva는 과제 또는 다음 시간으로 미룬다.",
-        sessions: [{ title: "전체 한 번에", pages: ["setup-rookie", "vibe", "pch", "rules", "chatgpt", "prd-basic", "build-rookie", "deploy-rookie", "share"] }]
+        name: "5차시 표준형(차시당 40~55분)",
+        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다. 각 차시 제목의 분량은 강의별 예상 시간을 합한 값이다.",
+        sessions: [
+          { title: "1차시 — 환경·개념 시작 (35분)", pages: ["setup-rookie", "vibe"] },
+          { title: "2차시 — Prompt·Context·Harness (40분)", pages: ["pch", "rules"] },
+          { title: "3차시 — 질문과 PRD (40분)", pages: ["chatgpt", "prd-basic"] },
+          { title: "4차시 — 만들고 배포하기 (50분)", pages: ["build-rookie", "deploy-rookie"] },
+          { title: "5차시 — 확장과 공유 (55분)", pages: ["gemini", "canva", "share"] }
+        ]
       },
       {
-        name: "4차시 표준형(차시당 45~50분)",
-        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다.",
+        name: "90분 특강형(계정 가입은 사전 과제)",
+        note: "만들어서 배포하는 경험만 압축한 편성이다. 계정 가입(setup-rookie)은 반드시 사전 과제로 끝내고 오게 한다. 개념 강의(pch·rules·chatgpt)와 확장 강의(gemini·canva·share)는 다루지 않으므로, 배포까지가 아니라 개념까지 필요하면 5차시 표준형을 쓴다.",
         sessions: [
-          { title: "1차시 — 환경·개념 시작", pages: ["setup-rookie", "vibe", "pch", "rules"] },
-          { title: "2차시 — AI에게 요청하기", pages: ["chatgpt", "prd-basic"] },
-          { title: "3차시 — 만들고 배포하기", pages: ["build-rookie", "deploy-rookie"] },
-          { title: "4차시 — 확장과 공유", pages: ["gemini", "canva", "share"] }
+          { title: "전체 한 번에 (90분)", pages: ["vibe", "prd-basic", "build-rookie", "deploy-rookie"] }
         ]
       }
     ],
@@ -705,21 +714,23 @@ const COURSE = {
     facilitatorIntro: "4차시 안팎(또는 하루 연수)으로 운영하기 좋습니다. 루키리그 수료자를 전제로 하며, 핵심은 'Secret이 필요한 API'와 '브라우저에서 직접 호출 가능한 API'를 구분하는 보안 감각입니다. 참가자가 API 키를 코드에 그대로 박아 넣는 실수를 가장 많이 하므로, 보안 강의(api-security-pro)에서 시간을 더 배정하는 것을 권장합니다.",
     runPlan: [
       {
-        name: "4차시 표준형(차시당 45~50분)",
-        note: "api-security-pro는 분량을 줄이지 말고 그대로 한 차시 전체를 쓴다.",
+        name: "6차시 표준형(차시당 45~50분)",
+        note: "api-security-pro는 분량을 줄이지 말고 prd-product와 함께 한 차시를 온전히 쓴다. 결과물 공유(share, 25분)는 과제로 돌리고 다음 만남 시작에 5분씩 발표시킨다. 1차시는 설치가 막히는 참가자가 나오므로 여유를 두고 시작한다.",
         sessions: [
-          { title: "1차시 — 기획·구조 설계", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data"] },
-          { title: "2차시 — API 연동과 보안", pages: ["frontend-backend", "api", "api-security-pro"] },
-          { title: "3차시 — AI와 함께 만들기", pages: ["prd-product", "cursor", "build-pro"] },
-          { title: "4차시 — 배포와 공유", pages: ["github", "deploy", "share"] }
+          { title: "1차시 — 환경과 제작 방향 (50분)", pages: ["setup-pro", "package-choice"] },
+          { title: "2차시 — 문제·화면·기능 (45분)", pages: ["problem", "screens", "features"] },
+          { title: "3차시 — 데이터와 API (50분)", pages: ["data", "frontend-backend", "api"] },
+          { title: "4차시 — 보안과 PRD (50분)", pages: ["api-security-pro", "prd-product"] },
+          { title: "5차시 — 에이전트로 만들기 (45분)", pages: ["cursor", "build-pro"] },
+          { title: "6차시 — 저장소와 배포 (45분)", pages: ["github", "deploy"] }
         ]
       },
       {
         name: "하루 연수형(6시간 안팎)",
-        note: "오전·오후 사이 점심시간을 3차시와 4차시 경계로 둔다.",
+        note: "오전·오후 사이 점심시간을 경계로 둔다. 오전 170분·오후 140분이므로 각 블록에 10분 휴식을 두 번 넣어도 3시간 안에 들어온다.",
         sessions: [
-          { title: "오전 — 기획부터 보안까지", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
-          { title: "오후 — 제작부터 배포까지", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
+          { title: "오전 — 기획부터 보안까지 (170분)", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
+          { title: "오후 — 제작부터 배포까지 (140분)", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
         ]
       }
     ],
@@ -1524,13 +1535,14 @@ const COURSE = {
     facilitatorIntro: "다회차 연수(주 1회 × 4주 등)에 적합한 분량입니다. 로그인·DB·릴리즈를 처음 다루는 참가자가 많으므로, 강의 순서를 건너뛰지 않고 release-harness(릴리즈 전 점검 구조)부터 차례로 짚어 주는 것이 중요합니다. 마지막 차시는 반드시 실제 v1.0 배포까지 마치고 끝내야 '완성 경험'이 남습니다.",
     runPlan: [
       {
-        name: "4주 연수형(주 1회, 회당 90분)",
-        note: "매회 시작 5분은 직전 주 산출물(릴리즈·로그)을 함께 확인한다.",
+        name: "5주 연수형(주 1회, 회당 90분)",
+        note: "매회 시작 5분은 직전 주 산출물(배포 링크·로그)을 함께 확인한다. 2주차의 서버 프록시와 3주차의 로그인·DB가 이 리그의 두 고비이므로, 이 두 주는 다른 강의를 끼워 넣지 말고 실습 시간을 남겨 둔다. 마지막 주는 반드시 실제 v1.0 배포까지 마치고 끝낸다.",
         sessions: [
-          { title: "1주차 — 도구와 점검 체계", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
-          { title: "2주차 — 보안과 인프라", pages: ["security", "env", "travel-api-gemini", "db-auth-integration", "auth"] },
-          { title: "3주차 — 설계와 배포 준비", pages: ["prd-release", "deploy-check", "logs", "cicd"] },
-          { title: "4주차 — 운영과 v1.0 출시", pages: ["exe", "releases", "warning", "ops", "share"] }
+          { title: "1주차 — 도구와 점검 체계 (70분)", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
+          { title: "2주차 — 보안과 서버 프록시 (75분)", pages: ["security", "env", "travel-api-gemini"] },
+          { title: "3주차 — 로그인과 DB (85분)", pages: ["auth", "db-auth-integration", "prd-release"] },
+          { title: "4주차 — 배포와 점검 (60분)", pages: ["deploy-check", "logs", "cicd", "exe"] },
+          { title: "5주차 — 릴리즈와 운영 (75분)", pages: ["releases", "warning", "ops", "share"] }
         ]
       }
     ],
