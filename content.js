@@ -22,6 +22,12 @@
  *   difficulty/estimatedMinutes/updatedAt/completionRequirements  Phase 4 메타데이터(선택, 없으면 숨김)
  *   presenterNotes  발표 모드 발표자 노트(선택) {title, steps, checks}
  *
+ * runPlan 저작 규칙
+ *   - 세션 title 끝에 "(NN분)"으로 분량을 표기한다.
+ *   - 그 NN은 세션 pages의 estimatedMinutes 합계와 정확히 일치해야 한다.
+ *   - 강의 시간을 바꾸면 그 강의가 속한 모든 runPlan 세션의 표기를 함께 고친다.
+ *   - 리그의 모든 강의는 최소 하나의 runPlan 세션에 등장해야 한다.
+ *
  * 기본 예시는 "여행 준비 앱"이 리그마다 성장하는 흐름이다.
  * 사용자는 예시를 그대로 따라 해도 되고, 캠핑·출장·이사·운동 준비처럼 자기 앱으로 바꿔도 된다.
  *
@@ -39,7 +45,7 @@ const COURSE = {
     name: "루키리그",
     theme: "#0056d2",
     label: "AI에게 코드를 받아 내 첫 앱을 만들고 배포한다",
-    description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 같은 구조로 캠핑·출장·이사·운동 준비, 가계부, 식단 체크, 동아리 회비 정산 앱 등 자기 일상에 바로 쓰는 앱으로 바꿔도 됩니다.",
+    description: "시나리오: 한 파일짜리 여행 준비 미니앱을 만듭니다. 준비물 체크, 코스 후보 뽑기, 간단 예산 합계를 넣고 Netlify로 배포합니다. 교사 연수라면 같은 구조로 '수업 준비 미니앱'을 만드세요 — 준비물 체크는 수업 자료 체크로, 코스 뽑기는 랜덤 발표자 뽑기로, 예산 합계는 학급비 합계로 바꾸면 그대로 맞아떨어집니다. 캠핑·출장·이사·운동 준비, 가계부, 식단 체크처럼 자기 일상 앱으로 바꿔도 됩니다.",
     tags: ["Prompt·Context·Harness", "AI 코드 받기", "Netlify/Vercel 배포", "첫 앱 완성"],
     padletUrl: "https://padlet.com/dungstme/_-guhr4cbmj43e82ew",
     competency: "AI에게 요청해 한 파일짜리 앱을 완성하고 인터넷에 배포한다",
@@ -63,18 +69,21 @@ const COURSE = {
     facilitatorIntro: "1차시(45~50분) 또는 단기 연수 한 모듈로 운영할 수 있습니다. 코딩 경험이 없는 참가자도 'AI에게 요청 → 받은 코드 실행 → 배포'까지 같은 시간에 끝낼 수 있도록 설계되어 있습니다. 진행 중 막히는 지점은 대부분 계정 가입·이메일 인증이므로, 시작 전 네트워크·메일 정책을 먼저 확인하면 흐름이 끊기지 않습니다.",
     runPlan: [
       {
-        name: "1차시 압축형(45~50분)",
-        note: "gemini·canva는 과제 또는 다음 시간으로 미룬다.",
-        sessions: [{ title: "전체 한 번에", pages: ["setup-rookie", "vibe", "pch", "rules", "chatgpt", "prd-basic", "build-rookie", "deploy-rookie", "share"] }]
+        name: "5차시 표준형(차시당 40~55분)",
+        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다. 각 차시 제목의 분량은 강의별 예상 시간을 합한 값이다.",
+        sessions: [
+          { title: "1차시 — 환경·개념 시작 (35분)", pages: ["setup-rookie", "vibe"] },
+          { title: "2차시 — Prompt·Context·Harness (40분)", pages: ["pch", "rules"] },
+          { title: "3차시 — 질문과 PRD (40분)", pages: ["chatgpt", "prd-basic"] },
+          { title: "4차시 — 만들고 배포하기 (50분)", pages: ["build-rookie", "deploy-rookie"] },
+          { title: "5차시 — 확장과 공유 (55분)", pages: ["gemini", "canva", "share"] }
+        ]
       },
       {
-        name: "4차시 표준형(차시당 45~50분)",
-        note: "차시마다 직전 차시 산출물을 5분 점검 후 시작한다.",
+        name: "90분 특강형(계정 가입은 사전 과제)",
+        note: "만들어서 배포하는 경험만 압축한 편성이다. 계정 가입(setup-rookie)은 반드시 사전 과제로 끝내고 오게 한다. 개념 강의(pch·rules·chatgpt)와 확장 강의(gemini·canva·share)는 다루지 않으므로, 배포까지가 아니라 개념까지 필요하면 5차시 표준형을 쓴다.",
         sessions: [
-          { title: "1차시 — 환경·개념 시작", pages: ["setup-rookie", "vibe", "pch", "rules"] },
-          { title: "2차시 — AI에게 요청하기", pages: ["chatgpt", "prd-basic"] },
-          { title: "3차시 — 만들고 배포하기", pages: ["build-rookie", "deploy-rookie"] },
-          { title: "4차시 — 확장과 공유", pages: ["gemini", "canva", "share"] }
+          { title: "전체 한 번에 (90분)", pages: ["vibe", "prd-basic", "build-rookie", "deploy-rookie"] }
         ]
       }
     ],
@@ -117,6 +126,8 @@ const COURSE = {
           "gemini.google.com → Google 계정으로 로그인합니다. Google 계정이 없다면 accounts.google.com/signup에서 먼저 만드세요.",
           "canva.com → 'Sign up for free'. 이메일 또는 Google 계정으로 가입합니다.",
           "app.netlify.com → 'Sign up'. GitHub 또는 이메일로 가입합니다.",
+          "가입 메일이 오지 않으면 먼저 스팸함을 확인합니다. 학교·회사 계정은 관리자 정책으로 외부 가입이 막히는 경우가 있으니, 막히면 개인 Gmail 같은 개인 메일로 다시 가입합니다.",
+          "다섯 개를 다 만들지 못해도 됩니다. AI 도구 1개 + Netlify만 있으면 다음 강의로 진행할 수 있습니다.",
           "각 탭을 열어 로그인 상태를 확인하고, 아래 실습 칸에 체크합니다."
         ],
         externalGuide: "가입 순서: ① chat.openai.com ② claude.ai ③ gemini.google.com ④ canva.com ⑤ app.netlify.com. 모두 무료 플랜으로 충분합니다.",
@@ -196,8 +207,8 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "appIdea", label: "내가 만들고 싶은 것(한 문장)", placeholder: "예: 여행 전 준비물 체크, 코스 뽑기, 예산 합계를 한 화면에서 하는 앱", chips: ["여행 준비 미니앱", "캠핑 준비 앱", "출장 준비 앱", "이사 준비 앱", "운동 루틴 준비 앱", "반려동물 산책 준비 앱", "장보기 준비 앱", "주말 계획 앱", "내 아이디어로 바꾸기"] },
-            { key: "user", label: "누가 사용하나요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 나", chips: ["나 자신", "가족", "친구", "여행 동행자", "캠핑 동호회", "출장이 잦은 직장인", "이사를 준비하는 사람", "운동 루틴을 시작하는 사람"] },
+            { key: "appIdea", label: "내가 만들고 싶은 것(한 문장)", placeholder: "예: 여행 전 준비물 체크, 코스 뽑기, 예산 합계를 한 화면에서 하는 앱", chips: ["여행 준비 미니앱", "수업 준비 미니앱(교사)", "학급 당번표(교사)", "캠핑 준비 앱", "출장 준비 앱", "이사 준비 앱", "운동 루틴 준비 앱", "장보기 준비 앱", "내 아이디어로 바꾸기"] },
+            { key: "user", label: "누가 사용하나요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 나", chips: ["나 자신", "가족", "친구", "여행 동행자", "우리 반 학생(교사)", "같은 학년 선생님(교사)", "출장이 잦은 직장인", "운동 루틴을 시작하는 사람"] },
             { key: "firstQ", label: "AI에게 던질 첫 질문", placeholder: "예: 여행 준비 미니앱의 가장 간단한 첫 화면부터 만들어 주세요. 준비물 체크, 코스 뽑기, 예산 합계가 필요해요. 불명확한 부분이 있으면 먼저 물어봐 줘.", chips: ["불명확한 부분이 있으면 먼저 물어봐 줘", "한 화면짜리로 만들어 줘", "API·로그인·DB는 넣지 마", "준비물 체크 기능을 넣어 줘", "랜덤 추천 버튼을 넣어 줘", "예산 합계를 계산해 줘", "내 아이디어에 맞게 항목명을 바꿔 줘", "<!DOCTYPE html>부터 </html>까지 전체를 줘"] }
           ]
         },
@@ -251,7 +262,7 @@ const COURSE = {
             { key: "harness", label: "Harness (지킬 범위·확인 방법)", placeholder: "예: API·로그인·DB 없이 체크, 랜덤 추천, 합계 계산만 동작하게 하고 미리보기로 확인한다.", chips: ["API·로그인·DB 제외", "체크/랜덤/합계만 구현", "미리보기로 확인 후 다음 기능", "모르면 구현 전 먼저 물어봐"] }
           ]
         },
-        checks: ["Prompt를 한 문장으로 적었다", "Context에 화면 구성을 적었다", "Harness에 지킬 범위·확인 방법을 적었다"]
+        checks: ["내 Prompt만 읽고도 무엇을 만들지 남이 알 수 있다", "Context에 화면 구성과 제약이 들어 있다", "Harness에 '하지 말 것'과 '어떻게 확인할지'가 둘 다 들어 있다"]
       },
       {
         id: "rules",
@@ -295,7 +306,7 @@ const COURSE = {
             { key: "securityRules", label: "보안 규칙", input: "text", placeholder: "예: 비밀번호·키를 코드에 직접 적지 않는다.", chips: ["비밀번호·키를 코드에 직접 적지 않기", "개인정보를 코드에 포함하지 않기"] }
           ]
         },
-        checks: ["해야 할 일을 적었다", "하면 안 되는 일을 적었다", "보안 규칙을 넣었다"]
+        checks: ["해야 할 일과 하면 안 되는 일이 각각 한 줄 이상 있다", "지침에 비밀값·개인정보를 코드에 넣지 말라는 문장이 있다", "이 지침을 그대로 복사해 AI에게 붙여넣을 수 있는 형태다"]
       },
       {
         id: "chatgpt",
@@ -350,7 +361,7 @@ const COURSE = {
             { key: "format", label: "원하는 답변 형식", input: "text", placeholder: "예: 완성된 HTML 한 파일로 전체를 줘.", chips: ["완성된 HTML 한 파일로 전체", "코드블록으로 줘", "설명은 주석으로만"] }
           ]
         },
-        checks: ["목표·배경·형식을 담은 질문을 만들었다", "AI가 먼저 되묻게 하는 문구를 넣었다"]
+        checks: ["질문에 목표·배경·원하는 형식이 모두 들어 있다", "질문 끝에 '불명확하면 먼저 물어봐 줘'가 들어 있다", "실제로 AI에 보냈고 AI가 되묻거나 답을 주었다"]
       },
       {
         id: "prd-basic",
@@ -391,31 +402,33 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱", chips: ["여행 준비 미니앱", "캠핑 준비 미니앱", "출장 준비 미니앱", "이사 준비 미니앱", "운동 루틴 준비 앱", "장보기 준비 앱", "한 달 가계부 앱", "식단 체크 앱", "동아리 회비 정산 앱"] },
-            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람", chips: ["여행 전날 준비물을 확인하는 사람", "가족 여행을 준비하는 사람", "캠핑 장비를 챙기는 사람", "출장 짐을 빠뜨리기 싫은 사람", "운동 루틴을 시작하는 사람", "매달 지출을 정리하고 싶은 사람", "동아리 회비를 관리하는 사람"] },
-            { key: "problem", label: "어떤 문제를 해결하나요?", placeholder: "예: 여행 전 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.", chips: ["준비물이 여러 메모에 흩어져 있다", "어디를 갈지 매번 고민한다", "예상 비용을 머릿속으로만 계산한다", "필요한 물건을 빠뜨리기 쉽다", "내 앱 주제의 관리 항목이 흩어져 있다"] },
-            { key: "features", label: "꼭 필요한 기능 3개", placeholder: "예: 1) 준비물 체크  2) 코스 후보 랜덤 뽑기  3) 예산 합계 계산", chips: ["1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산", "1) 항목 추가 2) 완료 체크 3) 총액 계산", "1) 후보 목록 2) 랜덤 추천 3) 메모 저장", "1) 할 일 체크 2) 우선순위 표시 3) 진행률 표시"] },
+            { key: "app", label: "앱 이름", input: "text", placeholder: "예: 여행 준비 미니앱", chips: ["여행 준비 미니앱", "수업 준비 미니앱(교사)", "랜덤 발표자 뽑기(교사)", "캠핑 준비 미니앱", "출장 준비 미니앱", "운동 루틴 준비 앱", "한 달 가계부 앱", "식단 체크 앱", "동아리 회비 정산 앱"] },
+            { key: "user", label: "누구를 위한 앱인가요?", input: "text", placeholder: "예: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람", chips: ["여행 전날 준비물을 확인하는 사람", "가족 여행을 준비하는 사람", "수업 자료를 매번 챙기는 교사", "학급 활동을 운영하는 교사", "출장 짐을 빠뜨리기 싫은 사람", "매달 지출을 정리하고 싶은 사람", "동아리 회비를 관리하는 사람"] },
+            { key: "problem", label: "어떤 문제를 해결하나요?", placeholder: "예: 여행 전 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.", chips: ["준비물이 여러 메모에 흩어져 있다", "어디를 갈지 매번 고민한다", "예상 비용을 머릿속으로만 계산한다", "수업 준비물을 매번 빠뜨린다(교사)", "발표 순서를 정하느라 시간이 든다(교사)", "내 앱 주제의 관리 항목이 흩어져 있다"] },
+            { key: "features", label: "꼭 필요한 기능 3개", placeholder: "예: 1) 준비물 체크  2) 코스 후보 랜덤 뽑기  3) 예산 합계 계산", chips: ["1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산", "(교사) 1) 수업 자료 체크 2) 랜덤 발표자 뽑기 3) 학급비 합계", "1) 항목 추가 2) 완료 체크 3) 총액 계산", "1) 후보 목록 2) 랜덤 추천 3) 메모 저장", "1) 할 일 체크 2) 우선순위 표시 3) 진행률 표시"] },
             { key: "success", label: "성공 확인 방법", placeholder: "예: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.", chips: ["체크 버튼이 눌린다", "랜덤 추천 결과가 바뀐다", "비용을 입력하면 합계가 맞다", "모바일에서 화면이 밀리지 않는다", "새로 만든 항목명이 내 주제에 맞다"] },
             { key: "copyPrompt", label: "AI에게 요청할 루키 PRD", placeholder: "예: 아래 PRD를 바탕으로 여행 준비 미니앱을 HTML+CSS+JS 한 파일로 만들어 줘.\n\n[루키 PRD]\n앱 이름: 여행 준비 미니앱\n사용자: 여행 전 준비물과 예산을 빠르게 정리하고 싶은 사람\n해결할 문제: 준비물, 갈 곳 후보, 예상 비용이 흩어져 있어 빠뜨리기 쉽다.\n필수 기능: 1) 준비물 체크 2) 코스 후보 랜덤 뽑기 3) 예산 합계 계산\n성공 기준: 준비물을 체크하고, 코스를 하나 뽑고, 비용을 입력하면 총액이 바르게 표시된다.\n\n조건: API·로그인·DB는 넣지 말고, 모바일에서도 보기 좋게 만들어 줘. <!DOCTYPE html>부터 </html>까지 전체 파일로 줘.", chips: ["여행 준비 앱 기준으로 작성", "내 앱 주제로 항목명만 바꾸기", "API·로그인·DB 없이 만들기", "모바일 우선으로 만들기", "수정하기 쉽게 주석을 조금 넣기", "완성 HTML 한 파일로 받기"] }
           ]
         },
-        checks: ["앱 이름·사용자·문제를 적었다", "기능 3개를 적었다", "성공 확인 방법을 적었다", "AI에게 요청할 PRD를 만들었다"]
+        checks: ["PRD만 읽고도 남이 같은 앱을 만들 수 있을 만큼 구체적이다", "기능이 3개로 좁혀져 있다", "성공 기준이 '무엇을 하면 무엇이 보인다' 형태로 적혀 있다", "PRD 전체를 복사해 AI에 붙여넣을 수 있다"]
       },
       {
         id: "build-rookie",
         group: "내 앱 만들기",
         title: "AI에게 코드 받아 실행하기",
-        goal: "ChatGPT·Claude·Gemini 중 하나로 HTML 코드를 받아 직접 실행해 본다.",
+        goal: "AI에게 HTML 코드를 받아 실행하고, 오류가 나면 원인을 찾아 고칠 수 있다.",
         difficulty: "beginner",
-        estimatedMinutes: 20,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
-        summary: "6번 루키 PRD를 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
-        reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 6번에서 만든 루키 PRD 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
+        estimatedMinutes: 30,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["'루키 PRD 만들기'의 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"],
+        summary: "'루키 PRD 만들기'에서 완성한 요청문을 AI에게 붙여넣고, 실행 결과를 보며 수정·디버그를 반복합니다.",
+        reading: "세 가지 AI 모두 HTML 코드를 만들 수 있습니다. ChatGPT·Claude는 chat.openai.com·claude.ai에서, Gemini는 gemini.google.com에서 사용합니다. 앞 강의 '루키 PRD 만들기'에서 완성한 요청문을 그대로 복사해 AI에게 붙여넣고, 받은 코드를 아래 입력칸에 붙여넣으면 미리보기에서 즉시 실행됩니다. 첫 결과는 초안입니다. 버튼이 안 눌리거나, 예산 합계가 틀리거나, 모바일 화면이 밀리면 문제를 구체적으로 적어 AI에게 수정 요청을 보내세요. 이 단계의 핵심은 완성 코드를 한 번에 받는 것이 아니라, PRD의 성공 기준을 보며 수정하고 디버그하는 과정입니다.",
         terms: [
           { term: "HTML", def: "화면의 구조를 정의하는 코드. 제목·버튼·입력칸 등의 요소를 담습니다." },
           { term: "CSS", def: "HTML 요소의 색·크기·간격 등 시각적 스타일을 지정하는 코드." },
-          { term: "JS(JavaScript)", def: "버튼 클릭·입력 처리 같은 동적 동작을 구현하는 코드." }
+          { term: "JS(JavaScript)", def: "버튼 클릭·입력 처리 같은 동적 동작을 구현하는 코드." },
+          { term: "개발자 도구(F12)", def: "브라우저에 내장된 점검 창. 키보드 F12를 누르면 열린다." },
+          { term: "콘솔(Console)", def: "개발자 도구의 한 탭. 코드가 멈춘 이유가 빨간 글자로 표시된다." }
         ],
         visual: {
           type: "flow",
@@ -433,15 +446,19 @@ const COURSE = {
           "같은 요청을 ChatGPT와 Claude에 각각 보내면 결과가 다를까요? 어떻게 비교할 수 있을까요?"
         ],
         steps: [
-          "6번에서 만든 루키 PRD 요청문을 복사합니다.",
+          "'루키 PRD 만들기'에서 완성한 요청문을 복사합니다.",
           "ChatGPT(chat.openai.com)·Claude(claude.ai)·Gemini(gemini.google.com) 중 하나를 선택해 접속합니다.",
-          "입력창에 6번 요청문을 붙여넣고 HTML 전체 파일을 요청합니다.",
+          "입력창에 그 요청문을 붙여넣고 HTML 전체 파일을 요청합니다.",
           "받은 코드 전체를 아래 '코드 붙여넣기' 칸에 붙여넣어 미리보기로 확인합니다.",
           "성공 기준과 비교하며 동작하지 않는 부분을 찾습니다.",
-          "문제를 구체적으로 적어 AI에게 수정 요청을 보내고 다시 붙여넣습니다.",
+          "오류를 고칠 때는 네 단계를 따릅니다. ① 기대한 것과 실제로 무엇이 다른지 한 문장으로 적습니다. 예: '합계 버튼을 눌렀는데 숫자 대신 NaN이 뜬다.'",
+          "② 키보드 F12를 눌러 개발자 도구를 열고 Console 탭의 빨간 글자를 전체 복사합니다. 빨간 글자가 없으면 이 단계는 건너뜁니다.",
+          "③ AI에게 이렇게 재요청합니다. '이 코드에서 (①의 증상)이 나고 콘솔에 (②의 에러)가 뜬다. 원인을 찾아 최소한만 고쳐 줘. 다른 기능은 그대로 둬.'",
+          "④ 받은 코드를 다시 붙여넣어 그 증상이 사라졌는지 확인합니다. 남아 있으면 ①로 돌아갑니다.",
+          "화면 모양을 먼저 잡고 싶다면 'Canva AI로 화면 초안 만들기' 강의를 앞당겨 보고, 만든 그림을 AI에게 첨부해 요청해도 됩니다.",
           "완성된 코드를 index.html 파일로 저장합니다."
         ],
-        externalGuide: "① 6번 루키 PRD 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 문제를 구체적으로 적어 수정 요청 → 반복",
+        externalGuide: "① '루키 PRD 만들기'의 요청문 복사 ② ChatGPT·Claude·Gemini 중 하나 접속 ③ 요청문 전송 ④ 받은 코드를 아래 칸에 붙여넣어 실행 ⑤ 준비물 체크·코스 뽑기·예산 합계를 확인 ⑥ 안 되면 F12 → Console의 빨간 글자를 복사해 '이 증상, 이 에러. 최소한만 고쳐 줘'로 재요청 ⑦ 다시 붙여넣어 확인 → 반복",
         links: [
           { label: "ChatGPT 열기", url: "https://chat.openai.com" },
           { label: "Claude 열기", url: "https://claude.ai" },
@@ -450,12 +467,12 @@ const COURSE = {
         practice: {
           kind: "build",
           fields: [
-            { key: "aiRequest", label: "6번 PRD 기반 AI 요청문", placeholder: "6번에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["6번 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
+            { key: "aiRequest", label: "루키 PRD 기반 AI 요청문", placeholder: "앞 강의에서 만든 'AI에게 요청할 루키 PRD'를 여기에 붙여넣으세요.", chips: ["루키 PRD를 그대로 붙여넣기", "내 앱 주제로 항목명 바꾸기", "한 파일 HTML로 요청하기", "불명확하면 먼저 물어보라고 요청하기"] },
             { key: "htmlCode", label: "AI가 준 HTML 코드 붙여넣기", placeholder: "AI에게 받은 HTML 코드를 여기 전체 붙여넣으세요. 아래에서 바로 실행됩니다." },
-            { key: "debugLog", label: "수정·디버그 기록", placeholder: "예: 예산 합계가 NaN으로 나와서 '숫자만 계산되게 수정해 줘'라고 요청했고 정상 확인했다. / 모바일에서 버튼이 밀려서 간격을 줄여 달라고 요청했다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음", "모바일에서 화면이 밀림", "항목명이 내 주제와 맞지 않음", "색상 대비가 약함", "수정 후 다시 붙여넣어 확인함"] }
+            { key: "debugLog", label: "수정·디버그 기록(증상 → 에러 → 요청 → 결과)", placeholder: "예: 합계 버튼을 눌렀더니 NaN이 떴다. 콘솔에 'Cannot read properties of null'이 있었다. '이 증상과 에러, 원인만 최소로 고쳐 줘'로 재요청했고 다시 붙여넣으니 합계가 정상 표시됐다.", chips: ["버튼이 눌리지 않음", "합계가 숫자로 계산되지 않음(NaN)", "모바일에서 화면이 밀림", "콘솔 빨간 글자를 복사해 첨부함", "빨간 글자는 없고 동작만 다름", "수정 후 다시 붙여넣어 확인함"] }
           ]
         },
-        checks: ["6번 PRD 요청문을 붙여넣어 코드를 받았다", "붙여넣어 미리보기로 실행해 봤다", "수정·디버그를 한 번 이상 기록했다"]
+        checks: ["미리보기 화면에 내 앱이 실제로 떠 있다", "PRD에 적은 기능 3개를 눌러 보니 모두 동작한다", "오류를 한 번 이상 만나 고쳤고 그 과정이 기록에 남아 있다", "자동 점검 패널에 '위험' 항목이 없다"]
       },
       {
         id: "deploy-rookie",
@@ -483,9 +500,10 @@ const COURSE = {
           "'Sites' 탭에서 점선 영역에 index.html 파일을 드래그&드롭합니다.",
           "몇 초 후 자동으로 URL이 생성됩니다.",
           "생성된 배포 링크를 열어 앱이 잘 열리는지 확인합니다.",
-          "배포 링크를 아래에 기록합니다."
+          "Netlify 가입이나 업로드가 막히면 순서대로 대안을 시도합니다. ① vercel.com에 가입해 같은 방식으로 폴더를 끌어다 놓습니다. ② 그것도 막히면 GitHub 저장소를 만들고 Settings → Pages에서 브랜치를 선택해 공개합니다. ③ 인터넷 배포가 모두 막힌 환경이라면 index.html 파일 자체를 메신저나 메일로 전달하고, 받는 사람이 파일을 더블클릭해 열도록 안내합니다.",
+          "배포 링크를 아래에 기록합니다. 파일로 전달했다면 그 방법을 적습니다."
         ],
-        externalGuide: "① Netlify에 접속해 로그인합니다. ② 'Sites' 탭의 점선 영역에 index.html 파일을 드래그&드롭합니다. ③ 몇 초 후 자동 생성된 URL을 복사해 아래에 기록합니다. ④ 브라우저에서 URL을 열어 앱이 정상 동작하는지 확인합니다.",
+        externalGuide: "① Netlify에 접속해 로그인합니다. ② 'Sites' 탭의 점선 영역에 index.html 파일을 드래그&드롭합니다. ③ 몇 초 후 자동 생성된 URL을 복사해 아래에 기록합니다. ④ 브라우저에서 URL을 열어 앱이 정상 동작하는지 확인합니다.  막혔을 때: Netlify → Vercel(같은 드래그&드롭) → GitHub Pages(Settings → Pages) → 파일 직접 전달 순으로 내려갑니다.",
         links: [
           { label: "Netlify 열기", url: "https://app.netlify.com" },
           { label: "Vercel 열기", url: "https://vercel.com" }
@@ -502,12 +520,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "platform", label: "사용한 배포 서비스", input: "select", options: ["Netlify", "Vercel"], value: "Netlify" },
+            { key: "platform", label: "사용한 배포 서비스", input: "select", options: ["Netlify", "Vercel", "GitHub Pages", "파일로 직접 전달"], value: "Netlify" },
             { key: "deployUrl", label: "배포된 링크(URL)", input: "text", placeholder: "예: https://my-first-app.netlify.app" },
-            { key: "deployNote", label: "배포하며 어려웠던 점 / 해결 방법", placeholder: "예: 파일 이름을 index.html로 바꾸니 바로 열렸다." }
+            { key: "deployNote", label: "배포하며 어려웠던 점 / 해결 방법", placeholder: "예: 파일 이름을 index.html로 바꾸니 바로 열렸다. / 학교망에서 Netlify 가입이 막혀 Vercel로 대신 배포했다.", chips: ["파일명을 index.html로 바꾸니 해결", "Netlify가 막혀 Vercel로 전환", "GitHub Pages로 전환", "이상 없이 한 번에 배포됨"] }
           ]
         },
-        checks: ["Netlify 또는 Vercel에 파일을 올렸다", "배포 링크가 실제로 열린다", "배포 URL을 기록했다"]
+        checks: ["배포 링크를 다른 기기나 시크릿 창에서 열어도 앱이 뜬다", "배포된 화면에서 주요 기능이 동작한다", "링크를 기록해 두어 다음에 다시 찾을 수 있다"]
       },
       {
         id: "share",
@@ -555,7 +573,7 @@ const COURSE = {
             { key: "help", label: "도움받고 싶은 점" }
           ]
         },
-        checks: ["배포 링크가 실제로 열린다", "공유글을 만들었다", "공개 점검을 했다"]
+        checks: ["공유글에 적은 링크를 눌러 실제로 앱이 열린다", "공유글에 만든 것·배운 점·도움받고 싶은 점이 모두 있다", "공유글과 앱 화면에 비밀번호·키·개인정보가 없다"]
       },
       {
         id: "gemini",
@@ -607,19 +625,19 @@ const COURSE = {
             { key: "gemRules", label: "Gems 지침", placeholder: "예:\n코딩을 모르는 사람에게 쉬운 말로 설명한다.\n바로 만들지 말고 필요한 정보를 먼저 묻는다.\n비밀번호·키·개인정보 노출을 먼저 확인한다." }
           ]
         },
-        checks: ["Gems 이름을 정했다", "Gems 지침을 작성했다"]
+        checks: ["Gems 목록에 내가 만든 Gem이 보인다", "그 Gem을 열어 대화하면 지침대로 먼저 묻거나 쉬운 말로 답한다"]
       },
       {
         id: "canva",
         group: "AI 도구 연습",
         title: "Canva AI로 화면 초안 만들기",
-        goal: "Canva Magic Design에 붙여넣을 화면 요청문을 만들고, 생성된 초안을 저장할 수 있다.",
+        goal: "Canva Magic Design으로 다음 버전 화면 초안을 만들어 AI 수정 요청에 활용할 수 있다.",
         difficulty: "beginner",
         estimatedMinutes: 20,
         updatedAt: "2026-06-22",
         completionRequirements: ["화면에 들어갈 요소를 정했다", "Canva Magic Design 요청문을 만들었다", "초안을 생성하거나 스크린샷을 저장했다"],
-        summary: "Canva의 Magic Design에 한 문장을 붙여넣으면 앱 화면처럼 생긴 디자인 초안이 나옵니다. 코드는 없지만, 이 그림을 AI에게 보여 주면 훨씬 정확한 코드를 받을 수 있습니다.",
-        reading: "Canva의 Magic Design은 텍스트로 원하는 화면을 설명하면 여러 디자인 초안을 자동으로 만들어 주는 AI 기능입니다. 여기서 만들어지는 건 실제로 동작하는 앱이 아니라, '이런 모양이면 좋겠다'는 화면 그림입니다. 하지만 이 그림이 있으면 ChatGPT나 Claude에 '이 화면처럼 만들어 줘'라고 보여 줄 수 있어, 코드 요청이 훨씬 정확해집니다. 사용 흐름은 이렇습니다: ① 아래에 요청문을 작성 → ② canva.com에서 Magic Design에 붙여넣기 → ③ 마음에 드는 초안 선택 → ④ 스크린샷 저장 → ⑤ AI 코드 요청 시 참고로 첨부.",
+        summary: "이미 만든 앱의 다음 버전을 구상하는 단계입니다. Magic Design으로 원하는 화면 그림을 만들어 AI에게 보여 주면 말로 설명할 때보다 훨씬 정확하게 고쳐 줍니다.",
+        reading: "여러분은 이미 앱을 만들어 배포했습니다. 이 강의는 그 앱의 다음 버전을 위한 것입니다.\n\n화면을 고치고 싶을 때 말로만 설명하면 AI가 엉뚱하게 바꾸기 쉽습니다. '버튼을 좀 더 잘 보이게'는 사람마다 다르게 이해합니다. 그림 한 장을 보여 주면 이 문제가 대부분 사라집니다.\n\nCanva의 Magic Design은 텍스트로 원하는 화면을 설명하면 디자인 초안을 자동으로 만들어 주는 AI 기능입니다. 여기서 나오는 건 동작하는 앱이 아니라 '이런 모양이면 좋겠다'는 그림입니다. 이 그림을 ChatGPT나 Claude에 첨부하고 '지금 내 앱을 이 화면처럼 바꿔 줘'라고 요청하면 수정 결과가 훨씬 정확해집니다.\n\n흐름은 이렇습니다. ① 아래에 요청문 작성 → ② canva.com의 Magic Design에 붙여넣기 → ③ 마음에 드는 초안 선택 → ④ 스크린샷 저장 → ⑤ AI에게 첨부해 수정 요청 → ⑥ 받은 코드를 다시 붙여넣어 확인. 아직 앱을 만들지 않았다면 이 강의를 먼저 봐도 됩니다. 그때는 초안을 첫 코드 요청에 첨부하면 됩니다.",
         terms: [
           { term: "Magic Design", def: "텍스트 설명을 입력하면 Canva가 디자인 초안을 자동 생성하는 AI 기능." },
           { term: "화면 초안(목업)", def: "실제로 동작하진 않지만 생김새를 미리 보여 주는 화면 그림." },
@@ -633,12 +651,12 @@ const COURSE = {
             { label: "요청문 작성", sub: "설명문으로 정리" },
             { label: "Magic Design에 붙여넣기", sub: "canva.com" },
             { label: "초안 선택 & 저장", sub: "스크린샷 보관" },
-            { label: "AI 코드 요청 시 첨부", sub: "더 정확한 결과" }
+            { label: "AI에 첨부해 수정 요청", sub: "다음 버전 반영" }
           ]
         },
         discussion: [
-          "Canva로 만든 화면 그림을 AI에게 보여 주면 코드 요청이 왜 더 정확해질까요?",
-          "내 앱 첫 화면에 꼭 보여야 할 요소 세 가지는 무엇인가요?"
+          "Canva로 만든 화면 그림을 AI에게 보여 주면 수정 요청이 왜 더 정확해질까요?",
+          "지금 만든 앱에서 다음 버전에 가장 먼저 바꾸고 싶은 화면 요소는 무엇인가요?"
         ],
         steps: [
           "화면에 꼭 들어갈 요소를 적습니다.",
@@ -648,7 +666,8 @@ const COURSE = {
           "편집 화면 왼쪽 패널에서 'Magic Design'을 찾아 클릭합니다. (보이지 않으면 왼쪽 검색창에 'Magic Design' 입력)",
           "작성한 요청문을 Magic Design 입력창에 붙여넣고 생성합니다.",
           "마음에 드는 초안을 선택 후 스크린샷으로 저장하거나 공유 링크를 복사합니다.",
-          "저장한 화면을 ChatGPT나 Claude에 업로드하며 '이런 모양으로 HTML을 만들어 줘'라고 요청합니다."
+          "저장한 화면을 ChatGPT나 Claude에 업로드하고, 지금 쓰고 있는 HTML 코드와 함께 '이 그림처럼 화면만 바꿔 줘. 기능은 그대로 둬'라고 요청합니다.",
+          "받은 코드를 'AI에게 코드 받아 실행하기' 강의의 미리보기 칸에 다시 붙여넣어 확인하고, 좋으면 배포를 갱신합니다."
         ],
         externalGuide: "canva.com → 디자인 만들기 → 앱 스크린샷/휴대폰 목업 선택 → 왼쪽 패널 Magic Design → 요청문 붙여넣기 → 초안 선택 → 스크린샷 저장.",
         links: [
@@ -657,11 +676,11 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "canvaParts", label: "화면에 꼭 들어갈 요소", input: "text", placeholder: "예: 여행 제목, 준비물 체크, 코스 뽑기 버튼, 예산 입력칸, 총액 표시" },
+            { key: "canvaParts", label: "다음 버전 화면에 넣을 요소", input: "text", placeholder: "예: 여행 제목, 준비물 체크, 코스 뽑기 버튼, 예산 입력칸, 총액 표시", chips: ["제목과 날짜", "체크리스트", "큰 실행 버튼", "합계 표시 영역", "결과 카드"] },
             { key: "canvaPrompt", label: "Canva Magic Design 요청문", placeholder: "예: 여행 준비 미니앱의 모바일 첫 화면. 준비물 체크리스트, 오늘 갈 코스 랜덤 뽑기, 교통비·식비·숙소비 예산 합계가 보이는 깔끔한 한국어 UI." }
           ]
         },
-        checks: ["화면에 들어갈 요소를 정했다", "Canva Magic Design 요청문을 만들었다", "초안을 생성하거나 스크린샷을 저장했다"]
+        checks: ["Canva에서 초안이 생성됐고 스크린샷이나 링크로 저장했다", "초안에 내 앱의 핵심 요소가 들어 있다", "초안을 AI에 첨부해 화면 수정 요청을 보내 봤다"]
       }
     ]
   },
@@ -671,7 +690,7 @@ const COURSE = {
     name: "프로리그",
     theme: "#1a8754",
     label: "보안 가드레일 안에서 날씨·쇼핑 API 여행 준비 앱을 만든다",
-    description: "시나리오: 루키 미니앱을 API 연동 여행 준비 앱으로 확장합니다. 여행지·날짜 입력, Open-Meteo 날씨 확인, 네이버 쇼핑 API 구조 설계, 준비물·예산 정리를 연결합니다. 자기 아이디어가 있다면 같은 구조로 캠핑·출장·행사 준비 앱을 만들 수 있습니다.",
+    description: "시나리오: 루키 미니앱을 API 연동 여행 준비 앱으로 확장합니다. 여행지·날짜 입력, Open-Meteo 날씨 확인, 네이버 쇼핑 API 구조 설계, 준비물·예산 정리를 연결합니다. 교사 연수라면 '학교 행사 준비 앱'으로 바꾸세요 — 현장학습·운동회 날짜의 날씨를 확인하고, 필요한 물품 구매 후보와 가격을 찾고, 행사 예산을 정리하는 흐름이 그대로 대응합니다. 캠핑·출장 준비 앱으로 바꿔도 됩니다.",
     tags: ["여행 준비 앱", "Open-Meteo", "네이버 쇼핑 API", "API 보안", "예산 정리"],
     padletUrl: "https://padlet.com/dungstme/_-othnocro968oryg4",
     competency: "외부 API를 보안 기준에 맞게 연동하고, 화면·서버 역할을 구분해 실제 데이터로 동작하는 앱을 배포한다",
@@ -695,21 +714,23 @@ const COURSE = {
     facilitatorIntro: "4차시 안팎(또는 하루 연수)으로 운영하기 좋습니다. 루키리그 수료자를 전제로 하며, 핵심은 'Secret이 필요한 API'와 '브라우저에서 직접 호출 가능한 API'를 구분하는 보안 감각입니다. 참가자가 API 키를 코드에 그대로 박아 넣는 실수를 가장 많이 하므로, 보안 강의(api-security-pro)에서 시간을 더 배정하는 것을 권장합니다.",
     runPlan: [
       {
-        name: "4차시 표준형(차시당 45~50분)",
-        note: "api-security-pro는 분량을 줄이지 말고 그대로 한 차시 전체를 쓴다.",
+        name: "6차시 표준형(차시당 45~50분)",
+        note: "api-security-pro는 분량을 줄이지 말고 prd-product와 함께 한 차시를 온전히 쓴다. 결과물 공유(share, 25분)는 과제로 돌리고 다음 만남 시작에 5분씩 발표시킨다. 1차시는 설치가 막히는 참가자가 나오므로 여유를 두고 시작한다.",
         sessions: [
-          { title: "1차시 — 기획·구조 설계", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data"] },
-          { title: "2차시 — API 연동과 보안", pages: ["frontend-backend", "api", "api-security-pro"] },
-          { title: "3차시 — AI와 함께 만들기", pages: ["prd-product", "cursor", "build-pro"] },
-          { title: "4차시 — 배포와 공유", pages: ["github", "deploy", "share"] }
+          { title: "1차시 — 환경과 제작 방향 (50분)", pages: ["setup-pro", "package-choice"] },
+          { title: "2차시 — 문제·화면·기능 (45분)", pages: ["problem", "screens", "features"] },
+          { title: "3차시 — 데이터와 API (50분)", pages: ["data", "frontend-backend", "api"] },
+          { title: "4차시 — 보안과 PRD (50분)", pages: ["api-security-pro", "prd-product"] },
+          { title: "5차시 — 에이전트로 만들기 (45분)", pages: ["cursor", "build-pro"] },
+          { title: "6차시 — 저장소와 배포 (45분)", pages: ["github", "deploy"] }
         ]
       },
       {
         name: "하루 연수형(6시간 안팎)",
-        note: "오전·오후 사이 점심시간을 3차시와 4차시 경계로 둔다.",
+        note: "오전·오후 사이 점심시간을 경계로 둔다. 오전 170분·오후 140분이므로 각 블록에 10분 휴식을 두 번 넣어도 3시간 안에 들어온다.",
         sessions: [
-          { title: "오전 — 기획부터 보안까지", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
-          { title: "오후 — 제작부터 배포까지", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
+          { title: "오전 — 기획부터 보안까지 (170분)", pages: ["setup-pro", "package-choice", "problem", "screens", "features", "data", "frontend-backend", "api", "api-security-pro"] },
+          { title: "오후 — 제작부터 배포까지 (140분)", pages: ["prd-product", "cursor", "build-pro", "github", "deploy", "share"] }
         ]
       }
     ],
@@ -718,19 +739,21 @@ const COURSE = {
         id: "setup-pro",
         group: "환경 준비",
         title: "프로 환경 준비하기",
-        goal: "Git과 GitHub를 설정하고 AI 에이전트(Claude Code·Codex·Antigravity) 중 하나를 골라 Windows GUI 프로그램으로 실행할 수 있다.",
+        goal: "내 PC의 설치 가능 여부를 판단해 작업 환경을 정하고, AI 코딩 에이전트 하나를 프로젝트 폴더에 연결할 수 있다.",
         difficulty: "intermediate",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["Git이 준비됐다", "AI 에이전트를 선택했다", "프로젝트 폴더를 열었다", "GitHub 계정을 만들었다", "GitHub 연결 정보를 확인했다"],
-        summary: "프로의 핵심 스택은 AI 에이전트 + Git + GitHub입니다. 에이전트가 코드를 만들고, Git이 기록하고, GitHub가 보관·배포합니다.",
-        reading: "프로리그에서는 Windows GUI 프로그램 형태의 AI 에이전트가 코드를 직접 만들고 수정합니다. Claude Code, Codex, Antigravity를 각각 실행한 뒤 내 프로젝트 폴더를 열고, 작업 지시서를 붙여넣어 파일 수정과 기능 구현을 맡깁니다. 세 도구 모두 화면에서 프로젝트를 열고 요청을 넣고 결과를 확인하는 흐름으로 사용합니다. 공통으로 필요한 건 Git(변경 기록)과 GitHub(클라우드 저장·배포)입니다. 코드를 직접 열어 확인하고 싶다면 편집기를 추가로 써도 되지만, 핵심은 GUI 에이전트에서 프로젝트 폴더를 안전하게 열고 작업 범위와 보안 금지사항을 분명히 주는 것입니다.",
+        estimatedMinutes: 30,
+        updatedAt: "2026-09-04",
+        completionRequirements: ["설치 가능·불가 중 내 작업 환경을 정했다", "에이전트를 하나만 골라 프로젝트 폴더를 열었다", "GitHub 계정을 만들고 Git 사용자 정보를 설정했다"],
+        summary: "프로의 핵심 스택은 AI 에이전트 + Git + GitHub입니다. 에이전트가 코드를 만들고, Git이 기록하고, GitHub가 보관·배포합니다. 세 에이전트를 다 설치할 필요는 없고 하나만 고르면 됩니다.",
+        reading: "프로리그부터는 AI 에이전트가 파일 하나가 아니라 프로젝트 폴더 전체를 읽고 고칩니다.\n\n먼저 내 PC가 어느 쪽인지 정하세요. 프로그램을 설치할 수 있는 개인 PC라면 Claude Code·Codex·Antigravity 중 하나를 설치해 로컬에서 작업합니다. 학교·교무실 PC처럼 관리자 권한이 없어 설치가 막힌다면 브라우저만으로 진행할 수 있습니다. GitHub 저장소 화면에서 마침표(.) 키를 누르면 github.dev 웹 편집기가 열려 파일을 만들고 고칠 수 있고, 코드는 루키리그처럼 AI 웹 채팅에서 받아 붙여넣으면 됩니다. 설치 여부와 상관없이 이 리그의 학습 목표는 모두 달성할 수 있으니, 설치가 막혔다고 여기서 멈추지 마세요.\n\n세 에이전트는 제공 형태가 다릅니다. Claude Code는 터미널에서 쓰는 명령줄 도구이면서 VS Code·JetBrains 확장과 데스크톱 앱, 웹(claude.ai/code)으로도 씁니다. Codex는 명령줄 도구와 IDE 확장, 웹으로 제공됩니다. Antigravity는 에디터형 앱을 설치해 씁니다. 셋 다 설치할 필요는 없고 하나만 골라 끝까지 쓰면 됩니다.\n\n마지막으로 Node.js가 필요한지 판단합니다. HTML·CSS·JS 파일만 쓰는 앱이라면 필요 없습니다. 에이전트가 React나 Vite 같은 구조로 프로젝트를 만들어 package.json 파일이 생겼다면 그때 Node.js를 설치하면 됩니다. 미리 설치할 필요는 없습니다.",
         terms: [
-          { term: "Claude Code", def: "프로젝트 폴더를 열고 파일 수정·테스트·Git 작업을 도와주는 Windows GUI AI 개발 프로그램." },
-          { term: "Codex", def: "프로젝트 폴더를 열어 코드 분석, 수정 제안, 구현 보조를 할 수 있는 Windows GUI AI 개발 프로그램." },
-          { term: "Antigravity", def: "화면 흐름과 멀티스텝 작업을 맡기기 좋은 Windows GUI AI 개발 프로그램." },
+          { term: "Claude Code", def: "Anthropic의 AI 코딩 에이전트. 터미널 명령줄 도구가 기본이고 VS Code·JetBrains 확장, 데스크톱 앱, 웹으로도 쓴다." },
+          { term: "Codex", def: "OpenAI의 AI 코딩 에이전트. 명령줄 도구와 IDE 확장, 웹으로 제공된다." },
+          { term: "Antigravity", def: "에디터형으로 설치해 쓰는 AI 개발 도구. 화면 흐름과 여러 단계 작업을 이어서 맡기기 좋다." },
           { term: "Git", def: "파일 변경을 저장하고 GitHub에 올리는 버전 관리 도구." },
-          { term: "프로젝트 폴더", def: "에이전트가 읽고 수정할 HTML·CSS·JS 파일이 들어 있는 작업 폴더." }
+          { term: "프로젝트 폴더", def: "에이전트가 읽고 수정할 HTML·CSS·JS 파일이 들어 있는 작업 폴더." },
+          { term: "설치 제한 환경", def: "관리자 권한이 없어 프로그램을 설치할 수 없는 PC. 학교·교무실 PC가 대개 여기 해당하며, 브라우저 경로로 우회한다." },
+          { term: "Node.js", def: "JavaScript를 브라우저 밖에서 실행하는 도구. package.json이 있는 프로젝트에서만 필요하다." }
         ],
         visual: {
           type: "layers",
@@ -743,18 +766,21 @@ const COURSE = {
           ]
         },
         discussion: [
-          "Claude Code·Codex·Antigravity 중 내 작업 방식에 가장 잘 맞는 GUI 에이전트는 무엇이고, 그 이유는?",
+          "내 PC는 설치가 가능한가요, 브라우저 경로로 가야 하나요? 그 판단 근거는 무엇인가요?",
           "에이전트가 Git 커밋까지 자율로 처리하게 하려면 어떤 조건을 먼저 설정해야 할까요?"
         ],
         steps: [
-          "git-scm.com/downloads 에서 Git을 다운로드해 설치합니다. 설치 마법사는 기본값 그대로 Next를 눌러도 됩니다.",
-          "Git이 설치됐는지 확인합니다. Git Bash나 PowerShell에서 `git --version` 을 입력해도 되고, GUI 에이전트 안에서 Git 연결 상태를 확인해도 됩니다.",
-          "Claude Code, Codex, Antigravity 중 사용할 Windows GUI 프로그램을 설치하거나 실행합니다.",
-          "에이전트에서 내 프로젝트 폴더를 엽니다.",
-          "github.com 에서 계정을 만듭니다(Sign up). 이메일·비밀번호·사용자 이름을 입력합니다.",
-          "에이전트 또는 Git 설정 화면에서 GitHub 계정과 사용자 이름·이메일을 연결합니다."
+          "먼저 내 PC에 프로그램을 설치할 수 있는지 확인합니다. 아무 설치 파일이나 실행했을 때 관리자 비밀번호를 요구하며 막히면 '설치 불가'입니다.",
+          "[설치 가능] git-scm.com/downloads 에서 Git을 내려받아 설치합니다. 설치 마법사는 기본값 그대로 Next를 눌러도 됩니다.",
+          "[설치 가능] PowerShell이나 Git Bash를 열고 `git --version` 을 입력해 버전이 나오는지 확인합니다.",
+          "[설치 가능] 커밋에 기록될 내 정보를 설정합니다. `git config --global user.name` 뒤에 큰따옴표로 감싼 내 이름을 붙여 실행하고, 같은 방식으로 `user.email` 도 설정합니다.",
+          "[설치 가능] Claude Code·Codex·Antigravity 중 하나만 골라 각 공식 페이지의 안내대로 설치하고 실행한 뒤, 내 프로젝트 폴더를 엽니다.",
+          "[설치 불가] 설치를 건너뛰고 브라우저로 진행합니다. GitHub 저장소 화면에서 마침표(.) 키를 누르면 github.dev 웹 편집기가 열립니다. 코드는 AI 웹 채팅에서 받아 이 편집기에 붙여넣습니다.",
+          "[공통] github.com 에서 계정을 만듭니다(Sign up). 이메일·비밀번호·사용자 이름을 입력합니다.",
+          "[공통] 프로젝트 폴더가 아직 없다면 바탕화면에 폴더를 하나 만들고 그 안에 빈 index.html 파일을 둡니다. 이 폴더가 앞으로의 작업 공간입니다.",
+          "package.json 파일이 생기기 전까지는 Node.js를 설치하지 않습니다. 생기면 그때 nodejs.org에서 LTS 버전을 받아 설치하고 `node -v` 로 확인합니다."
         ],
-        externalGuide: "① git-scm.com → Git 설치 ② Claude Code·Codex·Antigravity 중 하나 실행 ③ GUI에서 프로젝트 폴더 열기 ④ github.com → Sign up ⑤ 에이전트 또는 Git 설정 화면에서 GitHub 계정 연결.",
+        externalGuide: "설치 가능한 PC: ① git-scm.com → Git 설치 ② `git --version` 확인 ③ `git config` 로 이름·메일 설정 ④ 에이전트 하나 설치·실행 ⑤ 프로젝트 폴더 열기 ⑥ github.com → Sign up.  설치 불가한 PC: ① github.com → Sign up ② 저장소 만들기 ③ 저장소 화면에서 마침표(.) 키 → github.dev 웹 편집기 ④ AI 웹 채팅에서 코드를 받아 붙여넣기.",
         links: [
           { label: "Git 다운로드", url: "https://git-scm.com/downloads" },
           { label: "Claude Code", url: "https://claude.ai/code" },
@@ -765,13 +791,18 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "gitVersion", label: "git --version 결과", input: "text", placeholder: "예: git version 2.44.0", chips: ["git version 2.44.0", "git version 2.43.0"] },
-            { key: "agentChoice", label: "주로 사용할 에이전트", input: "select", options: ["Claude Code", "Codex", "Antigravity"], value: "Claude Code" },
+            { key: "workEnv", label: "내 작업 환경", input: "choice", value: "설치 가능(로컬 에이전트)", choices: [
+              { value: "설치 가능(로컬 에이전트)", desc: "개인 PC — Git과 에이전트를 설치해 프로젝트 폴더에서 작업" },
+              { value: "설치 불가(브라우저)", desc: "학교·교무실 PC — github.dev 웹 편집기 + AI 웹 채팅으로 진행" }
+            ] },
+            { key: "gitVersion", label: "git --version 결과(설치한 경우)", input: "text", placeholder: "예: git version 2.44.0", chips: ["git version 2.44.0", "설치 불가라 건너뜀"] },
+            { key: "agentChoice", label: "끝까지 쓸 에이전트 하나", input: "select", options: ["Claude Code", "Codex", "Antigravity", "AI 웹 채팅(설치 불가)"], value: "Claude Code" },
             { key: "githubUsername", label: "GitHub 사용자 이름", input: "text", placeholder: "예: myusername" },
-            { key: "setupNote", label: "막힌 부분 메모", input: "text", placeholder: "예: 에이전트에서 프로젝트 폴더를 열 수 없음", chips: ["설치 완료, 이상 없음", "프로젝트 폴더 열기 어려움", "GitHub 연결 오류", "Git 설정 확인 필요"] }
+            { key: "projectFolder", label: "프로젝트 폴더 위치(또는 저장소 이름)", input: "text", placeholder: "예: C:\\Users\\내이름\\Desktop\\travel-prep-app 또는 github.com/myusername/travel-prep-app" },
+            { key: "setupNote", label: "막힌 부분 메모", input: "text", placeholder: "예: 설치가 관리자 권한으로 막혀 브라우저 경로로 전환함", chips: ["설치 완료, 이상 없음", "관리자 권한으로 설치 막힘 → 브라우저 경로", "프로젝트 폴더 열기 어려움", "GitHub 연결 오류"] }
           ]
         },
-        checks: ["Git이 준비됐다", "AI 에이전트를 선택했다", "프로젝트 폴더를 열었다", "GitHub 계정을 만들었다", "GitHub 연결 정보를 확인했다"]
+        checks: ["설치 가능·불가 중 내 경로를 정했다", "에이전트(또는 웹 편집기)에서 내 프로젝트 폴더·저장소가 화면에 보인다", "github.com에 로그인하면 내 사용자 이름이 보인다"]
       },
       {
         id: "package-choice",
@@ -818,7 +849,7 @@ const COURSE = {
             { key: "reason", label: "선택 이유", placeholder: "예: 날씨와 쇼핑 정보를 API로 불러오고 가족에게 링크로 공유해야 하므로 웹앱으로 만든다." }
           ]
         },
-        checks: ["웹앱과 exe의 장단점을 비교했다", "이번 과정에서 만들 앱 형태를 선택했다", "선택 이유를 적었다"]
+        checks: ["웹앱·exe 중 하나를 골랐고 그 이유가 실제 사용 상황과 연결돼 있다", "고른 형태가 앞으로의 배포 방식과 모순되지 않는다"]
       },
       {
         id: "problem",
@@ -858,12 +889,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "problem", label: "해결할 문제", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다.", chips: ["준비물·날씨·쇼핑·예산이 흩어져 있다", "날씨에 맞는 준비물을 고르기 어렵다", "구매 후보 가격을 예산에 반영하기 번거롭다", "동행자에게 준비 상황을 설명하기 어렵다", "내 앱 주제의 정보가 여러 곳에 흩어져 있다"] },
-            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 구매 예산을 한 번에 정리하고 싶은 사람", chips: ["가족 여행 준비자", "혼자 여행을 준비하는 사람", "캠핑 장비를 준비하는 사람", "출장 준비를 자주 하는 직장인", "행사 준비 담당자", "내 앱의 실제 사용자"] },
+            { key: "problem", label: "해결할 문제", placeholder: "예: 여행 준비물이 메모, 쇼핑 검색, 날씨 확인, 예산표에 흩어져 빠뜨리기 쉽다.", chips: ["준비물·날씨·쇼핑·예산이 흩어져 있다", "날씨에 맞는 준비물을 고르기 어렵다", "구매 후보 가격을 예산에 반영하기 번거롭다", "현장학습 날씨와 준비물·예산이 따로 논다(교사)", "행사 물품 견적을 매번 다시 찾는다(교사)", "내 앱 주제의 정보가 여러 곳에 흩어져 있다"] },
+            { key: "user", label: "대상 사용자", input: "text", placeholder: "예: 여행 전에 준비물과 구매 예산을 한 번에 정리하고 싶은 사람", chips: ["가족 여행 준비자", "혼자 여행을 준비하는 사람", "현장학습을 준비하는 교사", "학교 행사 담당 교사", "출장 준비를 자주 하는 직장인", "내 앱의 실제 사용자"] },
             { key: "why", label: "왜 필요한가(한 문장)", placeholder: "예: 날씨와 쇼핑 정보를 함께 보며 필요한 준비물과 예산을 빠르게 정리하기 위해.", chips: ["날씨에 맞는 준비물을 바로 정하기 위해", "구매 후보와 예산을 한 화면에서 보기 위해", "준비 누락을 줄이기 위해", "API 정보와 내 체크리스트를 연결하기 위해"] }
           ]
         },
-        checks: ["문제를 적었다", "사용자를 적었다"]
+        checks: ["문제 문장에 '누가'와 '무엇이 불편한지'가 둘 다 들어 있다", "사용자를 한 사람으로 좁혀 말할 수 있다"]
       },
       {
         id: "screens",
@@ -903,12 +934,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "screenList", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리", chips: ["여행 정보 입력", "날씨 확인", "준비물 체크리스트", "쇼핑 검색 결과", "예산 정리", "요약 대시보드", "내 앱 관리 화면"] },
+            { key: "screenList", label: "화면 목록", placeholder: "예: 여행 정보 입력, 날씨 확인, 준비물 체크리스트, 쇼핑 검색 결과, 예산 정리", chips: ["여행 정보 입력", "날씨 확인", "준비물 체크리스트", "쇼핑 검색 결과", "예산 정리", "요약 대시보드", "행사 정보 입력(교사)", "행사 물품·예산 정리(교사)"] },
             { key: "eachPurpose", label: "각 화면의 목적", placeholder: "예: 날씨 확인은 여행지·날짜별 기온과 강수확률을 보여 주고, 쇼핑 검색은 우비·보조배터리 같은 구매 후보를 보여 준다.", chips: ["입력 화면: 여행지와 날짜를 받는다", "날씨 화면: 기온과 강수확률을 보여 준다", "준비물 화면: 챙긴 항목을 체크한다", "쇼핑 화면: 구매 후보와 가격을 보여 준다", "예산 화면: 총액과 남은 예산을 보여 준다"] },
             { key: "firstScreen", label: "가장 먼저 만들 화면", input: "text", placeholder: "예: 여행 정보 입력 + 준비물 대시보드", chips: ["여행 정보 입력 + 대시보드", "준비물 체크리스트 먼저", "날씨 결과 화면 먼저", "예산 합계 화면 먼저", "내 아이디어의 핵심 화면 먼저"] }
           ]
         },
-        checks: ["화면 목록을 적었다", "각 화면 목적을 적었다"]
+        checks: ["화면마다 '여기서 사용자가 무엇을 하는지' 한 줄로 답할 수 있다", "가장 먼저 만들 화면 하나를 골랐다"]
       },
       {
         id: "features",
@@ -945,12 +976,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "featureList", label: "기능 목록", placeholder: "예: 여행지·날짜 입력, 날씨 불러오기, 준비물 체크, 네이버 쇼핑 검색, 구매 후보 추가, 예산 합계", chips: ["여행지·날짜 입력", "Open-Meteo 날씨 불러오기", "준비물 체크", "네이버 쇼핑 샘플 결과 표시", "구매 후보를 예산에 추가", "예산 합계 계산", "내 앱에 맞는 API 결과 표시"] },
+            { key: "featureList", label: "기능 목록", placeholder: "예: 여행지·날짜 입력, 날씨 불러오기, 준비물 체크, 네이버 쇼핑 검색, 구매 후보 추가, 예산 합계", chips: ["여행지·날짜 입력", "Open-Meteo 날씨 불러오기", "준비물 체크", "네이버 쇼핑 샘플 결과 표시", "구매 후보를 예산에 추가", "예산 합계 계산", "행사 날짜 날씨 확인(교사)", "행사 물품 견적 정리(교사)"] },
             { key: "priority", label: "우선순위(필수/나중)", placeholder: "예: 필수 - 날씨 확인·준비물 체크·예산 합계 / 나중 - 쇼핑 이미지, 정렬, 저장", chips: ["필수 - 입력·날씨·준비물·예산", "필수 - Secret 없는 기능만", "나중 - 실제 네이버 쇼핑 호출", "나중 - 로그인 저장", "나중 - 동행자 공유", "나중 - 결제·예약은 제외"] },
             { key: "doneCriteria", label: "완료 기준", placeholder: "예: 여행지를 입력하면 날씨가 보이고, 준비물을 체크하고, 쇼핑 후보 가격을 예산에 더할 수 있다.", chips: ["날씨가 화면에 표시된다", "준비물 체크가 유지된다", "쇼핑 샘플 가격을 예산에 더한다", "Secret이 코드에 없다", "모바일에서 주요 버튼이 보인다"] }
           ]
         },
-        checks: ["핵심 기능을 적었다", "우선순위를 정했다"]
+        checks: ["기능이 필수와 나중으로 갈려 있다", "필수 기능마다 '무엇을 하면 무엇이 보인다'는 완료 기준이 있다"]
       },
       {
         id: "data",
@@ -992,7 +1023,7 @@ const COURSE = {
             { key: "dbNeeded", label: "DB가 필요한가?", input: "text", placeholder: "예: 프로에서는 브라우저 저장 또는 샘플 데이터로 충분, 로그인 저장은 마스터에서 처리", chips: ["프로에서는 샘플 데이터로 충분", "브라우저 저장만 사용", "로그인 저장은 마스터에서 처리", "여러 사용자가 쓰면 DB 필요", "동행자 공유가 필요하면 DB 필요"] }
           ]
         },
-        checks: ["저장할 데이터를 적었다", "공개하면 안 되는 값을 구분했다"]
+        checks: ["저장할 데이터 목록과 공개 금지 목록이 따로 적혀 있다", "공개 금지 목록에 Secret·API 키·개인정보가 들어 있다"]
       },
       {
         id: "frontend-backend",
@@ -1036,7 +1067,7 @@ const COURSE = {
             { key: "splitCriteria", label: "AI에게 나눠 맡길 기준", placeholder: "예: 프로에서는 화면, Open-Meteo 호출, 샘플 쇼핑 결과까지만 구현하고 Secret이 필요한 실제 호출은 서버 프록시 필요 항목으로 남긴다." }
           ]
         },
-        checks: ["프론트엔드 역할을 적었다", "백엔드 역할을 적었다"]
+        checks: ["내 앱 기능을 화면 쪽과 서버 쪽으로 하나씩 갈라 놓을 수 있다", "서버가 필요해지는 지점(비밀 키·여러 기기 공유)을 짚었다"]
       },
       {
         id: "api",
@@ -1085,7 +1116,7 @@ const COURSE = {
             { key: "showValues", label: "화면에 보여 줄 값", input: "text", placeholder: "예: 여행지, 날짜, 기온, 강수확률, 상품명, 가격, 예산 합계" }
           ]
         },
-        checks: ["요청 예시를 만들었다", "응답 예시를 만들었다", "Secret이 필요한 API를 구분했다"]
+        checks: ["요청 예시에 어떤 값을 보내는지가 적혀 있다", "응답 예시에서 화면에 쓸 값을 골라냈다", "키가 필요한 API와 필요 없는 API가 갈려 있다"]
       },
       {
         id: "api-security-pro",
@@ -1135,7 +1166,7 @@ const COURSE = {
             { key: "preDeploySearch", label: "배포 전 검색어", input: "text", placeholder: "예: SECRET, API_KEY, CLIENT_SECRET, password, token" }
           ]
         },
-        checks: ["직접 호출 가능한 API를 적었다", "Secret 필요 API를 브라우저 코드에서 제외했다", "샘플 응답을 정했다", "배포 전 검색어를 적었다"]
+        checks: ["브라우저에서 직접 부를 API와 제외할 API가 갈려 있다", "제외한 API를 대신할 샘플 응답을 정했다", "배포 전에 검색할 단어 목록을 만들었다", "실습 데이터에 실제 연락처·여권번호·주소가 없다"]
       },
       {
         id: "prd-product",
@@ -1186,7 +1217,7 @@ const COURSE = {
             { key: "done", label: "완료 기준", placeholder: "예: 날씨가 표시되고, 준비물을 체크할 수 있으며, 쇼핑 후보 가격을 예산에 더해 합계가 바르게 표시된다. 네이버 Secret은 브라우저 코드에 없다.", chips: ["날씨 표시 통과", "준비물 체크 통과", "쇼핑 샘플 표시 통과", "예산 합계 통과", "Secret 검색 통과", "모바일 확인 통과"] }
           ]
         },
-        checks: ["문제 정의를 넣었다", "화면·기능·데이터를 넣었다", "프로 보안 기준을 넣었다", "완료 기준을 넣었다"]
+        checks: ["PRD에 화면·기능·데이터·API·보안·완료 기준이 모두 들어 있다", "'브라우저 코드에 넣지 말 것'이 PRD에 명시돼 있다", "이 PRD를 그대로 복사해 에이전트에 붙여넣을 수 있다"]
       },
       {
         id: "cursor",
@@ -1197,31 +1228,31 @@ const COURSE = {
         estimatedMinutes: 20,
         updatedAt: "2026-06-22",
         completionRequirements: ["작업 지시서를 만들었다", "보안 금지사항을 넣었다", "먼저 질문하라는 문구를 넣었다"],
-        summary: "Claude Code·Codex·Antigravity, 세 GUI 에이전트는 각각 강점이 다릅니다. 어느 것을 쓰든 '이번에 이만큼, 이 범위 안에서'라는 명확한 지시서가 핵심입니다.",
-        reading: "프로리그에서 사용하는 AI 에이전트는 세 가지입니다. Claude Code는 프로젝트 폴더를 열어 여러 파일을 함께 수정하고 테스트 흐름을 점검하는 데 강합니다. Codex는 기존 코드를 읽고 문제를 찾거나 수정 방향을 빠르게 제안받을 때 좋습니다. Antigravity는 화면 흐름을 보며 여러 단계의 작업을 이어서 맡기기 좋습니다. 세 도구 모두 Windows GUI 프로그램으로 실행해 프로젝트 폴더를 열고, 작업 지시서를 입력해 사용합니다. 어느 도구를 선택하든 작업 지시서는 같습니다 — PRD 요약, 이번 작업 범위, 손대지 말 것, 먼저 물어볼 조건.",
+        summary: "Claude Code·Codex·Antigravity는 제공 형태와 강점이 다릅니다. 어느 것을 쓰든 '이번에 이만큼, 이 범위 안에서'라는 명확한 지시서가 핵심입니다.",
+        reading: "프로리그에서 소개하는 AI 에이전트는 세 가지입니다. Claude Code는 프로젝트 폴더 전체를 읽어 여러 파일을 함께 수정하고 테스트 흐름을 점검하는 데 강하며, 터미널 명령줄 도구가 기본이고 IDE 확장·데스크톱 앱·웹으로도 씁니다. Codex는 기존 코드를 읽고 문제를 찾거나 수정 방향을 빠르게 제안받을 때 좋으며, 명령줄 도구·IDE 확장·웹으로 제공됩니다. Antigravity는 에디터형 앱으로, 화면 흐름을 보며 여러 단계의 작업을 이어서 맡기기 좋습니다. 앞 강의에서 설치가 막혀 브라우저 경로를 택했다면 AI 웹 채팅을 에이전트 자리에 놓고 그대로 진행하면 됩니다.\n\n중요한 것은 도구 선택이 아니라 지시서입니다. 어느 도구를 쓰든 작업 지시서의 뼈대는 같습니다 — PRD 요약, 이번 작업 범위, 손대지 말 것, 먼저 물어볼 조건. 범위를 좁게 자를수록 결과를 검증하기 쉬워집니다.",
         terms: [
           { term: "AI 에이전트", def: "단순 답변이 아닌 코드 작성·파일 수정·실행까지 직접 처리하는 AI 도구." },
-          { term: "Claude Code", def: "프로젝트 폴더를 열어 여러 파일 수정과 테스트 점검을 도와주는 GUI 에이전트." },
-          { term: "Codex", def: "코드 분석, 수정 제안, 구현 보조를 도와주는 GUI 에이전트." },
-          { term: "Antigravity", def: "화면 흐름과 멀티스텝 작업을 이어서 맡기기 좋은 GUI 에이전트." },
+          { term: "Claude Code", def: "여러 파일 수정과 테스트 점검에 강한 AI 코딩 에이전트. 터미널 명령줄 도구가 기본이며 IDE 확장·데스크톱 앱·웹으로도 쓴다." },
+          { term: "Codex", def: "코드 분석, 수정 제안, 구현 보조에 쓰는 AI 코딩 에이전트. 명령줄 도구·IDE 확장·웹으로 제공된다." },
+          { term: "Antigravity", def: "화면 흐름과 여러 단계 작업을 이어서 맡기기 좋은 에디터형 AI 개발 도구." },
           { term: "작업 지시서", def: "PRD에서 이번 작업 범위를 잘라낸 실행 요청 문서." }
         ],
         visual: {
           type: "compare",
           caption: "AI 에이전트 비교",
           columns: [
-            { label: "Claude Code", items: ["Windows GUI 프로그램", "프로젝트 폴더 열기", "파일·Git·테스트 흐름 점검", "복잡한 리팩터링에 강함"] },
-            { label: "Codex", items: ["Windows GUI 프로그램", "자연어 → 코드 수정", "기존 코드 분석·수정", "빠른 문제 해결"] },
-            { label: "Antigravity", items: ["Windows GUI 프로그램", "화면 흐름 기반 작업", "멀티스텝 작업 위임", "빠른 프로토타이핑"] }
+            { label: "Claude Code", items: ["터미널·IDE 확장·웹", "프로젝트 폴더 전체 읽기", "파일·Git·테스트 흐름 점검", "복잡한 리팩터링에 강함"] },
+            { label: "Codex", items: ["터미널·IDE 확장·웹", "자연어 → 코드 수정", "기존 코드 분석·수정", "빠른 문제 해결"] },
+            { label: "Antigravity", items: ["에디터형 앱 설치", "화면 흐름 기반 작업", "멀티스텝 작업 위임", "빠른 프로토타이핑"] }
           ]
         },
         discussion: [
-          "Claude Code·Codex·Antigravity 중 현재 프로젝트에 어떤 GUI 도구가 가장 적합할까요?",
+          "Claude Code·Codex·Antigravity 중 현재 프로젝트에 어떤 도구가 가장 적합할까요?",
           "작업 범위를 좁혀서 지시하면 어떤 이점이 생기나요?"
         ],
         steps: [
           "사용할 AI 에이전트를 선택합니다 (Claude Code·Codex·Antigravity).",
-          "선택한 GUI 프로그램에서 프로젝트 폴더를 엽니다.",
+          "선택한 도구에서 프로젝트 폴더를 엽니다. 브라우저 경로라면 github.dev 편집기와 AI 웹 채팅 탭을 함께 엽니다.",
           "아래 실습칸에 PRD 요약을 붙여넣습니다.",
           "이번 작업에서 구현할 범위를 구체적으로 적습니다.",
           "손대지 말아야 할 부분을 명시합니다.",
@@ -1242,7 +1273,7 @@ const COURSE = {
             { key: "askFirst", label: "먼저 물어볼 질문", input: "text", placeholder: "예: 여행지 좌표를 직접 입력할지, 도시 선택 목록으로 시작할지 먼저 물어봐 줘.", chips: ["도시 입력 방식 먼저 확인", "쇼핑 샘플 데이터 먼저 확인", "예산 항목 기준 먼저 확인", "모바일 우선 레이아웃 확인", "내 앱 주제의 용어 확인"] }
           ]
         },
-        checks: ["작업 지시서를 만들었다", "보안 금지사항을 넣었다", "먼저 질문하라는 문구를 넣었다"]
+        checks: ["지시서에 이번 작업 범위와 손대지 말 것이 둘 다 있다", "지시서에 보안 금지사항이 들어 있다", "지시서 끝에 '먼저 물어봐 줘'가 들어 있다"]
       },
       {
         id: "build-pro",
@@ -1254,18 +1285,19 @@ const COURSE = {
         updatedAt: "2026-06-22",
         completionRequirements: ["변경된 파일을 기록했다", "실행 위치를 기록했다", "PRD의 기능이 모두 동작한다", "Secret·개인정보 노출을 점검했다"],
         summary: "프로리그 앱은 단일 HTML 붙여넣기가 아니라 프로젝트 폴더에서 구현합니다. 변경 파일, 실행 주소, 기능 점검, 보안 점검을 기록합니다.",
-        reading: "이 단계에서는 앞에서 만든 작업 지시서를 실제로 AI 에이전트에 넣어 프로젝트를 수정합니다. Claude Code, Codex, Antigravity 중 선택한 Windows GUI 프로그램에서 프로젝트 폴더를 열고 지시서를 붙여넣습니다. 프로리그 앱은 Open-Meteo 호출, 샘플 쇼핑 응답, 예산 계산, 보안 점검이 함께 들어가므로 단일 HTML 파일로 붙여넣어 확인하는 방식이 맞지 않습니다. 대신 에이전트가 어떤 파일을 만들거나 수정했는지, 어떤 주소나 파일로 실행 확인했는지, 어떤 기능이 통과했는지를 기록합니다. 동시에 코드에 Secret, API_KEY, password, token 같은 값이 들어가지 않았는지 확인합니다. '기능 A는 동작하지만 B가 안 된다'처럼 구체적으로 재요청하는 것이 포인트입니다.",
+        reading: "이 단계에서는 앞에서 만든 작업 지시서를 실제로 AI 에이전트에 넣어 프로젝트를 수정합니다. 프로리그 앱은 Open-Meteo 호출, 샘플 쇼핑 응답, 예산 계산, 보안 점검이 함께 들어가므로 파일이 여러 개로 늘어납니다.\n\n루키리그와 가장 크게 달라지는 점은 '내가 직접 실행해 봐야 한다'는 것입니다. 실행 방법은 프로젝트 모양에 따라 셋 중 하나입니다. 파일이 index.html 하나뿐이면 그 파일을 더블클릭해 브라우저로 엽니다. HTML·CSS·JS 파일이 여러 개면 VS Code의 Live Server 확장으로 열어 http://127.0.0.1:5500 같은 주소에서 확인합니다. 폴더에 package.json이 생겼다면 그 폴더에서 `npm install` 을 한 번 실행한 뒤 `npm run dev` 로 띄우고, 터미널에 뜬 주소(예: http://localhost:5173)를 브라우저에 엽니다.\n\n화면이 하얗게 뜨거나 버튼이 안 먹으면 F12를 눌러 Console 탭의 빨간 글자를 확인하세요. 그 문구가 원인을 좁히는 가장 빠른 단서입니다. 에이전트가 어떤 파일을 만들거나 고쳤는지, 어떤 주소에서 확인했는지, 어떤 기능이 통과했는지를 기록하고, 코드에 Secret·API_KEY·password·token 같은 값이 들어가지 않았는지 함께 확인합니다. '기능 A는 동작하지만 B가 안 된다'처럼 구체적으로 재요청하는 것이 포인트입니다.",
         terms: [
           { term: "AI 에이전트", def: "코드 생성뿐 아니라 파일 수정·실행·테스트까지 처리하는 AI 도구." },
           { term: "구현(Implementation)", def: "설계한 기능을 실제로 동작하게 코드로 만드는 과정." },
           { term: "이터레이션", def: "'지시 → 결과 확인 → 수정 요청'을 한 번 순환하는 사이클." },
-          { term: "Claude Code", def: "프로젝트 폴더를 열어 파일·Git·테스트 흐름을 점검하도록 도와주는 GUI 에이전트." }
+          { term: "로컬 서버", def: "내 컴퓨터에서만 열리는 임시 주소(http://localhost:...). 여러 파일로 나뉜 앱을 제대로 실행할 때 쓴다." },
+          { term: "개발자 도구(F12)", def: "브라우저에 내장된 점검 창. Console 탭의 빨간 글자가 오류 원인을 알려 준다." }
         ],
         visual: {
           type: "flow",
           caption: "프로 구현 점검 흐름",
           steps: [
-            { label: "프로젝트 열기", sub: "GUI 에이전트" },
+            { label: "프로젝트 열기", sub: "에이전트·편집기" },
             { label: "지시서 입력", sub: "범위·금지사항" },
             { label: "파일 변경 확인", sub: "무엇이 바뀌었나" },
             { label: "기능 검증", sub: "PRD 기준" },
@@ -1278,7 +1310,7 @@ const COURSE = {
         ],
         steps: [
           "앞에서 선택한 AI 에이전트를 엽니다.",
-          "GUI 프로그램에서 프로젝트 폴더를 열고 작업 지시서를 붙여넣습니다.",
+          "선택한 도구에서 프로젝트 폴더를 열고 작업 지시서를 붙여넣습니다.",
           "에이전트가 수정한 파일 목록을 확인합니다.",
           "로컬 실행 주소나 열어 본 파일 경로를 기록합니다.",
           "코드에서 SECRET, API_KEY, CLIENT_SECRET, password, token 같은 단어를 검색합니다.",
@@ -1286,7 +1318,7 @@ const COURSE = {
           "동작하지 않는 기능은 'OO 기능이 작동하지 않습니다. 원인을 찾아 수정해 줘'처럼 구체적으로 재요청합니다.",
           "모든 기능과 보안 기준을 확인한 결과를 아래 실습 칸에 기록합니다."
         ],
-        externalGuide: "① GUI 에이전트 실행 ② 프로젝트 폴더 열기 ③ 지시서 붙여넣기 ④ 변경 파일 확인 ⑤ 브라우저에서 실행 확인 ⑥ 보안 검색 ⑦ 미동작 기능 구체적 재요청 ⑧ 작업 기록 정리",
+        externalGuide: "① 에이전트 실행 ② 프로젝트 폴더 열기 ③ 지시서 붙여넣기 ④ 변경 파일 확인 ⑤ 브라우저에서 실행 확인 ⑥ 보안 검색 ⑦ 미동작 기능 구체적 재요청 ⑧ 작업 기록 정리",
         links: [
           { label: "Claude Code", url: "https://claude.ai/code" },
           { label: "Antigravity", url: "https://antigravity.dev" },
@@ -1302,7 +1334,7 @@ const COURSE = {
             { key: "fixRequests", label: "다시 요청한 수정", placeholder: "예: 예산 합계가 갱신되지 않아 원인 확인과 수정 요청. 수정 후 정상 동작 확인." }
           ]
         },
-        checks: ["변경된 파일을 기록했다", "실행 위치를 기록했다", "PRD의 기능이 모두 동작한다", "Secret·개인정보 노출을 점검했다"]
+        checks: ["브라우저에서 내 앱을 열어 PRD의 기능이 모두 동작한다", "에이전트가 바꾼 파일 목록을 확인했다", "코드에서 SECRET·API_KEY·password·token을 검색해 실제 값이 없다", "동작하지 않던 기능을 구체적으로 재요청해 고쳤다"]
       },
       {
         id: "github",
@@ -1314,25 +1346,31 @@ const COURSE = {
         updatedAt: "2026-06-22",
         completionRequirements: ["Repository를 만들었다", "기능 브랜치를 사용했다", "커밋 메시지를 만들었다", "민감 정보 점검을 했다"],
         summary: "GitHub는 코드를 버전별로 기록하는 공간입니다. Repository는 보관함, Branch는 작업 분리선, Commit은 변경 기록 단위입니다.",
-        reading: "GitHub로 코드를 관리하면 '언제 무엇을 바꿨는지' 기록이 남고, 실수해도 이전 상태로 되돌릴 수 있습니다. Repository(저장소)는 프로젝트 파일 전체를 담는 보관함이고, main 브랜치는 항상 잘 동작하는 안전한 버전을 유지하는 기본 줄기입니다. Branch(브랜치)는 main을 건드리지 않고 새 기능을 시험하는 별도 작업 공간입니다. 기능 브랜치를 만들어 작업하고, 잘 되면 main에 합칩니다(Merge). Commit은 '이 시점의 변경을 저장한다'는 기록 단위로, 메시지는 '추가 기능 구현'처럼 사람이 읽고 알 수 있게 적습니다. Push는 내 컴퓨터의 기록을 GitHub에 올리는 것이고, Pull은 GitHub의 최신 상태를 내 컴퓨터로 내려받는 것입니다. 올리기 전엔 반드시 API 키·비밀번호·개인정보가 없는지 확인하세요.",
+        reading: "GitHub로 코드를 관리하면 '언제 무엇을 바꿨는지' 기록이 남고, 실수해도 이전 상태로 되돌릴 수 있습니다. Repository(저장소)는 프로젝트 파일 전체를 담는 보관함이고, main 브랜치는 항상 잘 동작하는 안전한 버전을 유지하는 기본 줄기입니다. Branch(브랜치)는 main을 건드리지 않고 새 기능을 시험하는 별도 작업 공간입니다. 기능 브랜치를 만들어 작업하고, 잘 되면 main에 합칩니다(Merge). Commit은 '이 시점의 변경을 저장한다'는 기록 단위로, 메시지는 '예산 합계 기능 추가'처럼 사람이 읽고 알 수 있게 적습니다. Push는 내 컴퓨터의 기록을 GitHub에 올리는 것이고, Pull은 GitHub의 최신 상태를 내 컴퓨터로 내려받는 것입니다.\n\n이 강의는 개념만 읽고 넘어가는 곳이 아닙니다. 아래 따라하기의 명령을 실제로 한 번 쳐 보세요. 명령어를 외울 필요는 없습니다. 각 명령을 클릭하면 복사되고, 처음 한 번만 순서대로 실행하면 그다음부터는 add → commit → push 세 개만 반복합니다.\n\n명령줄이 부담스럽거나 설치가 막힌 환경이라면 명령 없이 할 수도 있습니다. 에이전트에게 '변경 사항을 커밋하고 푸시해 줘'라고 맡기거나, GitHub Desktop 프로그램의 버튼으로 하거나, 브라우저의 github.dev 편집기에서 왼쪽 소스 제어 아이콘으로 커밋할 수 있습니다. 어느 쪽이든 남는 기록은 같습니다.\n\n올리기 전에는 반드시 API 키·비밀번호·개인정보가 없는지 확인하세요. 한 번 GitHub에 올라간 값은 나중에 지워도 기록에 남습니다.",
         terms: [
           { term: "Repository(저장소)", def: "한 프로젝트의 파일 전체와 변경 기록을 담는 보관함." },
           { term: "Branch(브랜치)", def: "main을 건드리지 않고 새 기능을 만드는 별도 작업 공간." },
           { term: "Commit(커밋)", def: "특정 시점의 변경을 메시지와 함께 저장한 기록 단위." },
           { term: "Push / Pull", def: "Push는 내 컴퓨터 → GitHub, Pull은 GitHub → 내 컴퓨터." },
-          { term: "Merge", def: "기능 브랜치에서 완성한 코드를 main에 합치는 일." }
+          { term: "Merge", def: "기능 브랜치에서 완성한 코드를 main에 합치는 일." },
+          { term: ".gitignore", def: "GitHub에 올리지 않을 파일 목록을 적어 두는 파일. 여기 적힌 파일은 커밋에 포함되지 않는다." }
         ],
         discussion: [
           "main 브랜치를 직접 수정하지 않고 별도 브랜치를 나눠 쓰면 무엇이 안전해질까요?",
           "좋은 커밋 메시지와 나쁜 커밋 메시지의 차이는 무엇일까요?"
         ],
         steps: [
-          "GitHub에서 새 Repository를 만들고 이름을 정합니다.",
-          "올리면 안 되는 파일을 .gitignore에 적어 둡니다(API 키 파일, 비밀번호 파일 등).",
-          "새 기능을 만들 땐 main이 아닌 기능 브랜치를 만들어 작업합니다.",
-          "작업이 끝날 때마다 '무엇을 바꿨는지' 알 수 있는 Commit 메시지를 적습니다.",
-          "Push로 GitHub에 올리기 전, API 키·비밀번호가 없는지 다시 확인합니다.",
-          "잘 동작하면 main 브랜치에 Merge합니다."
+          "github.com 오른쪽 위 '+' → 'New repository' → 이름 입력 → 'Create repository'를 눌러 빈 저장소를 만듭니다. 다음 화면에 나오는 저장소 주소(https://github.com/…)를 복사해 둡니다.",
+          "프로젝트 폴더에 .gitignore 파일을 만들고 올리지 않을 것을 한 줄에 하나씩 적습니다. 보통 이 세 줄이면 시작으로 충분합니다 — .env / .env.local / node_modules/",
+          "프로젝트 폴더에서 터미널을 엽니다. VS Code라면 상단 메뉴 Terminal → New Terminal, 탐색기라면 폴더 주소창에 cmd를 입력하고 Enter를 누릅니다.",
+          "저장소를 처음 연결할 때만 다음을 순서대로 실행합니다. `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin` 뒤에 복사한 주소 붙이기 → `git push -u origin main`",
+          "새 기능을 시작할 때는 기능 브랜치를 만듭니다. `git switch -c` 뒤에 브랜치 이름(예: feature/weather)을 붙여 실행합니다.",
+          "작업이 끝날 때마다 세 개만 반복합니다. `git add .` → `git commit -m` 뒤에 바꾼 내용 적기 → `git push`",
+          "지금 무엇이 올라갈 상태인지 헷갈리면 `git status` 를 실행해 확인합니다.",
+          "Push 전에 코드에서 SECRET, API_KEY, CLIENT_SECRET, password, token 을 검색해 실제 값이 없는지 확인합니다.",
+          "GitHub 저장소 페이지를 새로고침해 내 파일이 올라갔는지 눈으로 확인합니다.",
+          "기능이 잘 동작하면 GitHub에서 'Compare & pull request' → 'Merge pull request'로 main에 합칩니다.",
+          "명령줄을 쓰지 않는 경우: 에이전트에게 '변경 사항을 커밋하고 푸시해 줘'라고 요청하거나, GitHub Desktop 또는 github.dev 편집기의 소스 제어 화면에서 버튼으로 커밋합니다."
         ],
         visual: {
           type: "tree",
@@ -1349,7 +1387,7 @@ const COURSE = {
             ]}
           ]
         },
-        externalGuide: "① github.com에 접속해 로그인합니다. ② 오른쪽 위 '+' → 'New repository' → 이름 입력 → 'Create repository'를 누릅니다. ③ 로컬에서 기능 브랜치를 만들고 작업 후 커밋합니다. ④ Push 전에 API 키·비밀번호·개인정보가 없는지 파일을 열어 직접 확인합니다. ⑤ Push 후 GitHub에서 파일이 정상 올라갔는지 확인합니다.",
+        externalGuide: "처음 한 번: `git init` → `git add .` → `git commit -m` → `git branch -M main` → `git remote add origin` → `git push -u origin main`.  그다음부터 매번: `git add .` → `git commit -m` → `git push`.  상태 확인은 `git status`.  명령이 부담스러우면 에이전트에게 커밋·푸시를 맡기거나 GitHub Desktop·github.dev의 소스 제어 버튼을 씁니다.",
         links: [
           { label: "GitHub 열기", url: "https://github.com" }
         ],
@@ -1359,10 +1397,11 @@ const COURSE = {
             { key: "repoName", label: "Repository 이름", input: "text", placeholder: "예: travel-prep-app" },
             { key: "branchName", label: "기능 브랜치 이름", input: "text", placeholder: "예: feature/weather-shopping-budget" },
             { key: "commitMsg", label: "커밋 메시지", input: "text", placeholder: "예: 여행 날씨와 예산 기능 구현" },
-            { key: "beforeUpload", label: "업로드 전 확인", placeholder: "예: API 키·비밀번호·개인정보 없음, SECRET·API_KEY·CLIENT_SECRET·password·token 검색 완료, .gitignore 설정 확인" }
+            { key: "gitignoreLines", label: ".gitignore에 적은 것", input: "text", placeholder: "예: .env, .env.local, node_modules/", chips: [".env", ".env.local", "node_modules/", "*.key"] },
+            { key: "beforeUpload", label: "업로드 전 확인", placeholder: "예: SECRET·API_KEY·CLIENT_SECRET·password·token 검색 결과 실제 값 없음. .gitignore에 .env 포함 확인. GitHub 저장소 페이지에서 파일 목록 확인 완료." }
           ]
         },
-        checks: ["Repository를 만들었다", "기능 브랜치를 사용했다", "커밋 메시지를 만들었다", "민감 정보 점검을 했다"]
+        checks: ["GitHub 저장소 페이지에 내 파일 목록이 보인다", "커밋이 2개 이상 있고 메시지만 보고 무엇을 바꿨는지 알 수 있다", ".gitignore에 .env가 있고 저장소에 비밀 값 파일이 올라가 있지 않다"]
       },
       {
         id: "deploy",
@@ -1414,7 +1453,7 @@ const COURSE = {
             { key: "deployHelp", label: "배포 중 어려웠던 점 / 해결 방법", placeholder: "예: 경로 오류가 났는데 index.html 위치를 루트로 옮기니 해결됐다." }
           ]
         },
-        checks: ["배포 플랫폼을 골랐다", "실제 배포 URL이 열린다", "주요 기능을 배포 URL에서 확인했다"]
+        checks: ["배포 URL을 시크릿 창에서 열어도 앱이 뜬다", "배포된 화면에서 주요 기능이 동작하고 모바일에서 깨지지 않는다"]
       },
       {
         id: "share",
@@ -1462,7 +1501,7 @@ const COURSE = {
             { key: "help", label: "도움받고 싶은 점" }
           ]
         },
-        checks: ["배포 링크가 실제로 열린다", "공유글을 만들었다", "보안 점검 메모를 넣었다", "공개 점검을 했다"]
+        checks: ["공유글의 링크를 눌러 앱이 실제로 열린다", "공유글에 PRD 요약과 보안 점검 메모가 들어 있다", "공유글과 배포 화면에 키·개인정보가 없다"]
       }
     ]
   },
@@ -1472,7 +1511,7 @@ const COURSE = {
     name: "마스터리그",
     theme: "#c47800",
     label: "로그인·DB·AI를 연결한 여행 플래너로 완성한다",
-    description: "시나리오: API 연동 여행 준비 앱을 운영형 여행 플래너로 확장합니다. 로그인, 사용자별 DB 저장, 동행자 공유, 서버/환경변수 기반 API 보안, Gemini API 요약 추천을 연결합니다. 자기 아이디어가 있다면 같은 구조로 사용자별 데이터가 필요한 앱을 만들 수 있습니다.",
+    description: "시나리오: API 연동 여행 준비 앱을 운영형 여행 플래너로 확장합니다. 로그인, 사용자별 DB 저장, 동행자 공유, 서버/환경변수 기반 API 보안, Gemini API 요약 추천을 연결합니다. 교사 연수라면 '학급 기록 서비스'로 바꾸세요 — 교사별로 로그인해 자기 반 데이터만 보이게 하고, 동학년 교사에게만 공유하는 구조가 그대로 대응합니다. 사용자별 데이터가 필요한 앱이면 무엇이든 같은 구조입니다.",
     tags: ["여행 플래너", "DB·로그인", "Gemini API", "API 보안"],
     padletUrl: "https://padlet.com/dungstme/_-6tfn9vwj7wv8p4f",
     competency: "로그인·데이터베이스·AI API를 연결해 사용자별 데이터를 안전하게 다루는 운영형 서비스를 릴리즈한다",
@@ -1496,13 +1535,14 @@ const COURSE = {
     facilitatorIntro: "다회차 연수(주 1회 × 4주 등)에 적합한 분량입니다. 로그인·DB·릴리즈를 처음 다루는 참가자가 많으므로, 강의 순서를 건너뛰지 않고 release-harness(릴리즈 전 점검 구조)부터 차례로 짚어 주는 것이 중요합니다. 마지막 차시는 반드시 실제 v1.0 배포까지 마치고 끝내야 '완성 경험'이 남습니다.",
     runPlan: [
       {
-        name: "4주 연수형(주 1회, 회당 90분)",
-        note: "매회 시작 5분은 직전 주 산출물(릴리즈·로그)을 함께 확인한다.",
+        name: "5주 연수형(주 1회, 회당 90분)",
+        note: "매회 시작 5분은 직전 주 산출물(배포 링크·로그)을 함께 확인한다. 2주차의 서버 프록시와 3주차의 로그인·DB가 이 리그의 두 고비이므로, 이 두 주는 다른 강의를 끼워 넣지 말고 실습 시간을 남겨 둔다. 마지막 주는 반드시 실제 v1.0 배포까지 마치고 끝낸다.",
         sessions: [
-          { title: "1주차 — 도구와 점검 체계", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
-          { title: "2주차 — 보안과 인프라", pages: ["security", "env", "travel-api-gemini", "db-auth-integration", "auth"] },
-          { title: "3주차 — 설계와 배포 준비", pages: ["prd-release", "deploy-check", "logs", "cicd"] },
-          { title: "4주차 — 운영과 v1.0 출시", pages: ["exe", "releases", "warning", "ops", "share"] }
+          { title: "1주차 — 도구와 점검 체계 (70분)", pages: ["setup-master", "agentic-tools", "release-harness", "tests"] },
+          { title: "2주차 — 보안과 서버 프록시 (75분)", pages: ["security", "env", "travel-api-gemini"] },
+          { title: "3주차 — 로그인과 DB (85분)", pages: ["auth", "db-auth-integration", "prd-release"] },
+          { title: "4주차 — 배포와 점검 (60분)", pages: ["deploy-check", "logs", "cicd", "exe"] },
+          { title: "5주차 — 릴리즈와 운영 (75분)", pages: ["releases", "warning", "ops", "share"] }
         ]
       }
     ],
@@ -1555,11 +1595,11 @@ const COURSE = {
           kind: "form",
           fields: [
             { key: "masterTool", label: "주로 사용할 도구", input: "select", options: ["Claude Code", "Antigravity", "Codex"], value: "Claude Code" },
-            { key: "masterTask", label: "맡길 첫 작업", placeholder: "예: 로그인 후 사용자별 데이터만 보이도록 구조를 점검해 줘.", chips: ["로그인 후 내 여행만 보이게 하기", "여행 계획을 DB에 저장하기", "동행자 공유 권한 설계하기", "Gemini API 요약 기능 설계하기", "API 키 환경변수 점검하기", "내 앱의 사용자별 데이터 구조 점검하기"] },
+            { key: "masterTask", label: "맡길 첫 작업", placeholder: "예: 로그인 후 사용자별 데이터만 보이도록 구조를 점검해 줘.", chips: ["로그인 후 내 여행만 보이게 하기", "여행 계획을 DB에 저장하기", "동행자 공유 권한 설계하기", "교사별로 자기 반 기록만 보이게 하기(교사)", "동학년 교사에게만 공유하기(교사)", "API 키 환경변수 점검하기"] },
             { key: "humanCheck", label: "사람이 직접 확인할 기준", placeholder: "예: 다른 사용자의 데이터가 보이지 않는지 직접 테스트한다.", chips: ["A 계정 데이터가 B 계정에 보이지 않는다", "초대된 동행자만 공유 여행을 볼 수 있다", "API 키가 화면과 코드에 없다", "Gemini 응답 실패 시 안내가 나온다", "모바일에서 로그인 흐름이 깨지지 않는다"] }
           ]
         },
-        checks: ["세 도구의 역할을 구분했다", "맡길 첫 작업을 정했다", "사람이 확인할 기준을 적었다"]
+        checks: ["고른 도구 하나에서 프로젝트가 열려 있다", "맡길 첫 작업이 한 문장으로 적혀 있다", "사람이 확인할 기준이 '무엇을 보면 통과'로 적혀 있다"]
       },
       {
         id: "agentic-tools",
@@ -1612,7 +1652,7 @@ const COURSE = {
             { key: "guardrails", label: "손대면 안 되는 것", placeholder: "예: 실제 비밀번호·API 키를 입력하지 말 것, 기존 디자인은 크게 바꾸지 말 것." }
           ]
         },
-        checks: ["세 도구 중 하나를 선택했다", "위임할 작업 범위를 정의했다", "사람이 확인할 테스트를 적었다"]
+        checks: ["위임할 작업 범위와 손대면 안 되는 것이 둘 다 적혀 있다", "AI 결과를 검증할 테스트가 실행 가능한 문장으로 적혀 있다", "AI에 붙여넣을 내용에 실제 비밀번호·키가 없다"]
       },
       {
         id: "release-harness",
@@ -1657,7 +1697,7 @@ const COURSE = {
             { key: "deployCheck", label: "배포·다운로드 확인", input: "text", placeholder: "예: 배포 URL 접속, 새로고침, 모바일 확인." }
           ]
         },
-        checks: ["릴리즈 통과 기준을 적었다", "사용자 관점 확인을 넣었다"]
+        checks: ["릴리즈 통과 기준이 하나씩 확인 가능한 항목으로 나뉘어 있다", "기준에 기능·보안·배포·사용자 안내가 모두 들어 있다"]
       },
       {
         id: "tests",
@@ -1699,7 +1739,7 @@ const COURSE = {
             { key: "testOrder", label: "릴리즈 전 확인 순서", input: "text", placeholder: "예: 로그인 → 여행 생성 → 날씨 확인 → 예산 저장 → Gemini 요약 → 동행자 권한 확인" }
           ]
         },
-        checks: ["정상 테스트를 적었다", "실패 테스트를 적었다"]
+        checks: ["정상 테스트가 '무엇을 하면 무엇이 나온다' 형태로 적혀 있다", "실패·예외 테스트가 하나 이상 있다", "이 목록을 그대로 AI에게 '통과하게 고쳐 줘'로 넘길 수 있다"]
       },
       {
         id: "security",
@@ -1743,44 +1783,52 @@ const COURSE = {
             { key: "beforePublic", label: "공개 전 확인", input: "text", placeholder: "예: API 키 노출 검색, ownerId 권한 분리, 동행자 공유 범위 확인" }
           ]
         },
-        checks: ["민감 정보 점검을 했다", "권한 위험을 적었다"]
+        checks: ["민감 정보 목록에 키·토큰·개인정보가 빠짐없이 들어 있다", "초대받지 않은 사람이 남의 데이터를 볼 수 있는지 직접 확인했다"]
       },
       {
         id: "env",
         group: "보안",
         title: "환경변수 이해하기",
-        goal: "API 키를 코드 밖에서 관리하는 이유를 이해한다.",
+        goal: "브라우저에 노출돼도 되는 키와 서버에만 둬야 하는 키를 구분하고, 비밀 값을 환경변수로 분리할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 15,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["환경변수 항목을 정했다", "공개 금지 값을 구분했다"],
-        summary: "환경변수는 네이버 Secret, Gemini API 키, DB 연결 정보를 코드에 직접 쓰지 않고 따로 보관하는 방법입니다.",
-        reading: "환경변수는 비밀 값을 코드 밖에서 관리하는 방법입니다. 마스터리그의 여행 플래너에서는 NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY, DB 연결 정보처럼 공개하면 안 되는 값을 환경변수로 둡니다. Open-Meteo는 키 없이 시작할 수 있지만, 네이버 쇼핑 API와 Gemini API는 브라우저 코드에 직접 넣으면 노출됩니다. 배포 서비스마다 환경변수를 넣는 화면이 따로 있으니, 어떤 값이 필요한지와 어디에 등록할지를 문서로 남겨 둡니다. 앱에 외부 서비스를 붙여 키가 생기면, 그 키를 코드가 아니라 서버와 환경변수로 옮깁니다.",
+        estimatedMinutes: 20,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["공개 가능 키와 비밀 키를 구분했다", "환경변수 이름을 정했다", ".env.local과 .gitignore를 설정했다"],
+        summary: "모든 키를 숨겨야 하는 것은 아닙니다. 브라우저에 나가도 되는 공개 키와, 서버에만 둬야 하는 비밀 키를 구분하는 것이 이 강의의 핵심입니다.",
+        reading: "지금까지는 '키는 무조건 숨긴다'로 배웠습니다. 여기서 한 단계 정확해집니다. 키에는 두 종류가 있습니다.\n\n공개 키는 브라우저에 나가도 되는 값입니다. Supabase의 anon key가 대표적입니다. 이 키는 '우리 서비스의 어느 프로젝트인지'만 알려 줄 뿐, 무엇을 읽고 쓸 수 있는지는 뒤에서 배울 RLS 규칙이 따로 통제합니다. 그래서 화면 코드에 들어가는 것이 정상 설계입니다. 반대로 비밀 키는 그 값을 가진 사람이 무엇이든 할 수 있게 되는 값입니다. 네이버 Client Secret, Gemini API 키, Supabase service_role 키, DB 연결 문자열이 여기 해당합니다. 이런 값은 브라우저에 절대 내려보내지 않고 서버에서만 읽습니다.\n\n구분 기준은 간단합니다. 그 값을 남이 알았을 때 남의 데이터를 보거나 내 요금을 쓸 수 있다면 비밀 키입니다. service_role 키가 특히 위험합니다. 이름이 anon key와 비슷해 헷갈리기 쉬운데, 이 키는 RLS 규칙을 통째로 무시하므로 새어 나가면 전체 데이터가 열립니다.\n\n비밀 값은 코드가 아니라 두 곳에 둡니다. 내 컴퓨터에서는 프로젝트 폴더의 .env.local 파일에 두고, 그 파일 이름을 반드시 .gitignore에 넣어 GitHub에 올라가지 않게 합니다. 배포 서비스에서는 Vercel이나 Netlify 설정 화면의 환경변수 항목에 같은 이름으로 등록합니다. 코드에서는 값을 직접 쓰지 않고 이름으로 불러 씁니다.",
         toolGuides: ["naverShopping", "geminiApi"],
         terms: [
-          { term: "환경변수", def: "비밀 값을 코드 밖에 보관해 두고 불러 쓰는 설정." },
+          { term: "환경변수", def: "비밀 값을 코드 밖에 보관해 두고 이름으로 불러 쓰는 설정." },
+          { term: "공개 키(anon key)", def: "브라우저에 나가도 되는 키. 어느 프로젝트인지만 알려 주며, 권한은 RLS 규칙이 따로 통제한다." },
+          { term: "비밀 키(service_role·Secret)", def: "가진 사람이 무엇이든 할 수 있게 되는 키. 권한 규칙을 무시하므로 서버에서만 읽는다." },
+          { term: ".env.local", def: "내 컴퓨터에만 두는 비밀 값 파일. 반드시 .gitignore에 넣어 업로드를 막는다." },
           { term: "공개 저장소", def: "누구나 볼 수 있는 GitHub 저장소. 비밀 값을 올리면 안 됨." }
         ],
         visual: {
           type: "layers",
           caption: "환경변수로 비밀값 분리",
           layers: [
-            { label: "코드 (공개 저장소 OK)", desc: "로직·화면·기능 코드 — GitHub에 올릴 수 있음" },
-            { label: ".env 파일 (로컬 전용)", desc: ".gitignore에 추가 필수 — 절대 업로드 금지" },
-            { label: "배포 서비스 환경변수", desc: "Vercel·Netlify 설정 화면에 등록 (비공개)" },
-            { label: "비밀 값 원본", desc: "API 키·비밀번호·DB 연결 정보 — 절대 코드에 넣지 않기" }
+            { label: "화면 코드 (공개 저장소 OK)", desc: "로직·화면·공개 키(anon key) — GitHub에 올려도 됨" },
+            { label: ".env.local (내 컴퓨터 전용)", desc: ".gitignore에 추가 필수 — 절대 업로드 금지" },
+            { label: "배포 서비스 환경변수", desc: "Vercel·Netlify 설정 화면에 같은 이름으로 등록 (비공개)" },
+            { label: "서버에서만 읽는 비밀 키", desc: "Secret·service_role·DB 연결 정보 — 브라우저로 내려보내지 않음" }
           ]
         },
         discussion: [
-          "키를 코드에 직접 적으면 어떤 경로로 노출될 수 있을까요?",
-          "환경변수로 옮기면 무엇이 안전해지나요?"
+          "Supabase anon key는 브라우저에 나가도 되는데 service_role 키는 왜 안 될까요?",
+          "내 앱의 키 목록에서 공개 가능한 것과 비밀인 것을 어떤 기준으로 갈랐나요?",
+          "키를 코드에 직접 적으면 어떤 경로로 노출될 수 있을까요?"
         ],
         steps: [
-          "환경변수 이름을 정합니다.",
-          "코드에 쓰면 안 되는 값을 구분합니다.",
-          "배포 서비스 입력 위치를 확인합니다."
+          "내 앱이 쓰는 키를 모두 적고, 각각 공개 가능한지 비밀인지 나눕니다. 판단 기준은 '남이 이 값을 알면 남의 데이터를 보거나 내 요금을 쓸 수 있는가'입니다.",
+          "프로젝트 폴더에 .env.local 파일을 만들고 비밀 값을 이름=값 형태로 한 줄에 하나씩 적습니다. 예: GEMINI_API_KEY=발급받은값",
+          ".gitignore를 열어 `.env.local` 이 들어 있는지 확인합니다. 없으면 한 줄 추가합니다. 이 한 줄을 빠뜨리면 다음 커밋에 비밀 값이 그대로 올라갑니다.",
+          "`git status` 를 실행해 .env.local이 목록에 나타나지 않는지 확인합니다. 나타나면 .gitignore가 적용되지 않은 것입니다.",
+          "배포 서비스에 같은 이름으로 등록합니다. Vercel은 프로젝트 → Settings → Environment Variables, Netlify는 Site configuration → Environment variables입니다.",
+          "등록 후 배포를 다시 실행합니다. 환경변수는 기존 배포에 소급 적용되지 않습니다.",
+          "공개 키(anon key 등)는 숨기려 애쓰지 않습니다. 대신 다음 강의의 권한 규칙으로 통제한다는 것을 기억합니다."
         ],
-        externalGuide: "① 아래 배포 서비스 링크를 엽니다. ② Vercel: 프로젝트 선택 → Settings → Environment Variables → 이름·값 입력 → Save. Netlify: Site configuration → Environment variables → Add a variable → 이름·값 입력 → Save. ③ 코드에서는 process.env.변수이름 또는 import.meta.env.변수이름으로 읽습니다. ④ 배포를 다시 실행해 환경변수가 적용됐는지 확인합니다.",
+        externalGuide: "① 로컬: 프로젝트 폴더에 .env.local 생성 → 비밀 값을 이름=값으로 기록 → .gitignore에 `.env.local` 추가 → `git status` 로 목록에 안 뜨는지 확인. ② 배포: Vercel은 프로젝트 → Settings → Environment Variables, Netlify는 Site configuration → Environment variables에서 같은 이름으로 등록 후 Save. ③ 서버 코드에서는 process.env.변수이름으로 읽습니다. 화면 코드에서 이 값을 읽으면 브라우저로 나가므로 넣지 않습니다. ④ 배포를 다시 실행해야 적용됩니다.",
         links: [
           { label: "Vercel 환경변수 설정", url: "https://vercel.com/dashboard" },
           { label: "Netlify 환경변수 설정", url: "https://app.netlify.com" }
@@ -1788,80 +1836,97 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "envName", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_SECRET, GEMINI_API_KEY, DATABASE_URL" },
-            { key: "secretValue", label: "코드에 쓰면 안 되는 값", input: "text", placeholder: "예: 네이버 Client Secret, Gemini API 키, DB 연결 문자열" },
-            { key: "deployLocation", label: "배포 서비스 입력 위치 메모", input: "text", placeholder: "예: Vercel → Settings → Environment Variables" }
+            { key: "publicKeys", label: "브라우저에 나가도 되는 공개 키", input: "text", placeholder: "예: Supabase anon key, Supabase 프로젝트 URL", chips: ["Supabase anon key", "Supabase 프로젝트 URL", "Open-Meteo(키 없음)", "공개 키 없음"] },
+            { key: "envName", label: "서버에만 둘 비밀 키의 환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_SECRET, GEMINI_API_KEY, SUPABASE_SERVICE_ROLE_KEY", chips: ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "GEMINI_API_KEY", "SUPABASE_SERVICE_ROLE_KEY", "DATABASE_URL"] },
+            { key: "secretValue", label: "비밀로 분류한 이유", placeholder: "예: service_role 키는 RLS 규칙을 무시하므로 새어 나가면 모든 사용자의 여행 데이터가 열린다. Gemini 키는 남이 쓰면 내 요금이 청구된다." },
+            { key: "gitignoreCheck", label: ".gitignore·git status 확인 결과", input: "text", placeholder: "예: .gitignore에 .env.local 추가함. git status 목록에 .env.local 안 나타남.", chips: [".env.local 추가 완료", "git status에 안 나타남 확인", "이미 올라간 적 없음 확인"] },
+            { key: "deployLocation", label: "배포 서비스 등록 위치·재배포 여부", input: "text", placeholder: "예: Vercel → Settings → Environment Variables에 3개 등록 후 재배포함" }
           ]
         },
-        checks: ["환경변수 항목을 정했다", "공개 금지 값을 구분했다"]
+        checks: ["내 키 목록이 공개 가능 / 비밀 두 칸으로 나뉘어 있다", ".gitignore에 .env.local이 있고 `git status` 목록에 .env.local이 나타나지 않는다", "배포 서비스 환경변수 화면에 등록한 이름이 보이고 재배포를 마쳤다"]
       },
       {
         id: "travel-api-gemini",
         group: "API·AI 연동",
         title: "일반 API와 Gemini API 연동",
-        goal: "여행 플래너에서 일반 API와 Gemini API가 맡는 역할을 나누고 안전한 호출 구조를 설계한다.",
+        goal: "서버 프록시를 실제로 만들어 비밀 키를 브라우저에 노출하지 않고 외부 API와 Gemini API를 호출할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"],
-        summary: "일반 API는 날씨·쇼핑·환율·장소 데이터를 가져오고, Gemini API는 그 데이터를 바탕으로 준비 요약과 추천 문구를 만듭니다.",
-        reading: "마스터리그의 여행 플래너는 프로리그보다 API 구조가 한 단계 깊어집니다. Open-Meteo 같은 날씨 API는 여행 날짜의 기온과 강수 가능성을 가져오고, 네이버 쇼핑 API는 준비물 구매 후보와 가격을 가져옵니다. 필요하면 환율 API나 장소 검색 API를 추가할 수 있습니다. Gemini API는 이 데이터를 그대로 보여 주는 대신, 날씨·예산·준비물·일정을 묶어 '비가 올 가능성이 높으니 우비와 방수팩을 챙기세요'처럼 사용자가 이해하기 쉬운 요약과 추천 문구를 만듭니다. 단, 네이버 Secret과 Gemini API 키는 브라우저 화면이나 입력칸에 넣지 않습니다. 서버 라우트나 프록시가 환경변수에서 키를 읽고, 화면은 서버가 정리해 준 결과만 받도록 설계합니다.",
+        estimatedMinutes: 40,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["api 폴더에 중계 파일을 만들었다", "환경변수를 등록하고 재배포했다", "화면 코드의 호출 대상을 /api로 바꿨다", "배포본에 키가 노출되지 않음을 확인했다", "API 실패 대체 안내를 넣었다"],
+        summary: "프로리그에서 미뤄 둔 숙제를 여기서 끝냅니다. 서버가 대신 호출하는 통로를 만들면, 네이버 쇼핑 API를 키 노출 없이 실제로 부를 수 있습니다.",
+        reading: "프로리그에서 네이버 쇼핑 API는 샘플 응답으로만 다뤘습니다. Client Secret을 브라우저에 넣을 수 없어서였습니다. 그 숙제를 이번 강의에서 끝냅니다.\n\n해법은 통로를 하나 두는 것입니다. 브라우저가 네이버에 직접 묻는 대신 내 서버에 묻고, 내 서버가 키를 붙여 네이버에 물어본 뒤 결과만 돌려줍니다. 이 중계자를 서버 프록시라고 합니다. 키는 서버에만 있으므로 브라우저 어디를 뒤져도 나오지 않습니다.\n\n예전에는 서버를 따로 빌려야 했지만, 지금은 Vercel에 배포하는 프로젝트라면 폴더 하나로 끝납니다. 프로젝트 루트에 api 라는 폴더를 만들고 그 안에 파일을 하나 두면, 그 파일이 곧 서버 주소가 됩니다. api/shopping.js 파일은 /api/shopping 주소로 열립니다. 화면 코드는 네이버 주소 대신 이 주소를 부르면 됩니다.\n\n역할을 정리하면 이렇습니다. 일반 API(Open-Meteo 날씨, 네이버 쇼핑, 환율)는 사실 데이터를 가져오고, Gemini API는 그 데이터를 묶어 '비가 올 가능성이 높으니 우비와 방수팩을 챙기세요'처럼 사람이 읽을 문장을 만듭니다. Open-Meteo는 키가 없으니 화면에서 직접 불러도 됩니다. 네이버와 Gemini는 키가 있으니 반드시 프록시를 거칩니다.\n\n한 가지 더. Gemini에 보낼 때 사용자의 실제 연락처나 숙소 주소를 함께 보내지 않습니다. 여행지, 날짜, 날씨, 예산, 준비물 목록이면 좋은 요약을 만들기에 충분합니다.",
         toolGuides: ["openMeteo", "naverShopping", "geminiApi"],
         terms: [
           { term: "일반 API", def: "날씨·쇼핑·환율·장소처럼 정해진 데이터를 요청하고 응답받는 외부 서비스." },
           { term: "Gemini API", def: "여행 데이터와 사용자 조건을 바탕으로 요약·추천 문구를 생성하는 AI API." },
-          { term: "서버 프록시", def: "브라우저 대신 서버가 외부 API를 호출해 Secret을 숨기는 구조." },
-          { term: "환경변수", def: "API 키와 Secret을 코드 밖에 보관하는 설정." }
+          { term: "서버 프록시", def: "브라우저 대신 서버가 외부 API를 호출해 Secret을 숨기는 중계 구조." },
+          { term: "서버리스 함수", def: "서버를 따로 빌리지 않고 파일 하나로 만드는 서버 코드. Vercel에서는 api 폴더의 파일 하나가 주소 하나가 된다." },
+          { term: "환경변수", def: "API 키와 Secret을 코드 밖에 보관하고 서버에서만 읽는 설정." },
+          { term: "Network 탭", def: "개발자 도구(F12)에서 브라우저가 주고받은 요청을 보는 곳. 키가 새는지 여기서 확인한다." }
         ],
         visual: {
           type: "flow",
           caption: "여행 API 연동 흐름",
           steps: [
-            { label: "여행 정보", sub: "여행지·날짜·예산·준비물" },
-            { label: "일반 API", sub: "날씨·쇼핑·환율·장소" },
-            { label: "서버 프록시", sub: "Secret은 환경변수에서만 읽기" },
-            { label: "Gemini API", sub: "요약·추천 문구 생성" },
-            { label: "화면 표시", sub: "사용자에게 결과만 보여 주기" }
+            { label: "화면", sub: "/api/shopping 호출" },
+            { label: "api 폴더 파일", sub: "환경변수에서 키 읽기" },
+            { label: "외부 API", sub: "네이버·Gemini에 요청" },
+            { label: "결과만 반환", sub: "키는 응답에 넣지 않음" },
+            { label: "확인", sub: "Network 탭에 키 없음" }
           ]
         },
         discussion: [
-          "날씨·쇼핑·환율·장소 중 내 여행 플래너에 가장 먼저 붙일 API는 무엇인가요?",
+          "Open-Meteo는 화면에서 바로 불러도 되는데 네이버 쇼핑은 왜 프록시를 거쳐야 할까요?",
           "Gemini가 만들면 좋은 문구는 단순 요약일까요, 추천 행동일까요?",
-          "브라우저 코드에 API 키를 넣지 않으려면 어떤 구조가 필요할까요?"
+          "프록시를 만들었는데도 키가 샐 수 있는 경우는 어떤 상황일까요?"
         ],
         steps: [
-          "여행 플래너에 붙일 일반 API를 고릅니다.",
-          "Gemini API가 만들 결과를 한 문장으로 정합니다.",
-          "서버 프록시와 환경변수 이름을 적습니다.",
-          "API 실패 시 화면에 보여 줄 대체 안내를 정합니다."
+          "먼저 API를 두 칸으로 나눕니다. 키가 없는 것(Open-Meteo)은 화면에서 직접 호출하고, 키가 있는 것(네이버 쇼핑, Gemini)은 프록시를 거치도록 정합니다.",
+          "프로젝트 루트에 api 라는 폴더를 만듭니다. 루트란 index.html이나 package.json이 있는 최상위 폴더입니다.",
+          "에이전트에게 중계 파일을 만들게 합니다. 지시문에 다음을 그대로 넣으세요. 'api 폴더에 shopping 중계 파일을 만들어 줘. 키는 process.env에서만 읽고, 응답 본문에는 절대 포함하지 마. 화면에서 넘어온 검색어만 외부 API에 전달하고, 실패하면 상태 코드와 짧은 메시지만 돌려줘.'",
+          "앞 강의에서 만든 .env.local에 필요한 키를 넣고, 배포 서비스 환경변수에도 같은 이름으로 등록합니다.",
+          "화면 코드에서 외부 API 주소를 부르던 부분을 내 프록시 주소로 바꿉니다. 예를 들어 네이버 주소 대신 /api/shopping 을 부릅니다.",
+          "배포합니다. 환경변수는 기존 배포에 소급 적용되지 않으므로 반드시 다시 배포해야 합니다.",
+          "배포된 페이지에서 검색을 한 번 해 실제 결과가 뜨는지 확인합니다. 샘플 데이터가 아니라 진짜 응답이어야 합니다.",
+          "키가 새지 않는지 두 가지로 확인합니다. 첫째, 페이지에서 마우스 오른쪽 → '페이지 소스 보기'를 열고 Ctrl+F로 SECRET, API_KEY, CLIENT_SECRET을 검색해 아무것도 안 나오는지 봅니다.",
+          "둘째, F12 → Network 탭을 열고 검색을 다시 실행합니다. /api/shopping 요청을 클릭해 Headers와 Response 어디에도 키 값이 없는지 확인합니다.",
+          "Gemini 연동도 같은 방식으로 파일을 하나 더 만듭니다. 보낼 데이터는 여행지·날짜·날씨·예산·준비물까지만으로 제한하고, 실제 연락처나 숙소 주소는 넣지 않습니다.",
+          "API가 실패했을 때 화면이 비어 버리지 않도록 대체 안내 문구를 넣습니다. 실패는 반드시 일어납니다."
         ],
+        externalGuide: "① 프로젝트 루트에 api 폴더 생성 ② 에이전트에 중계 파일 요청 — '키는 process.env에서만 읽고 응답에 포함하지 마' ③ .env.local과 배포 서비스 환경변수에 같은 이름으로 등록 ④ 화면 코드의 호출 대상을 외부 주소 → /api/… 로 교체 ⑤ 재배포 ⑥ 검증: 페이지 소스 보기에서 SECRET·API_KEY 검색 0건, F12 Network 탭의 /api 요청 Headers·Response에 키 없음.",
         practice: {
           kind: "form",
           fields: [
             { key: "generalApis", label: "사용할 일반 API", placeholder: "예: Open-Meteo 날씨, 네이버 쇼핑, 환율 API", chips: ["Open-Meteo 날씨", "네이버 쇼핑", "환율 API", "장소 검색 API", "내 앱에 필요한 외부 데이터", "처음엔 하나만 선택"] },
             { key: "geminiUse", label: "Gemini API 사용 목적", placeholder: "예: 날씨·예산·준비물을 바탕으로 여행 준비 요약과 추천 문구 생성", chips: ["비 오는 여행 준비 요약", "예산 초과 위험 안내", "날씨 기반 준비물 추천", "동행자에게 보낼 준비 메시지", "여행 전 체크리스트 요약", "내 앱 데이터 기반 추천 문구"] },
             { key: "envKeys", label: "환경변수 이름", input: "text", placeholder: "예: NAVER_CLIENT_ID, NAVER_CLIENT_SECRET, GEMINI_API_KEY", chips: ["NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET", "GEMINI_API_KEY", "DATABASE_URL", "AUTH_SECRET"] },
+            { key: "proxyRoutes", label: "만든 프록시 주소와 파일", input: "text", placeholder: "예: api/shopping.js → /api/shopping, api/summary.js → /api/summary", chips: ["api/shopping.js → /api/shopping", "api/summary.js → /api/summary", "api/weather.js는 불필요(키 없음)"] },
+            { key: "leakCheck", label: "키 노출 검증 결과", placeholder: "예: 배포 URL에서 페이지 소스 보기 → SECRET·API_KEY·CLIENT_SECRET 검색 0건. F12 Network 탭에서 /api/shopping 요청의 Headers·Response 확인 — 키 값 없음. 응답에는 상품명·가격만 있음." },
             { key: "safePrompt", label: "Gemini에 보낼 안전한 요청", placeholder: "예: 개인 연락처 없이 여행지·날짜·날씨·예산·준비물만 보내 준비 요약을 만들어 달라고 요청한다.", chips: ["개인정보 없이 요약 요청", "여행지·날짜·날씨·예산만 전달", "실제 전화번호·주소 제외", "추천 문구만 생성", "결정은 사용자가 하도록 안내"] },
             { key: "fallback", label: "API 실패 시 대체 안내", placeholder: "예: 날씨 API가 실패하면 '날씨를 불러오지 못했습니다. 준비물은 직접 확인해 주세요.'라고 보여 준다.", chips: ["날씨를 불러오지 못했습니다", "쇼핑 후보를 불러오지 못했습니다", "AI 요약을 생성하지 못했습니다", "잠시 후 다시 시도해 주세요", "기본 준비물 목록을 먼저 보여 줍니다"] }
           ]
         },
-        checks: ["일반 API 역할을 정했다", "Gemini API 사용 목적을 정했다", "환경변수 이름을 적었다", "API 실패 대체 안내를 적었다"]
+        checks: ["배포된 앱에서 검색하면 샘플이 아니라 실제 API 결과가 화면에 뜬다", "페이지 소스 보기에서 SECRET·API_KEY·CLIENT_SECRET 검색 결과가 0건이다", "F12 Network 탭의 /api 요청 Headers·Response 어디에도 키 값이 없다", "API를 일부러 실패시켜도 빈 화면 대신 안내 문구가 보인다"]
       },
       {
         id: "db-auth-integration",
         group: "DB·로그인",
         title: "데이터베이스와 로그인 연동",
-        goal: "로그인한 사용자와 데이터베이스 데이터를 안전하게 연결하는 구조를 설계한다.",
+        goal: "Supabase로 로그인과 데이터베이스를 실제로 연결하고, RLS 규칙으로 사용자별 데이터를 분리할 수 있다.",
         difficulty: "advanced",
-        estimatedMinutes: 25,
-        updatedAt: "2026-06-22",
-        completionRequirements: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"],
-        summary: "프로리그가 저장할 여행 데이터를 정리하는 단계였다면, 마스터리그는 로그인한 사용자별로 여행 계획이 분리되도록 DB와 인증을 연결합니다.",
-        reading: "데이터베이스와 로그인 시스템을 연결하면 여행 플래너는 '모두가 같은 데이터를 보는 화면'에서 '각 사용자가 자기 여행 계획만 보는 서비스'로 바뀝니다. 여행 플래너라면 trips, itineraryItems, packingItems, budgetItems, collaborators 같은 데이터를 사용자 ID와 연결해야 합니다. 각 여행에는 ownerId가 있고, 동행자 공유가 필요하면 collaborators 테이블이나 공유 권한 필드를 둡니다. 화면에서는 로그인하지 않은 사용자를 막고, 서버나 DB 규칙에서는 초대받지 않은 사람이 다른 사람의 일정·예산·준비물을 읽거나 수정하지 못하게 해야 합니다. Supabase, Firebase, Clerk 같은 서비스를 쓸 수 있지만 핵심은 같습니다. 로그인 확인, 사용자 ID 연결, 사용자별 데이터 분리, 동행자 권한 규칙, 환경변수 관리입니다.",
+        estimatedMinutes: 45,
+        updatedAt: "2026-09-06",
+        completionRequirements: ["Supabase 프로젝트와 테이블을 만들었다", "이메일 로그인을 켰다", "RLS를 켜고 정책을 만들었다", "앱에서 로그인·저장·조회가 동작한다", "A 계정 데이터가 B 계정에 안 보이는 것을 확인했다"],
+        summary: "이 강의에서 앱이 서비스가 됩니다. 로그인을 붙이고 사용자마다 자기 데이터만 보이게 만드는 것이 마스터리그의 분기점입니다.",
+        reading: "데이터베이스와 로그인을 연결하면 여행 플래너는 '모두가 같은 데이터를 보는 화면'에서 '각 사용자가 자기 계획만 보는 서비스'로 바뀝니다.\n\n이 강의는 Supabase 하나로 끝까지 갑니다. 로그인과 데이터베이스를 한 곳에서 다루고 무료로 시작할 수 있어서입니다. Firebase나 Clerk도 같은 일을 하지만, 처음에는 도구를 비교하는 것보다 하나를 끝까지 완성해 보는 편이 훨씬 많이 남습니다. 나중에 옮기더라도 개념은 그대로 통합니다.\n\n핵심 개념은 두 가지입니다. 첫째, 모든 데이터 줄에 주인을 적어 둡니다. trips 테이블에 owner_id 컬럼을 두고, 여행을 만들 때 지금 로그인한 사람의 ID를 함께 저장합니다. 둘째, 주인만 볼 수 있게 데이터베이스가 직접 막습니다. 이것을 RLS(Row Level Security, 행 수준 보안)라고 합니다.\n\nRLS가 왜 중요한지 짚고 가야 합니다. 화면 코드에서 '내 것만 보여 줘'라고 걸러 내는 것만으로는 안전하지 않습니다. 브라우저 코드는 누구나 열어 고칠 수 있어서, 조건을 지우고 전체를 요청하면 남의 데이터가 그대로 나옵니다. RLS는 데이터베이스 쪽에 규칙을 걸어 두는 방식이라, 요청이 어디서 오든 규칙에 맞지 않으면 빈 결과를 돌려줍니다. 그래서 앞 강의에서 배운 anon key가 브라우저에 나가도 괜찮은 것입니다. 열쇠는 공개돼도 문은 RLS가 지킵니다.\n\n동행자 공유가 필요하면 collaborators 테이블을 하나 더 두고, 정책을 '내가 주인이거나 collaborators에 내가 들어 있으면 읽기 허용'으로 넓히면 됩니다. 다만 처음에는 내 것만 보이는 것까지 완성하고, 공유는 그다음에 붙이세요.",
         terms: [
           { term: "데이터베이스", def: "앱의 데이터를 저장하고 다시 불러오는 공간." },
           { term: "사용자 ID", def: "로그인한 사용자를 구분하기 위해 인증 시스템이 부여하는 고유 값." },
-          { term: "소유자 필드", def: "데이터가 어떤 사용자에게 속하는지 나타내는 ownerId 또는 userId 같은 값." },
+          { term: "소유자 필드", def: "데이터가 어떤 사용자에게 속하는지 나타내는 owner_id 또는 user_id 같은 컬럼." },
+          { term: "RLS(행 수준 보안)", def: "데이터베이스가 줄 단위로 접근을 막는 기능. 화면 코드가 아니라 DB가 직접 거르므로 코드를 고쳐도 뚫리지 않는다." },
+          { term: "정책(Policy)", def: "RLS에서 '어떤 조건이면 읽기·쓰기를 허용할지' 적어 둔 규칙 한 줄." },
+          { term: "auth.uid()", def: "Supabase 정책 안에서 '지금 로그인한 사용자의 ID'를 뜻하는 값." },
           { term: "접근 규칙", def: "누가 어떤 데이터를 읽고 수정할 수 있는지 정한 보안 규칙." }
         ],
         visual: {
@@ -1880,13 +1945,19 @@ const COURSE = {
           "다른 사용자의 데이터가 보이지 않게 하려면 코드와 DB 규칙에서 각각 무엇을 확인해야 할까요?"
         ],
         steps: [
-          "로그인이 필요한 화면과 필요 없는 화면을 구분합니다.",
-          "저장할 데이터에 사용자 ID를 연결할 필드를 정합니다.",
-          "데이터를 만들 때 현재 사용자 ID를 함께 저장하도록 설계합니다.",
-          "목록을 불러올 때 현재 사용자 데이터만 조회하도록 정합니다.",
-          "다른 사용자 데이터 접근을 막는 권한 규칙과 테스트를 적습니다."
+          "supabase.com에 가입하고 'New project'로 프로젝트를 만듭니다. 데이터베이스 비밀번호는 따로 안전한 곳에 적어 둡니다.",
+          "왼쪽 메뉴 Table Editor → 'New table'로 trips 테이블을 만듭니다. 컬럼은 id(기본 생성), owner_id(타입 uuid), title(text), start_date(date) 정도로 시작합니다.",
+          "테이블을 만들 때 'Enable Row Level Security' 체크를 켠 상태로 둡니다. 껐다면 나중에 Authentication → Policies에서 켤 수 있습니다.",
+          "왼쪽 메뉴 Authentication → Providers에서 Email을 켭니다. 연습 단계에서는 'Confirm email'을 꺼 두면 테스트 계정을 빠르게 만들 수 있습니다.",
+          "Authentication → Policies에서 trips 테이블에 정책을 추가합니다. 'Enable read access for users based on user_id' 같은 템플릿을 고르고 조건을 `owner_id = auth.uid()` 로 둡니다. 읽기(SELECT)와 쓰기(INSERT·UPDATE·DELETE)를 각각 만듭니다.",
+          "Project Settings → API에서 Project URL과 anon key를 복사합니다. 이 두 값은 화면 코드에 넣어도 되는 공개 값입니다. 같은 화면의 service_role 키는 절대 복사해 쓰지 않습니다.",
+          "에이전트에게 연결을 맡깁니다. 지시문 예: 'Supabase 클라이언트를 붙여 이메일 로그인 화면과 로그아웃을 만들어 줘. 여행을 저장할 때 owner_id에 현재 로그인 사용자 id를 넣고, 목록은 로그인한 사용자 것만 조회해 줘. URL과 anon key는 환경변수로 빼 줘. service_role 키는 쓰지 마.'",
+          "배포하고 계정 A로 가입해 여행을 하나 만듭니다. 새로고침해도 남아 있는지 확인합니다.",
+          "브라우저 시크릿 창을 열고 계정 B로 가입합니다. 계정 A가 만든 여행이 보이지 않아야 합니다. 보인다면 RLS 정책이 꺼져 있거나 조건이 잘못된 것입니다.",
+          "로그아웃한 상태에서 저장 화면 주소로 직접 접속해 봅니다. 로그인 화면으로 막히는지 확인합니다.",
+          "여기까지 되면 동행자 공유를 붙입니다. collaborators 테이블(trip_id, user_id)을 만들고, 읽기 정책을 '내가 주인이거나 collaborators에 내가 있으면 허용'으로 넓힙니다."
         ],
-        externalGuide: "AI에게 요청할 때는 실제 비밀번호나 키를 붙여넣지 마세요. 'Supabase/Firebase/Clerk 중 하나를 기준으로 로그인 후 사용자별 데이터만 보이게 하는 구조를 설계해 줘. 실제 키는 비워 두고 환경변수 이름만 제안해 줘.'처럼 요청합니다.",
+        externalGuide: "① supabase.com → New project ② Table Editor → trips 테이블(owner_id uuid 포함), RLS 켜기 ③ Authentication → Providers → Email 켜기(연습 중엔 Confirm email 끄기) ④ Authentication → Policies → 조건 `owner_id = auth.uid()` 로 읽기·쓰기 정책 추가 ⑤ Project Settings → API에서 Project URL·anon key 복사(service_role은 쓰지 않음) ⑥ 에이전트에 연결 요청 ⑦ 검증: 계정 A로 저장 → 시크릿 창에서 계정 B로 로그인 → A의 데이터가 안 보이면 성공.  AI에게 실제 비밀번호나 service_role 키를 붙여넣지 마세요.",
         links: [
           { label: "Supabase", url: "https://supabase.com" },
           { label: "Firebase", url: "https://firebase.google.com" },
@@ -1895,14 +1966,16 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "authProvider", label: "로그인 서비스 후보", input: "select", options: ["Supabase Auth", "Firebase Auth", "Clerk", "아직 미정"], value: "Supabase Auth" },
-            { key: "dbProvider", label: "데이터베이스 후보", input: "select", options: ["Supabase Database", "Firebase Firestore", "기존 DB", "아직 미정"], value: "Supabase Database" },
-            { key: "userData", label: "사용자별로 저장할 데이터", placeholder: "예: trips, itineraryItems, packingItems, budgetItems, ownerId, collaborators", chips: ["trips", "itineraryItems", "packingItems", "budgetItems", "collaborators", "ownerId", "sharedWith", "내 앱의 사용자별 데이터"] },
+            { key: "authProvider", label: "사용한 로그인 서비스", input: "select", options: ["Supabase Auth", "Firebase Auth", "Clerk"], value: "Supabase Auth" },
+            { key: "dbProvider", label: "사용한 데이터베이스", input: "select", options: ["Supabase Database", "Firebase Firestore", "기존 DB"], value: "Supabase Database" },
+            { key: "tableSchema", label: "만든 테이블과 컬럼", placeholder: "예: trips(id, owner_id uuid, title text, start_date date) / packing_items(id, trip_id, name, checked) / collaborators(trip_id, user_id)", chips: ["trips(id, owner_id, title, start_date)", "packing_items(id, trip_id, name, checked)", "budget_items(id, trip_id, label, amount)", "collaborators(trip_id, user_id)"] },
+            { key: "rlsPolicy", label: "작성한 RLS 정책 조건", input: "text", placeholder: "예: SELECT·INSERT·UPDATE·DELETE 모두 owner_id = auth.uid()", chips: ["owner_id = auth.uid()", "읽기·쓰기 정책 각각 생성", "공유 읽기는 collaborators 포함 조건으로 확장"] },
+            { key: "userData", label: "사용자별로 저장할 데이터", placeholder: "예: trips, itineraryItems, packingItems, budgetItems, ownerId, collaborators", chips: ["trips", "packing_items", "budget_items", "collaborators", "owner_id", "(교사) classes + owner_id", "(교사) student_records + class_id", "내 앱의 사용자별 데이터"] },
             { key: "accessRule", label: "접근 규칙", placeholder: "예: 로그인한 사용자는 ownerId가 자기 ID이거나 collaborators에 포함된 여행만 읽고 수정할 수 있다.", chips: ["ownerId가 현재 사용자일 때만 읽기", "초대된 동행자만 보기", "소유자만 삭제 가능", "관리자는 운영 데이터만 확인", "공개 여행과 비공개 여행 구분"] },
             { key: "authTest", label: "연동 테스트", placeholder: "예: A 계정으로 만든 여행이 B 계정에서 보이지 않고, 초대된 동행자에게만 공유되는지 확인한다.", chips: ["A 계정 여행이 B 계정에 보이지 않음", "동행자 초대 후에만 보임", "로그아웃하면 저장 화면 접근 불가", "권한 없는 수정 요청 차단", "새로고침 후에도 내 데이터 유지"] }
           ]
         },
-        checks: ["로그인 서비스 후보를 정했다", "DB 후보를 정했다", "사용자별 데이터 필드를 적었다", "접근 규칙과 테스트를 적었다"]
+        checks: ["Supabase Table Editor에 내 테이블과 owner_id 컬럼이 보인다", "Authentication → Policies에 정책이 등록되어 있고 RLS가 켜져 있다", "배포된 앱에서 로그인 후 저장한 데이터가 새로고침해도 남아 있다", "시크릿 창의 다른 계정으로 로그인하면 앞 계정의 데이터가 보이지 않는다", "로그아웃 상태에서 저장 화면에 직접 접속하면 로그인 화면으로 막힌다"]
       },
       {
         id: "auth",
@@ -1939,12 +2012,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "내 앱의 일반 사용자"] },
+            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "담임 교사(교사)", "동학년 교사(교사)"] },
             { key: "rolePermissions", label: "역할별 권한", placeholder: "예: 소유자 - 여행 수정·공유 관리 / 동행자 - 초대된 여행 보기·일부 수정 / 관리자 - 신고·운영 관리", chips: ["소유자 - 여행 수정·공유 관리", "동행자 - 초대된 여행 보기", "관리자 - 운영 데이터 확인", "비로그인 - 로그인 화면만 보기", "일반 사용자 - 자기 데이터만 수정"] },
             { key: "hiddenData", label: "보면 안 되는 데이터", input: "text", placeholder: "예: 초대받지 않은 여행 일정, 예산, 동행자 메모", chips: ["초대받지 않은 여행 일정", "다른 사람의 예산", "비공개 준비물 메모", "로그인 토큰", "API 키", "관리자 전용 데이터"] }
           ]
         },
-        checks: ["사용자 역할을 정했다", "권한 규칙을 적었다"]
+        checks: ["역할별로 할 수 있는 일과 없는 일이 갈려 있다", "비로그인 사용자가 볼 수 없어야 할 것이 명시돼 있다"]
       },
       {
         id: "prd-release",
@@ -1984,21 +2057,21 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "scope", label: "목표와 범위", placeholder: "예: 여행 플래너를 로그인·DB·API·Gemini 연동까지 포함해 안전하게 배포·운영한다.", chips: ["로그인·DB·AI 연동 여행 플래너", "사용자별 데이터 저장 앱", "동행자 공유가 있는 준비 앱", "API 키를 서버에서 보호하는 앱", "내 아이디어의 운영형 앱"] },
-            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "내 앱 사용자"] },
+            { key: "scope", label: "목표와 범위", placeholder: "예: 여행 플래너를 로그인·DB·API·Gemini 연동까지 포함해 안전하게 배포·운영한다.", chips: ["로그인·DB·AI 연동 여행 플래너", "교사별 학급 기록 서비스(교사)", "사용자별 데이터 저장 앱", "동행자 공유가 있는 준비 앱", "API 키를 서버에서 보호하는 앱", "내 아이디어의 운영형 앱"] },
+            { key: "roles", label: "사용자 역할", input: "text", placeholder: "예: 여행 소유자, 동행자, 관리자", chips: ["여행 소유자", "동행자", "관리자", "비로그인 사용자", "담임 교사(교사)", "동학년 교사(교사)"] },
             { key: "flow", label: "핵심 플로우", placeholder: "예: 로그인 → 여행 생성 → 날씨·쇼핑 확인 → 준비물·예산 저장 → Gemini 요약 생성 → 동행자 공유", chips: ["로그인 → 여행 생성 → 준비물 저장 → Gemini 요약", "로그인 → 내 데이터 조회 → 수정 → 저장", "여행 생성 → 동행자 초대 → 권한 확인", "API 호출 → 서버 프록시 → 화면 표시"] },
-            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packingItems, budgetItems, itineraryItems, collaborators 테이블에 ownerId와 tripId를 저장한다.", chips: ["trips + ownerId", "packingItems + tripId", "budgetItems + amount", "collaborators + role", "itineraryItems + date", "내 앱 테이블명"] },
-            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 로그인한 사용자 ID를 ownerId로 저장하고, 자기 여행 또는 초대받은 여행만 조회한다.", chips: ["로그인한 사용자 ID를 ownerId로 저장", "내 데이터만 조회", "초대받은 데이터만 조회", "로그아웃 시 보호 화면 차단", "권한 없는 수정 차단"] },
+            { key: "database", label: "데이터베이스 설계", placeholder: "예: trips, packing_items, budget_items, collaborators 테이블에 owner_id와 trip_id를 두고, 모든 테이블에 RLS를 켠다.", chips: ["trips + owner_id", "packing_items + trip_id", "budget_items + amount", "collaborators + user_id", "전 테이블 RLS 켜기", "내 앱 테이블명"] },
+            { key: "authIntegration", label: "로그인 연동 기준", placeholder: "예: 저장할 때 owner_id에 auth.uid()를 넣고, 조회는 RLS 정책이 자동으로 거르게 한다. 화면 필터에 의존하지 않는다.", chips: ["owner_id에 auth.uid() 저장", "화면 필터가 아닌 RLS로 차단", "초대받은 데이터만 조회", "로그아웃 시 보호 화면 차단", "권한 없는 수정 차단"] },
             { key: "priority", label: "기능 우선순위", placeholder: "예: 필수 - 로그인·여행 저장·예산 합계·Secret 보호 / 다음 - 동행자 공유·Gemini 추천", chips: ["필수 - 로그인·DB 저장·Secret 보호", "필수 - 사용자별 데이터 분리", "다음 - 동행자 공유", "다음 - Gemini 추천", "제외 - 결제·예약·항공권 구매"] },
             { key: "exceptions", label: "예외 상황", placeholder: "예: API 실패, 로그인 만료, 여행지 없음, 초대 권한 없음", chips: ["API 실패", "로그인 만료", "여행지 없음", "초대 권한 없음", "DB 저장 실패", "Gemini 응답 실패"] },
-            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini API 키는 환경변수로 관리하고, 사용자별 여행 데이터와 공유 권한을 분리한다.", chips: ["API 키는 환경변수로 관리", "브라우저에 Secret 금지", "사용자별 데이터 분리", "동행자 권한 확인", "개인정보 최소 수집", "공개 전 키 검색"] },
-            { key: "tests", label: "테스트 기준", placeholder: "예: 로그인별 데이터 분리, 날씨·쇼핑 API 실패 처리, Gemini 요약 생성, 권한 없는 접근 차단 통과", chips: ["A/B 계정 데이터 분리", "권한 없는 접근 차단", "API 실패 안내 표시", "Gemini 요약 생성", "새로고침 후 데이터 유지", "모바일 화면 확인"] },
+            { key: "security", label: "보안 요구사항", placeholder: "예: 네이버 Secret·Gemini 키는 api 폴더의 서버 프록시에서만 읽고, 사용자별 데이터는 RLS 정책(owner_id = auth.uid())으로 분리한다. anon key는 화면에 두되 권한은 RLS가 통제한다.", chips: ["비밀 키는 서버 프록시에서만 읽기", "anon key는 공개, 권한은 RLS로 통제", "service_role 키는 브라우저에 금지", "RLS 정책으로 사용자별 데이터 분리", "동행자 권한 확인", "공개 전 키 검색"] },
+            { key: "tests", label: "테스트 기준", placeholder: "예: 시크릿 창 B 계정에서 A 데이터 안 보임, 페이지 소스·Network 탭에 키 없음, API 실패 시 안내 표시, 새로고침 후 데이터 유지", chips: ["시크릿 창 A/B 계정 데이터 분리", "페이지 소스·Network에 키 없음", "권한 없는 접근 차단", "API 실패 안내 표시", "새로고침 후 데이터 유지", "모바일 화면 확인"] },
             { key: "deploy", label: "배포·패키징 기준", input: "text", placeholder: "예: 웹 배포, 링크 접속·모바일 확인", chips: ["웹 배포", "Vercel", "Netlify", "환경변수 등록 후 배포", "배포 URL 직접 확인", "exe는 필요할 때만 검토"] },
             { key: "release", label: "릴리즈 기준", placeholder: "예: 테스트·보안 통과 후 릴리즈 노트와 함께 공개", chips: ["테스트 통과 후 공개", "보안 점검 통과 후 공개", "사용자용 변경점만 작성", "다운로드·보안 경고 안내 포함", "v1.0 기준 정리"] },
             { key: "ops", label: "운영 체크리스트", placeholder: "예: 오류 보고 확인, 업데이트 주기, 보안 재점검", chips: ["오류 보고 확인", "API 실패 로그 확인", "사용자 피드백 수집", "보안 재점검", "업데이트 주기 정하기", "다음 버전 개선 목록"] }
           ]
         },
-        checks: ["DB 설계를 넣었다", "로그인 연동 기준을 넣었다", "보안 요구사항을 넣었다", "테스트 기준을 넣었다"]
+        checks: ["PRD에 DB 설계·로그인 연동·보안·테스트·릴리즈·운영 기준이 모두 있다", "보안 항목에 anon/service 키 구분과 RLS가 들어 있다", "완료 기준이 '무엇을 하면 무엇이 보인다'로 적혀 있다"]
       },
       {
         id: "deploy-check",
@@ -2043,7 +2116,7 @@ const COURSE = {
             { key: "issues", label: "발견한 문제", input: "text", placeholder: "예: 새로고침 시 데이터가 사라지는지 확인 필요" }
           ]
         },
-        checks: ["배포 URL을 기록했다", "사용자 관점 확인을 했다"]
+        checks: ["배포 URL을 시크릿 창에서 열어 첫 화면이 뜬다", "새로고침해도 로그인 상태와 데이터가 유지된다", "모바일 화면에서 주요 버튼이 눌린다"]
       },
       {
         id: "logs",
@@ -2087,7 +2160,7 @@ const COURSE = {
             { key: "reportSentence", label: "AI에게 줄 보고 문장", placeholder: "예: 오후 3시, Gemini 요약 생성 버튼을 누르자 추천 문구가 안 나오고 콘솔에 '...' 메시지가 떴습니다. 원인을 좁혀 주세요." }
           ]
         },
-        checks: ["에러 보고 템플릿을 만들었다", "로그에서 볼 항목을 적었다"]
+        checks: ["에러 보고에 언제·어디서·무엇을 눌렀고 어떤 메시지가 떴는지가 모두 있다", "이 보고문을 그대로 복사해 AI에게 붙여넣을 수 있다"]
       },
       {
         id: "cicd",
@@ -2132,7 +2205,7 @@ const COURSE = {
             { key: "failCriteria", label: "실패 시 멈출 기준", input: "text", placeholder: "예: 테스트가 하나라도 실패하면 배포하지 않는다." }
           ]
         },
-        checks: ["CI 단계를 적었다", "CD 단계를 적었다"]
+        checks: ["CI에서 무엇을 검사할지 한 줄로 말할 수 있다", "검사 실패 시 배포를 멈출 기준이 정해져 있다"]
       },
       {
         id: "exe",
@@ -2180,7 +2253,7 @@ const COURSE = {
             { key: "securityNotice", label: "보안 경고 안내문", placeholder: "예: 처음 실행 시 Windows 경고가 뜰 수 있습니다. 파일 출처와 이름을 확인하고 실행하세요." }
           ]
         },
-        checks: ["exe 파일명을 정했다", "보안 경고 안내를 적었다"]
+        checks: ["내 앱이 Python인지 웹 기술인지 판단해 도구를 골랐다", "파일명·버전·아이콘이 정해져 있다", "보안 경고가 뜰 때 보여 줄 안내문이 있다"]
       },
       {
         id: "releases",
@@ -2223,10 +2296,10 @@ const COURSE = {
           fields: [
             { key: "changeNotes", label: "사용자용 변경 내용", placeholder: "예: 이번 버전부터 '상세 보기'가 추가되고 속도가 빨라졌습니다." },
             { key: "downloadGuide", label: "다운로드 안내", placeholder: "예: 아래 파일을 내려받아 실행하세요. 첫 실행 시 보안 경고가 뜰 수 있습니다." },
-            { key: "removeInternal", label: "내부 정보 제거 확인", input: "text", placeholder: "예: 커밋 해시·내부 URL 없음 확인" }
+            { key: "removeInternal", label: "내부 정보 제거 확인", input: "text", placeholder: "예: 커밋 해시·내부 URL·환경변수 이름·DB 테이블명 없음 확인", chips: ["커밋 해시 없음", "내부 URL 없음", "환경변수 이름 없음", "키·토큰 없음"] }
           ]
         },
-        checks: ["릴리즈 노트를 작성했다", "다운로드 안내를 넣었다"]
+        checks: ["릴리즈 노트에 사용자가 알아야 할 변화와 다운로드 방법이 있다", "커밋 해시·내부 URL 같은 내부 기록이 섞여 있지 않다"]
       },
       {
         id: "warning",
@@ -2275,7 +2348,7 @@ const COURSE = {
             { key: "warningGuide", label: "보안 경고 안내문", placeholder: "예: Windows 경고가 뜨면 파일 출처와 이름을 먼저 확인하세요. 다른 사이트에서 받은 파일이면 실행하지 마세요." }
           ]
         },
-        checks: ["경고를 줄이는 방법을 적었다", "공식 다운로드 위치를 적었다", "사용자 확인 문구를 넣었다", "보안 경고 안내문을 만들었다"]
+        checks: ["공식 다운로드 위치를 한 곳으로 정했다", "안내문에 파일명·버전·게시자 확인 방법이 있다", "안내문이 '무조건 실행하세요'가 아니라 출처 확인을 먼저 요구한다"]
       },
       {
         id: "ops",
@@ -2314,12 +2387,12 @@ const COURSE = {
         practice: {
           kind: "form",
           fields: [
-            { key: "opsChecklist", label: "운영 체크 항목", placeholder: "예: 주 1회 오류 보고 확인, 월 1회 보안 재점검, 사용자 피드백 모으기" },
+            { key: "opsChecklist", label: "운영 체크 항목", placeholder: "예: 주 1회 오류 보고 확인, 월 1회 보안 재점검(RLS 정책·환경변수·키 노출), 사용자 피드백 모으기", chips: ["주 1회 오류 보고 확인", "월 1회 RLS 정책 재확인", "환경변수·키 노출 재점검", "API 실패 로그 확인", "사용자 피드백 수집"] },
             { key: "updateCriteria", label: "업데이트 기준", input: "text", placeholder: "예: 같은 오류가 반복되거나 요청이 쌓이면 업데이트" },
             { key: "inquiryResponse", label: "사용자 문의 대응", placeholder: "예: 문의 창구를 정하고, 받은 문의를 에러 보고 형식으로 정리한다." }
           ]
         },
-        checks: ["운영 체크리스트를 만들었다", "업데이트 기준을 적었다"]
+        checks: ["운영 체크 항목마다 확인 주기가 정해져 있다", "재점검 항목에 RLS 정책과 키 노출이 들어 있다"]
       },
       {
         id: "share",
@@ -2366,7 +2439,7 @@ const COURSE = {
             { key: "help", label: "도움받고 싶은 점" }
           ]
         },
-        checks: ["v1.0 배포 링크가 실제로 열린다", "공유글을 만들었다", "공개 점검을 했다"]
+        checks: ["v1.0 링크를 눌러 실제로 열린다", "다른 계정으로 로그인하면 내 데이터가 보이지 않는다", "공유글에 민감 정보와 내부 URL이 없다"]
       }
     ]
   }
@@ -2384,7 +2457,7 @@ const COURSE = {
 const PROJECT_TRACKS = [
   {
     name: "수업 도구",
-    intro: "수업 중 바로 띄워 쓰는 작은 도구. 루키리그 한 흐름으로도 완성할 수 있습니다.",
+    intro: "수업 중 바로 띄워 쓰는 작은 도구. 루키리그의 '수업 준비 미니앱' 병기 예시가 바로 이 갈래입니다.",
     ideas: [
       { title: "랜덤 발표자 뽑기", summary: "이름 목록에서 무작위로 한 명을 뽑아 보여 주는 한 화면 앱.", league: "rookie", useFor: "발표·질문 순서를 공정하게 정할 때 칠판 대신 띄워 사용합니다." },
       { title: "수업 타이머·스톱워치", summary: "남은 시간을 크게 표시하고 끝나면 알려 주는 타이머.", league: "rookie", useFor: "모둠 활동·시험 시간을 학생들이 함께 보도록 화면에 띄웁니다." },
@@ -2413,7 +2486,7 @@ const PROJECT_TRACKS = [
     name: "교무 업무",
     intro: "행사·문서·예산처럼 매번 손이 가던 업무를 자동화하는 도구.",
     ideas: [
-      { title: "행사 준비물 체크리스트", summary: "준비물과 담당·완료 여부를 표시하는 점검 앱(루키 캡스톤과 같은 구조).", league: "rookie", useFor: "현장학습·학예회 준비를 한 화면에서 빠짐없이 챙깁니다." },
+      { title: "행사 준비물 체크리스트", summary: "준비물과 담당·완료 여부를 표시하는 점검 앱(루키 '수업 준비 미니앱'과 같은 구조).", league: "rookie", useFor: "현장학습·학예회 준비를 한 화면에서 빠짐없이 챙깁니다. 날씨·견적까지 붙이면 프로리그의 '학교 행사 준비 앱'이 됩니다." },
       { title: "가정통신문 생성기", summary: "제목·날짜·내용을 넣으면 정해진 양식으로 글을 만들어 주는 앱.", league: "pro", useFor: "반복되는 통신문을 매번 새로 쓰지 않고 양식에 맞춰 빠르게 작성합니다." },
       { title: "일정 카운트다운", summary: "시험·행사까지 남은 날짜를 자동으로 세어 보여 주는 화면.", league: "rookie", useFor: "교실 앞에 띄워 학생·학부모와 중요한 일정을 함께 공유합니다." }
     ]
@@ -2424,7 +2497,7 @@ const PROJECT_TRACKS = [
     ideas: [
       { title: "설문 결과 요약 보드", summary: "보기별 응답 수를 입력하면 비율과 막대로 정리해 주는 앱.", league: "pro", useFor: "반 설문·만족도 조사 결과를 회의·통신문에 바로 쓸 형태로 만듭니다." },
       { title: "급식·활동 만족도 집계", summary: "항목별 점수를 모아 평균과 순위로 보여 주는 집계 앱.", league: "pro", useFor: "주간 만족도를 누적해 변화 추이를 한눈에 확인합니다." },
-      { title: "출결·참여 통계", summary: "로그인한 사용자별로 데이터를 따로 저장·집계하는 다중 사용자 앱.", league: "master", useFor: "여러 교사가 각자 학급 데이터를 입력하고 자기 반 통계만 보도록 운영합니다." }
+      { title: "출결·참여 통계", summary: "로그인한 사용자별로 데이터를 따로 저장·집계하는 다중 사용자 앱(마스터 '학급 기록 서비스'와 같은 구조).", league: "master", useFor: "여러 교사가 각자 학급 데이터를 입력하고, RLS 규칙으로 자기 반 통계만 보도록 운영합니다." }
     ]
   }
 ];

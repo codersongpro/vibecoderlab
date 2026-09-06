@@ -4,7 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>VibeCoder Lab</title>
-  <link rel="stylesheet" href="styles.css?v=34">
+  <!-- Pretendard는 있으면 좋은 웹폰트일 뿐이다. 학교망에서 CDN이 막히면 이 요청만 실패하고
+       styles.css의 --font-sans에 적힌 OS 기본 한글 폰트로 자동 대체된다. -->
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+  <link rel="stylesheet" href="styles.css?v=35">
 </head>
 <body>
   <header class="topbar">
@@ -262,8 +266,8 @@
     </footer>
   </div>
 
-  <script src="content.js?v=34"></script>
-  <script src="qr.js?v=34"></script>
-  <script src="app.js?v=34"></script>
+  <script src="content.js?v=35"></script>
+  <script src="qr.js?v=35"></script>
+  <script src="app.js?v=35"></script>
 </body>
 </html>

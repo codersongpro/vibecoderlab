@@ -81,6 +81,19 @@
 4. 발표 모드 슬라이드 증가: practice/checks 추가로 슬라이드 수↑.
 5. 미리보기 sandbox 완화 금지(`allow-same-origin` 재도입 시 취약).
 
+## 9. 2026-09 커리큘럼 리뷰 반영
+
+커리큘럼 완결성 리뷰(`docs/curriculum-review-2026-09.md`)에 따라 `content.js`를 대폭 보강했다. 구조·엔진은 그대로이며 데이터와 일부 CSS만 바뀌었다.
+
+- **runPlan 규약 신설** — 세션 `title` 끝에 `(NN분)`을 표기하고, 그 값이 세션 `pages`의 `estimatedMinutes` 합계와 **정확히 일치**해야 한다. 강의 시간을 바꾸면 그 강의가 속한 모든 세션 표기를 함께 고친다. 규칙은 `content.js` 상단 주석에 있다. 리그 편성이 루키 5차시(+90분 특강형), 프로 6차시, 마스터 5주로 바뀌었다.
+- **`checks` / `completionRequirements` 역할 분리** — 이전에는 44강 중 42강이 두 배열이 동일한 문자열이었다. 이제 `completionRequirements`는 수료 조건 요약, `checks`는 관찰 가능한 확인 항목이다. 두 배열이 같아지면 안 된다. `buildSelfCheckPrompt`가 둘을 합쳐 AI 채점 프롬프트를 만들므로 중복은 프롬프트 품질을 떨어뜨린다.
+- **마스터리그 실구현화** — `travel-api-gemini`(서버 프록시), `db-auth-integration`(Supabase + RLS), `env`(anon/service 키 구분)가 설계 문서에서 실행 절차로 바뀌었다. 소요 시간이 각각 40/45/20분으로 늘어 runPlan 재편의 직접 원인이 됐다.
+- **`steps`의 백틱 명령** — `renderText`가 `` `명령` ``을 클릭 복사 가능한 `<code>`로 렌더한다. `code.inline-code`는 폭을 많이 차지하므로 **한 토큰을 30자 이내**로 유지한다. 긴 인자는 본문 설명으로 옮긴다.
+- **`summary`에 백틱 금지** — `summary`는 `textContent`로 들어가 백틱이 그대로 노출된다. 백틱은 `steps`·`externalGuide`·`terms[].def`·`discussion`·`reading`에서만 쓴다.
+- **CSS 줄바꿈 보정(styles.css)** — 좁은 화면에서 컨테이너를 밀어내던 6지점을 고쳤다: `code.inline-code`·`.guide-chip`(`inline-flex` + `nowrap`), `.choice`(button 기본 `nowrap` 상속), `input/textarea/select`(폼 컨트롤 고유 폭), `.result`·`.check-item span`(긴 토큰 미분리). 375px 가로 넘침 10강 → 0강. **새 UI 요소를 추가할 때 `inline-flex`나 `nowrap`을 쓰면 같은 문제가 재발하므로 `max-width:100%`·`min-width:0`·`overflow-wrap`을 함께 준다.**
+- **반응형 규약** — 320~1920px 어느 폭에서도 가로 스크롤이 생기지 않아야 한다. 헤더는 한 줄에 약 1100px이 필요해 `@media (max-width: 1279px)`에서 줄바꿈한다. `body`는 `overflow-wrap: anywhere`(`break-word`는 최소 폭 계산을 줄이지 않아 긴 토큰이 컨테이너를 밀어낸다). 도식 `.visual`은 `contain: inline-size` + `overflow-x: auto`로 자체 스크롤한다.
+- **폰트** — Pretendard는 `index.html`의 `<link>`로 받는 선택적 웹폰트다. 차단되면 `--font-sans`의 OS 기본 한글 폰트(맑은 고딕 · Apple SD Gothic Neo · Noto Sans KR)로 대체된다. 폰트를 새로 지정할 때는 `var(--font-sans)` / `var(--font-mono)`를 쓰고 직접 스택을 적지 않는다. `buildPortfolioHtml`이 만드는 내려받기 파일은 웹폰트를 못 쓰므로 스택을 직접 갖고 있다.
+
 ## 8. 2026-07 코드 리뷰 반영
 
 `practice.kind === "mini"` 분기(사용하는 강의 0개)를 제거했고, `updatePreview()`는 build 실습 전용으로 단순화했다. 완료율 QR을 외부 서버(api.qrserver.com) 대신 `qr.js`의 자체 인코더로 전환했다. 자세한 발견 사항·수정 내역은 `docs/code-review-2026-07.md` 참고.
