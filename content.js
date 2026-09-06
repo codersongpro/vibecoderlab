@@ -1335,25 +1335,31 @@ const COURSE = {
         updatedAt: "2026-06-22",
         completionRequirements: ["Repository를 만들었다", "기능 브랜치를 사용했다", "커밋 메시지를 만들었다", "민감 정보 점검을 했다"],
         summary: "GitHub는 코드를 버전별로 기록하는 공간입니다. Repository는 보관함, Branch는 작업 분리선, Commit은 변경 기록 단위입니다.",
-        reading: "GitHub로 코드를 관리하면 '언제 무엇을 바꿨는지' 기록이 남고, 실수해도 이전 상태로 되돌릴 수 있습니다. Repository(저장소)는 프로젝트 파일 전체를 담는 보관함이고, main 브랜치는 항상 잘 동작하는 안전한 버전을 유지하는 기본 줄기입니다. Branch(브랜치)는 main을 건드리지 않고 새 기능을 시험하는 별도 작업 공간입니다. 기능 브랜치를 만들어 작업하고, 잘 되면 main에 합칩니다(Merge). Commit은 '이 시점의 변경을 저장한다'는 기록 단위로, 메시지는 '추가 기능 구현'처럼 사람이 읽고 알 수 있게 적습니다. Push는 내 컴퓨터의 기록을 GitHub에 올리는 것이고, Pull은 GitHub의 최신 상태를 내 컴퓨터로 내려받는 것입니다. 올리기 전엔 반드시 API 키·비밀번호·개인정보가 없는지 확인하세요.",
+        reading: "GitHub로 코드를 관리하면 '언제 무엇을 바꿨는지' 기록이 남고, 실수해도 이전 상태로 되돌릴 수 있습니다. Repository(저장소)는 프로젝트 파일 전체를 담는 보관함이고, main 브랜치는 항상 잘 동작하는 안전한 버전을 유지하는 기본 줄기입니다. Branch(브랜치)는 main을 건드리지 않고 새 기능을 시험하는 별도 작업 공간입니다. 기능 브랜치를 만들어 작업하고, 잘 되면 main에 합칩니다(Merge). Commit은 '이 시점의 변경을 저장한다'는 기록 단위로, 메시지는 '예산 합계 기능 추가'처럼 사람이 읽고 알 수 있게 적습니다. Push는 내 컴퓨터의 기록을 GitHub에 올리는 것이고, Pull은 GitHub의 최신 상태를 내 컴퓨터로 내려받는 것입니다.\n\n이 강의는 개념만 읽고 넘어가는 곳이 아닙니다. 아래 따라하기의 명령을 실제로 한 번 쳐 보세요. 명령어를 외울 필요는 없습니다. 각 명령을 클릭하면 복사되고, 처음 한 번만 순서대로 실행하면 그다음부터는 add → commit → push 세 개만 반복합니다.\n\n명령줄이 부담스럽거나 설치가 막힌 환경이라면 명령 없이 할 수도 있습니다. 에이전트에게 '변경 사항을 커밋하고 푸시해 줘'라고 맡기거나, GitHub Desktop 프로그램의 버튼으로 하거나, 브라우저의 github.dev 편집기에서 왼쪽 소스 제어 아이콘으로 커밋할 수 있습니다. 어느 쪽이든 남는 기록은 같습니다.\n\n올리기 전에는 반드시 API 키·비밀번호·개인정보가 없는지 확인하세요. 한 번 GitHub에 올라간 값은 나중에 지워도 기록에 남습니다.",
         terms: [
           { term: "Repository(저장소)", def: "한 프로젝트의 파일 전체와 변경 기록을 담는 보관함." },
           { term: "Branch(브랜치)", def: "main을 건드리지 않고 새 기능을 만드는 별도 작업 공간." },
           { term: "Commit(커밋)", def: "특정 시점의 변경을 메시지와 함께 저장한 기록 단위." },
           { term: "Push / Pull", def: "Push는 내 컴퓨터 → GitHub, Pull은 GitHub → 내 컴퓨터." },
-          { term: "Merge", def: "기능 브랜치에서 완성한 코드를 main에 합치는 일." }
+          { term: "Merge", def: "기능 브랜치에서 완성한 코드를 main에 합치는 일." },
+          { term: ".gitignore", def: "GitHub에 올리지 않을 파일 목록을 적어 두는 파일. 여기 적힌 파일은 커밋에 포함되지 않는다." }
         ],
         discussion: [
           "main 브랜치를 직접 수정하지 않고 별도 브랜치를 나눠 쓰면 무엇이 안전해질까요?",
           "좋은 커밋 메시지와 나쁜 커밋 메시지의 차이는 무엇일까요?"
         ],
         steps: [
-          "GitHub에서 새 Repository를 만들고 이름을 정합니다.",
-          "올리면 안 되는 파일을 .gitignore에 적어 둡니다(API 키 파일, 비밀번호 파일 등).",
-          "새 기능을 만들 땐 main이 아닌 기능 브랜치를 만들어 작업합니다.",
-          "작업이 끝날 때마다 '무엇을 바꿨는지' 알 수 있는 Commit 메시지를 적습니다.",
-          "Push로 GitHub에 올리기 전, API 키·비밀번호가 없는지 다시 확인합니다.",
-          "잘 동작하면 main 브랜치에 Merge합니다."
+          "github.com 오른쪽 위 '+' → 'New repository' → 이름 입력 → 'Create repository'를 눌러 빈 저장소를 만듭니다. 다음 화면에 나오는 저장소 주소(https://github.com/…)를 복사해 둡니다.",
+          "프로젝트 폴더에 .gitignore 파일을 만들고 올리지 않을 것을 한 줄에 하나씩 적습니다. 보통 이 세 줄이면 시작으로 충분합니다 — .env / .env.local / node_modules/",
+          "프로젝트 폴더에서 터미널을 엽니다. VS Code라면 상단 메뉴 Terminal → New Terminal, 탐색기라면 폴더 주소창에 cmd를 입력하고 Enter를 누릅니다.",
+          "저장소를 처음 연결할 때만 다음을 순서대로 실행합니다. `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin 복사한주소` → `git push -u origin main`",
+          "새 기능을 시작할 때는 기능 브랜치를 만듭니다. `git switch -c feature/weather-panel`",
+          "작업이 끝날 때마다 세 개만 반복합니다. `git add .` → `git commit -m \"예산 합계 기능 추가\"` → `git push`",
+          "지금 무엇이 올라갈 상태인지 헷갈리면 `git status` 를 실행해 확인합니다.",
+          "Push 전에 코드에서 SECRET, API_KEY, CLIENT_SECRET, password, token 을 검색해 실제 값이 없는지 확인합니다.",
+          "GitHub 저장소 페이지를 새로고침해 내 파일이 올라갔는지 눈으로 확인합니다.",
+          "기능이 잘 동작하면 GitHub에서 'Compare & pull request' → 'Merge pull request'로 main에 합칩니다.",
+          "명령줄을 쓰지 않는 경우: 에이전트에게 '변경 사항을 커밋하고 푸시해 줘'라고 요청하거나, GitHub Desktop 또는 github.dev 편집기의 소스 제어 화면에서 버튼으로 커밋합니다."
         ],
         visual: {
           type: "tree",
@@ -1370,7 +1376,7 @@ const COURSE = {
             ]}
           ]
         },
-        externalGuide: "① github.com에 접속해 로그인합니다. ② 오른쪽 위 '+' → 'New repository' → 이름 입력 → 'Create repository'를 누릅니다. ③ 로컬에서 기능 브랜치를 만들고 작업 후 커밋합니다. ④ Push 전에 API 키·비밀번호·개인정보가 없는지 파일을 열어 직접 확인합니다. ⑤ Push 후 GitHub에서 파일이 정상 올라갔는지 확인합니다.",
+        externalGuide: "처음 한 번: `git init` → `git add .` → `git commit -m \"첫 커밋\"` → `git branch -M main` → `git remote add origin 저장소주소` → `git push -u origin main`.  그다음부터 매번: `git add .` → `git commit -m \"바꾼 내용\"` → `git push`.  상태 확인은 `git status`.  명령이 부담스러우면 에이전트에게 커밋·푸시를 맡기거나 GitHub Desktop·github.dev의 소스 제어 버튼을 씁니다.",
         links: [
           { label: "GitHub 열기", url: "https://github.com" }
         ],
@@ -1380,7 +1386,8 @@ const COURSE = {
             { key: "repoName", label: "Repository 이름", input: "text", placeholder: "예: travel-prep-app" },
             { key: "branchName", label: "기능 브랜치 이름", input: "text", placeholder: "예: feature/weather-shopping-budget" },
             { key: "commitMsg", label: "커밋 메시지", input: "text", placeholder: "예: 여행 날씨와 예산 기능 구현" },
-            { key: "beforeUpload", label: "업로드 전 확인", placeholder: "예: API 키·비밀번호·개인정보 없음, SECRET·API_KEY·CLIENT_SECRET·password·token 검색 완료, .gitignore 설정 확인" }
+            { key: "gitignoreLines", label: ".gitignore에 적은 것", input: "text", placeholder: "예: .env, .env.local, node_modules/", chips: [".env", ".env.local", "node_modules/", "*.key"] },
+            { key: "beforeUpload", label: "업로드 전 확인", placeholder: "예: SECRET·API_KEY·CLIENT_SECRET·password·token 검색 결과 실제 값 없음. .gitignore에 .env 포함 확인. GitHub 저장소 페이지에서 파일 목록 확인 완료." }
           ]
         },
         checks: ["Repository를 만들었다", "기능 브랜치를 사용했다", "커밋 메시지를 만들었다", "민감 정보 점검을 했다"]
